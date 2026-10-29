@@ -1518,7 +1518,26 @@ async function spPilotSend(accion){
 document.getElementById('spPilotButton').onclick=spPilotOpen;
 document.getElementById('trackingMapButton').onclick=openTrackingMapping;
 document.getElementById('sharepointViewBtn').onclick=()=>loadSpPreview(); // compatibilidad: oculto, sin cambio de fuente
-document.getElementById('saveBtn').onclick=saveLocal;document.getElementById('downloadCsv').onclick=exportCSV;document.getElementById('resetView').onclick=()=>toast('Demostración local: esta pantalla no consulta SharePoint. Utiliza el navegador para refrescar.');
+
+document.getElementById('saveBtn').onclick = async () => {
+  if (window.TSF_SESSION_ROLE !== 'EDICION') {
+    toast('Tu perfil solo permite consultar.');
+    return;
+  }
+
+  if (isSpPreview()) {
+    await spSaveChanges();
+    return;
+  }
+
+  if (isTrackingSp()) {
+    await saveTrackingSp();
+    return;
+  }
+
+  toast('Este módulo todavía no tiene guardado en SharePoint.');
+};
+document.getElementById('downloadCsv').onclick=exportCSV;document.getElementById('resetView').onclick=()=>toast('Demostración local: esta pantalla no consulta SharePoint. Utiliza el navegador para refrescar.');
 document.addEventListener('pointerdown',e=>{const p=document.querySelector('.filter-panel');if(p&&!p.contains(e.target)&&!e.target.closest('.header-filter'))p.remove()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelector('.filter-panel')?.remove();closeOverlays()}});
 window.addEventListener('beforeunload',e=>{if(dirty.size||spEdits.size||trackingSp.edits.size){e.preventDefault();e.returnValue=''}});
