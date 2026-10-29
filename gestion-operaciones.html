@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V11.7 — Demostración pública</title>
+<title>TSF | Operaciones V11.7 — Piloto con acceso</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -215,6 +215,21 @@ body.tsf-gestion-sp #saveBtn:disabled{opacity:.63;cursor:not-allowed}
 @media(max-width:760px){.tsf-header-ident{display:none}.tsf-pending-tools{width:100%;justify-content:space-between}}
 #spPilotButton,#ownerSharePointLink,#trackingMapButton,#sharepointViewBtn{display:none!important}
 </style>
+<style id="tsf-auth-style">
+/* Control visual de demostración, NO sustituto de autorización en el servidor */
+html.tsf-auth-pending body { visibility:hidden !important; }
+body.tsf-lector #saveBtn,
+body.tsf-lector #newRecord,
+body.tsf-lector #downloadCsv,
+body.tsf-lector #spPilotButton,
+body.tsf-lector #drawerApply,
+body.tsf-lector #reproConfirm,
+body.tsf-lector #reproManual { display:none !important; }
+.tsf-access-strip { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-left:12px; }
+.tsf-access-badge { background:rgba(255,203,22,.16); border:1px solid rgba(255,203,22,.6); color:#fff; padding:7px 10px; font-weight:750; font-size:11px; border-radius:7px; }
+.tsf-exit { padding:7px 10px; border:0; border-radius:7px; background:#ffcb16; color:#171b22; font-weight:750; cursor:pointer; }
+</style>
+<script>document.documentElement.classList.add('tsf-auth-pending');</script>
 </head>
 <body>
 <div class="app" id="app">
@@ -224,7 +239,7 @@ body.tsf-gestion-sp #saveBtn:disabled{opacity:.63;cursor:not-allowed}
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V11.7 · DEMO PÚBLICA · SIN DATOS REALES</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V11.7 · PILOTO AUTENTICADO · DATOS FICTICIOS</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
@@ -906,7 +921,7 @@ function fieldRole(moduleIndex,col,row=null){
  if(moduleIndex===1&&FINANCIAL_SHARED.has(col))return 'workflow';
  return inheritedFrom(col)?'inherited':'workflow';
 }
-function isEditableColumn(moduleIndex,col,row=null){if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if(moduleIndex===1&&trackingSp.active)return trackingEditable(col);return ['manual','workflow'].includes(fieldRole(moduleIndex,col,row))}
+function isEditableColumn(moduleIndex,col,row=null){if(window.TSF_SESSION_ROLE!=='EDICION')return false;if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if(moduleIndex===1&&trackingSp.active)return trackingEditable(col);return ['manual','workflow'].includes(fieldRole(moduleIndex,col,row))}
 function nowLima(){
  const parts=Object.fromEntries(new Intl.DateTimeFormat('es-PE',{timeZone:'America/Lima',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
  return `${parts.day}/${parts.month}/${parts.year} ${parts.hour}:${parts.minute}`;
@@ -1297,7 +1312,8 @@ function openDrawer(id){
   else toast('Cambios locales aplicados. Guarda el borrador en este navegador.');
  };
 }
-function saveLocal(){if(isSpPreview()){spSaveChanges();return;}if(isTrackingSp()){saveTrackingSp();return;}try{localStorage.setItem(localKey,JSON.stringify({savedAt:new Date().toISOString(),modules}));dirty.clear();draw();toast('Borrador almacenado solo en este navegador. NO se ha enviado a SharePoint ni a otros analistas.')}catch(e){toast('No se pudo guardar el borrador en este navegador. Exporta los datos para respaldarlos.')}}
+function saveLocal(){if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Perfil Consulta: guardado no autorizado.');return;}
+if(isSpPreview()){spSaveChanges();return;}if(isTrackingSp()){saveTrackingSp();return;}try{localStorage.setItem(localKey,JSON.stringify({savedAt:new Date().toISOString(),modules}));dirty.clear();draw();toast('Borrador almacenado solo en este navegador. NO se ha enviado a SharePoint ni a otros analistas.')}catch(e){toast('No se pudo guardar el borrador en este navegador. Exporta los datos para respaldarlos.')}}
 // V11.1: revisión global al pulsar el botón. Python ejecuta las dos revisiones
 // independientemente y en paralelo; la interfaz permanece navegable.
 async function resetView(){
@@ -1378,7 +1394,8 @@ function exportCSV(){
  download(new Blob([csv],{type:'text/csv;charset=utf-8'}),m.key.replace(/\W+/g,'_')+(isSpPreview()?'_SHAREPOINT.csv':'_VISTA_LOCAL.csv'));
 }
 function download(blob,file){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=file;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
-function newRecord(){if(isSpPreview()){toast('Vista SharePoint: solo lectura. Las altas siguen en la ventana de pruebas.');return;}const ids=new Set(modules[0].rows.map(keyID));let num=1;while(ids.has('MID-2026-'+String(num).padStart(4,'0')))num++;let next='MID-2026-'+String(num).padStart(4,'0');
+function newRecord(){if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Perfil Consulta: cambios no permitidos en esta demostración.');return;}
+if(isSpPreview()){toast('Vista SharePoint: solo lectura. Las altas siguen en la ventana de pruebas.');return;}const ids=new Set(modules[0].rows.map(keyID));let num=1;while(ids.has('MID-2026-'+String(num).padStart(4,'0')))num++;let next='MID-2026-'+String(num).padStart(4,'0');
  document.getElementById('overlays').innerHTML=`<div class="modal-wrap"><div class="modal"><div class="modalhead"><h3>Nueva operación</h3><p>Registro en Gestión de Operaciones (piloto). Tracking, Bien/GPS y Modificaciones se habilitan con los 3 campos amarillos; Garantías solo si corresponde y Reprocesos de forma manual.</p></div><div class="modalcontent"><div class="modal-grid"><div class="form-item"><label>ID_OPERACION</label><input id="newId" value="${esc(next)}"/></div><div class="form-item"><label>PRODUCTO</label><select id="newProd"><option>LEASING</option><option>PRÉSTAMO</option><option>OTRO</option></select></div><div class="form-item full"><label>CLIENTE</label><input id="newCli" placeholder="Razón social / nombre"/></div><div class="form-item"><label>RUC</label><input id="newRuc" placeholder="11 dígitos"/></div><div class="form-item"><label>FUNCIONARIO (FFNN)</label><input id="newFfnn" placeholder="Funcionario"/></div></div><div class="tipbox">Este botón prueba la creación de operaciones. Una vez conectado, será SharePoint quien valide y confirme las altas, evitando IDs duplicados.</div></div><div class="modalfooter"><button class="button" id="newCancel">Cancelar</button><button class="button primary" id="newConfirm">${ic('plus',14)} Crear en modo local</button></div></div></div>`;
  document.getElementById('newCancel').onclick=closeOverlays;
  document.getElementById('newConfirm').onclick=()=>{const id=document.getElementById('newId').value.trim(),client=document.getElementById('newCli').value.trim(),ruc=document.getElementById('newRuc').value.trim(),prod=document.getElementById('newProd').value,fn=document.getElementById('newFfnn').value.trim();if(!id||!client){toast('Ingresa el ID y el nombre del cliente.');return}if(modules[0].rows.some(r=>keyID(r)===id)){toast('Ese ID_OPERACION ya existe. Usa otro código.');return}if(ruc&& !/^\d{11}$/.test(ruc)){toast('El RUC debe tener 11 dígitos o quedar vacío.');return}
@@ -1391,7 +1408,8 @@ function newRecord(){if(isSpPreview()){toast('Vista SharePoint: solo lectura. La
 
 // V7: Búsqueda incremental: ID_OPERACION / RUC / CAF / EXPEDIENTE.
 // Coincidencia seleccionada = datos heredados bloqueados. Sin coincidencia = fila manual editable.
-function newReproceso(){
+function newReproceso(){if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Perfil Consulta: cambios no permitidos en esta demostración.');return;}
+
  const modal=document.getElementById('overlays');
  modal.innerHTML=`<div class="modal-wrap"><div class="modal modal-repro"><div class="modalhead"><h3>Nuevo reproceso</h3><p>Busca por una parte del ID, RUC, CAF o EXPEDIENTE. Selecciona la operación correcta. Si no existe, puedes crear un registro manual para completar sus datos.</p></div><div class="modalcontent">
   <div class="lookup-filters"><div class="form-item"><label for="reproLookupType">BUSCAR POR</label><select id="reproLookupType"><option value="ID_OPERACION">ID_OPERACION</option><option value="RUC">RUC</option><option value="CAF">CAF</option><option value="EXPEDIENTE" selected>EXPEDIENTE</option></select></div><div class="form-item lookup-query"><label for="reproLookup">ESCRIBE PARTE DEL CÓDIGO</label><input id="reproLookup" autocomplete="off" spellcheck="false" placeholder="Ej. EXPE, EXPE-12..."/></div></div>
@@ -1461,7 +1479,8 @@ document.getElementById('pendingOnly').onclick=()=>{pendingOnly=!pendingOnly;pag
 document.getElementById('clearFilters').onclick=()=>{query='';analyst='';state='';page=1;pendingOnly=false;colFilters={};sorting={col:'',dir:1};draw()};
 document.getElementById('newRecord').onclick=()=>{if(mIdx===4)newReproceso();else newRecord()};
 // ===== Prueba aislada de Power Automate: no reemplaza Guardar borrador local =====
-function spPilotOpen(){
+function spPilotOpen(){if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Perfil Consulta: prueba de escritura no permitida.');return;}
+
  const row=modules[0].rows.find(r=>String(r.ID_OPERACION||'')==='MID-2026-0021')||modules[0].rows[0]||{};
  const ov=document.getElementById('overlays');
  ov.innerHTML=`<div class="modal-wrap"><div class="modal" style="max-width:730px"><div class="modalhead"><h3>Prueba HTML ↔ Power Automate ↔ SharePoint</h3><p>Solo para datos ficticios. La configuración y el enlace HTTP están guardados en el servidor local, NO en el HTML. Los botones operan sobre la lista real de prueba.</p></div><div class="modalcontent"><div class="modal-grid">
@@ -1548,5 +1567,64 @@ async function tsfCacheObserve(){
 // V11: primero diez operaciones; la fuente oficial sigue siendo SharePoint.
 if(location.hash.toLowerCase()==='#tracking')switchModule(1);
 else draw(); // DEMO: no consulta SharePoint ni Python.
+</script>
+
+<script id="tsf-auth-guard">
+'use strict';
+(async function controlarAccesoTSF(){
+  const login = './inicio-sesion-tsf.html';
+  const api = 'https://tsf-operaciones-api-prueba.jchavez-23e.workers.dev';
+  const token = sessionStorage.getItem('TSF_PILOTO_TOKEN');
+  const rolAnterior = sessionStorage.getItem('TSF_PILOTO_ROL');
+  const salir = () => {
+    sessionStorage.removeItem('TSF_PILOTO_TOKEN');
+    sessionStorage.removeItem('TSF_PILOTO_ROL');
+    location.replace(login);
+  };
+  if (!token || !['LECTURA','EDICION'].includes(rolAnterior)) {
+    salir(); return;
+  }
+  try {
+    const response = await fetch(api + '/auth/me', {
+      method:'GET',
+      headers:{ 'Authorization':'Bearer ' + token },
+      cache:'no-store'
+    });
+    if (!response.ok) throw new Error('Sesión inválida');
+    const session = await response.json();
+    if (session.ok !== true || session.rol !== rolAnterior ||
+        !['LECTURA','EDICION'].includes(session.rol)) {
+      throw new Error('Perfil inválido');
+    }
+    // La autorización real para cada futura escritura debe ocurrir en el Worker.
+    window.TSF_SESSION_ROLE = session.rol;
+    if (session.rol === 'LECTURA') {
+      // No mostrar borradores editados anteriormente en el mismo navegador.
+      modules = clone(base);
+      dirty.clear();
+    }
+    draw();
+    const header = document.querySelector('.headright');
+    if (header) {
+      const strip = document.createElement('div');
+      strip.className = 'tsf-access-strip';
+      const badge = document.createElement('span');
+      badge.className = 'tsf-access-badge';
+      badge.textContent = session.rol === 'EDICION' ? 'PERFIL EDICIÓN' : 'PERFIL CONSULTA';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'tsf-exit';
+      button.textContent = 'Cerrar sesión';
+      button.addEventListener('click', salir);
+      strip.append(badge, button);
+      header.appendChild(strip);
+    }
+    document.body.classList.toggle('tsf-lector',session.rol==='LECTURA');
+    document.documentElement.classList.remove('tsf-auth-pending');
+  } catch (error) {
+    // Fail closed: nunca liberar la vista cuando no pudo verificarse la sesión.
+    salir();
+  }
+})();
 </script>
 </body></html>
