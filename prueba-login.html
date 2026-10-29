@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TSF | Prueba de accesos</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;
+  display:grid;place-items:center;
+  background:#f3f5f8;
+  font-family:Segoe UI,Arial,sans-serif;
+  color:#23272d;
+}
+.panel{
+  width:min(450px,95%);
+  background:white;
+  padding:32px;
+  border-radius:14px;
+  border-top:5px solid #ffcb16;
+  box-shadow:0 5px 24px #00000012;
+}
+h2{margin:0 0 8px}
+p{color:#687482;font-size:13px}
+label{
+  display:block;
+  margin:18px 0 7px;
+  font-weight:600;
+}
+input,select{
+  width:100%;
+  padding:13px;
+  border:1px solid #d4dae3;
+  border-radius:8px;
+  font-size:14px;
+}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:0;
+  border-radius:8px;
+  background:#ffcb16;
+  color:#20242a;
+  font-weight:700;
+  cursor:pointer;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.secundario{background:#e9edf3}
+#estado{
+  margin-top:20px;
+  padding:14px;
+  border-radius:8px;
+  background:#f2f4f7;
+  overflow-wrap:anywhere;
+  font-size:13px;
+}
+</style>
+</head>
+<body>
+<div class="panel">
+  <h2>TOTAL! | Operaciones TSF</h2>
+  <p>V11.7 - Prueba de autenticación Cloudflare</p>
+
+  <label for="rol">Tipo de acceso</label>
+  <select id="rol">
+    <option value="LECTURA">Consulta</option>
+    <option value="EDICION">Edición</option>
+  </select>
+
+  <label for="clave">Contraseña</label>
+  <input type="password" id="clave"
+         placeholder="Ingresa tu contraseña de prueba">
+
+  <button id="ingresar" onclick="iniciar()">
+    Iniciar sesión
+  </button>
+
+  <button class="secundario" onclick="verificar()">
+    Verificar sesión
+  </button>
+
+  <button class="secundario" onclick="editar()">
+    Probar permiso de edición
+  </button>
+
+  <div id="estado" role="status">
+    Esperando inicio de sesión.
+  </div>
+</div>
+
+<script>
+const API =
+ "https://tsf-operaciones-api-prueba.jchavez-23e.workers.dev";
+
+let token = null;
+
+function mensaje(texto) {
+  document.getElementById("estado").textContent = texto;
+}
+
+async function iniciar() {
+  token = null;
+  const rol = document.getElementById("rol").value;
+  const input = document.getElementById("clave");
+  const password = input.value;
+
+  input.value = "";
+  mensaje("Validando credenciales...");
+
+  try {
+    const respuesta = await fetch(API + "/auth/login", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({rol, password})
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok || !datos.ok) {
+      throw new Error(datos.error || "Acceso denegado");
+    }
+
+    token = datos.access_token;
+
+    mensaje(
+      "ACCESO CORRECTO\n" +
+      "Perfil: " + datos.rol + "\n" +
+      "Sesión válida durante 20 minutos."
+    );
+
+  } catch (error) {
+    mensaje("ERROR: " + error.message);
+  }
+}
+
+async function consultar(ruta, metodo) {
+  if (!token) {
+    mensaje("Primero debes iniciar sesión.");
+    return;
+  }
+
+  try {
+    const respuesta = await fetch(API + ruta, {
+      method: metodo,
+      headers: {"Authorization":"Bearer " + token}
+    });
+
+    const datos = await respuesta.json();
+
+    mensaje(JSON.stringify(datos, null, 2));
+
+  } catch (error) {
+    mensaje("ERROR: " + error.message);
+  }
+}
+
+function verificar() {
+  consultar("/auth/me", "GET");
+}
+
+function editar() {
+  consultar("/demo/verificar-edicion", "POST");
+}
+</script>
+</body>
+</html>
