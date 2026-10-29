@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TSF | Inicio de sesión</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:"Segoe UI",Arial,sans-serif;
+ background:#f3f5f8;
+ color:#222831;
+}
+header{
+ background:#24282d;
+ color:#fff;
+ padding:22px 5%;
+ border-bottom:4px solid #ffcb16;
+}
+header strong{font-size:24px}
+header strong span{color:#ffcb16}
+header small{
+ display:block;
+ margin-top:5px;
+ color:#c5cbd3;
+}
+main{
+ min-height:calc(100vh - 92px);
+ display:grid;
+ place-items:center;
+ padding:25px;
+}
+.panel{
+ width:min(460px,100%);
+ padding:35px;
+ background:white;
+ border-radius:14px;
+ box-shadow:0 12px 40px #15233c18;
+}
+h1{font-size:27px;margin:0 0 8px}
+.subtitle{
+ color:#6f7b89;
+ font-size:13px;
+ margin-bottom:28px;
+ line-height:1.6;
+}
+label{
+ display:block;
+ margin:18px 0 8px;
+ font-weight:700;
+ font-size:12px;
+}
+select,input{
+ width:100%;
+ height:48px;
+ padding:12px;
+ border:1px solid #dbe1e8;
+ border-radius:8px;
+ font:inherit;
+}
+button{
+ display:block;
+ width:100%;
+ padding:15px;
+ background:#ffcb16;
+ color:#20242a;
+ border:0;
+ border-radius:8px;
+ font-weight:800;
+ margin-top:23px;
+ cursor:pointer;
+}
+button:disabled{opacity:.6;cursor:wait}
+#estado{
+ margin-top:18px;
+ font-size:12px;
+ color:#ac3030;
+ min-height:18px;
+}
+.aviso{
+ background:#f5f7fa;
+ padding:13px;
+ border-radius:8px;
+ color:#697586;
+ font-size:11px;
+ line-height:1.6;
+ margin-top:18px;
+}
+</style>
+</head>
+<body>
+
+<header>
+ <strong>TOTAL<span>!</span></strong>
+ <small>PORTAL DE OPERACIONES · MEDIANO PLAZO</small>
+</header>
+
+<main>
+<section class="panel">
+ <h1>Iniciar sesión</h1>
+ <p class="subtitle">
+  Acceso al Portal de Operaciones TSF V11.7.
+  Selecciona tu perfil e ingresa la contraseña
+  asignada para esta demostración.
+ </p>
+
+ <form id="login">
+  <label for="rol">TIPO DE ACCESO</label>
+  <select id="rol">
+   <option value="LECTURA">Consulta</option>
+   <option value="EDICION">Edición</option>
+  </select>
+
+  <label for="password">CONTRASEÑA</label>
+  <input id="password"
+         type="password"
+         autocomplete="off"
+         required
+         placeholder="Introduce tu contraseña">
+
+  <button id="boton" type="submit">
+   Ingresar al portal
+  </button>
+ </form>
+
+ <div id="estado" role="alert"></div>
+
+ <div class="aviso">
+  Versión piloto con datos ficticios.
+  La autenticación se verifica mediante
+  Cloudflare Workers. No hay conexión
+  con SharePoint.
+ </div>
+</section>
+</main>
+
+<script>
+"use strict";
+
+const API =
+ "https://tsf-operaciones-api-prueba.jchavez-23e.workers.dev";
+
+document.getElementById("login")
+ .addEventListener("submit", async function(e) {
+
+ e.preventDefault();
+
+ const boton = document.getElementById("boton");
+ const estado = document.getElementById("estado");
+ const campo = document.getElementById("password");
+
+ const rol = document.getElementById("rol").value;
+ const password = campo.value;
+
+ boton.disabled = true;
+ boton.textContent = "Validando acceso...";
+ estado.textContent = "";
+
+ try {
+  const respuesta = await fetch(API + "/auth/login", {
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({rol,password})
+  });
+
+  const datos = await respuesta.json();
+
+  if(!respuesta.ok || datos.ok !== true){
+   throw new Error(
+    datos.error || "No se pudo iniciar sesión"
+   );
+  }
+
+  const verificacion = await fetch(API + "/auth/me", {
+   headers:{
+    "Authorization":"Bearer " + datos.access_token
+   }
+  });
+
+  const sesion = await verificacion.json();
+
+  if(
+   !verificacion.ok ||
+   sesion.ok !== true ||
+   sesion.rol !== rol
+  ){
+   throw new Error("No se pudo verificar la sesión");
+  }
+
+  sessionStorage.setItem(
+   "TSF_PILOTO_TOKEN", datos.access_token
+  );
+  sessionStorage.setItem(
+   "TSF_PILOTO_ROL", sesion.rol
+  );
+
+  window.location.assign("./gestion-operaciones.html");
+
+ } catch(error) {
+  estado.textContent = error.message;
+  campo.value = "";
+  boton.disabled = false;
+  boton.textContent = "Ingresar al portal";
+ }
+});
+</script>
+
+</body>
+</html>
