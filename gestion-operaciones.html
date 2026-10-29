@@ -1604,6 +1604,56 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       dirty.clear();
     }
     draw();
+    
+    // CONEXIÓN REAL: GITHUB -> CLOUDFLARE -> SHAREPOINT
+    const fetchOriginal = window.fetch.bind(window);
+
+    window.fetch = (recurso, opciones = {}) => {
+      if (recurso === '/api/operaciones') {
+        const headers = new Headers(opciones.headers || {});
+
+        headers.set(
+          'Authorization',
+          'Bearer ' + token
+        );
+
+        return fetchOriginal(
+          api + '/api/operaciones',
+          {
+            ...opciones,
+            headers,
+            credentials: 'omit',
+            cache: 'no-store'
+          }
+        );
+      }
+
+      return fetchOriginal(recurso, opciones);
+    };
+
+    // Mostrar listas reales, no los registros simulados
+    spPreview.active = true;
+    trackingSp.active = true;
+
+    // Actualizar ambas listas desde SharePoint
+    document.getElementById('resetView').onclick = async () => {
+      if (spEdits.size || trackingSp.edits.size) {
+        toast('Hay cambios pendientes. No se recargará la vista.');
+        return;
+      }
+
+      await Promise.allSettled([
+        loadSpPreview(),
+        loadTrackingSp(true)
+      ]);
+    };
+
+    // Carga inicial desde las listas existentes
+    void Promise.allSettled([
+      loadSpPreview(),
+      loadTrackingSp(true)
+    ]);
+ 
     const header = document.querySelector('.headright');
     if (header) {
       const strip = document.createElement('div');
