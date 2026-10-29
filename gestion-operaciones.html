@@ -1672,7 +1672,214 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       loadSpPreview(),
       loadTrackingSp(true)
     ]);
- 
+    
+    // ==========================================
+    // TSF V11.7 - SINCRONIZACION MULTIUSUARIO
+    // Conserva los cambios pendientes y ETags.
+    // ==========================================
+
+    const TSF_SYNC_INTERVAL = 30000;
+    let tsfSyncBusy = false;
+    const tsfConflictsNotified = new Set();
+
+    async function tsfSyncSafe() {
+      if (
+        tsfSyncBusy ||
+        document.hidden ||
+        !['LECTURA', 'EDICION'].includes(window.TSF_SESSION_ROLE)
+      ) return;
+
+      // No interrumpir a alguien mientras escribe.
+      if (
+        document.querySelector('#overlays .drawer') ||
+        document.activeElement?.matches?.(
+          '.cell-input, .tsf-cell-select, #q, [data-drawer-col]'
+        )
+      ) return;
+
+      const mod = mIdx === 0 ? {
+        index: 0,
+        store: spPreview,
+        edits: spEdits,
+        action: 'GESTION_PAGINA',
+        convert: item => spPreviewRow(
+          tsfGestionRawItem(item)
+        ),
+        saving: () => spSaving
+      } : mIdx === 1 ? {
+        index: 1,
+        store: trackingSp,
+        edits: trackingSp.edits,
+        action: 'TRACKING_PAGINA',
+        convert: trackingRow,
+        saving: () => trackingSp.saving
+      } : null;
+
+      if (!mod) return;
+
+      const { store, edits } = mod;
+
+      if (
+        !store.active ||
+        store.loading ||
+        store.historyLoading ||
+        mod.saving()
+      ) return;
+
+      tsfSyncBusy = true;
+      const token = store.loadToken;
+
+      try {
+        const remote = new Map();
+        let cursor = '';
+
+        // Consultar todas las paginas del modulo.
+        for (let pageNum = 0; pageNum < 150; pageNum++) {
+          const batch = await tsfPageFetch(
+            mod.action,
+            cursor
+          );
+
+          for (const row of tsfPagingRows(
+            batch,
+            mod.convert
+          )) {
+            const id = keyID(row);
+
+            if (remote.has(id)) {
+              throw new Error(
+                'ID duplicado en sincronizacion: ' + id
+              );
+            }
+
+            remote.set(id, row);
+          }
+
+          if (batch.length < 10) {
+            cursor = null;
+            break;
+          }
+
+          cursor = tsfNextCursor(batch, cursor);
+        }
+
+        if (cursor !== null) {
+          throw new Error(
+            'Historial demasiado largo para esta sincronizacion'
+          );
+        }
+
+        // No aplicar datos si comenzo otro guardado,
+        // otra carga o alguien esta escribiendo.
+        if (
+          store.loadToken !== token ||
+          store.loading ||
+          store.historyLoading ||
+          mod.saving() ||
+          document.hidden ||
+          mIdx !== mod.index ||
+          document.querySelector('#overlays .drawer') ||
+          document.activeElement?.matches?.(
+            '.cell-input, .tsf-cell-select, #q, [data-drawer-col]'
+          )
+        ) return;
+
+        const previous = new Map(
+          store.rows.map(row => [keyID(row), row])
+        );
+
+        let updated = 0;
+
+        for (const [id, incoming] of remote) {
+          const old = previous.get(id);
+
+          if (edits.has(id)) {
+            // Nunca cambiar una fila con ediciones locales.
+            if (
+              old &&
+              old.__spEtag !== incoming.__spEtag
+            ) {
+              const conflictKey = mod.index + ':' + id;
+
+              if (!tsfConflictsNotified.has(conflictKey)) {
+                tsfConflictsNotified.add(conflictKey);
+
+                toast(
+                  'Conflicto en ' + id +
+                  ': otro usuario modifico el registro. ' +
+                  'Tus cambios pendientes estan intactos.'
+                );
+              }
+            }
+
+            continue;
+          }
+
+          if (
+            !old ||
+            old.__spEtag !== incoming.__spEtag ||
+            JSON.stringify(old.__spBaseline) !==
+            JSON.stringify(incoming.__spBaseline)
+          ) {
+            updated++;
+          }
+        }
+
+        for (const [id] of previous) {
+          if (!remote.has(id) && !edits.has(id)) {
+            updated++;
+          }
+        }
+
+        // Las filas pendientes conservan sus valores
+        // y ETags originales.
+        const merged = [...remote.values()].map(row => {
+          const id = keyID(row);
+
+          return edits.has(id) && previous.has(id)
+            ? previous.get(id)
+            : row;
+        });
+
+        // Conservar tambien borradores de filas
+        // que hayan desaparecido de SharePoint.
+        for (const [id, row] of previous) {
+          if (edits.has(id) && !remote.has(id)) {
+            merged.push(row);
+          }
+        }
+
+        store.rows = merged.sort(
+          (a, b) => b.__spId - a.__spId
+        );
+
+        store.lastSync = new Date();
+
+        if (mod.index === 0) {
+          store.stats.remote = remote.size;
+        }
+
+        // Repintar solo si hay novedades.
+        if (updated > 0) {
+          tsfSafePaint(mod.index);
+        }
+
+        // IMPORTANTE:
+        // spEdits y trackingSp.edits permanecen intactos.
+
+      } catch (error) {
+        console.warn(
+          'Sincronizacion TSF no aplicada:',
+          String(error?.message || error)
+        );
+      } finally {
+        tsfSyncBusy = false;
+      }
+    }
+
+    // Sincronizar cada 30 segundos.
+    setInterval(tsfSyncSafe, TSF_SYNC_INTERVAL);
+
     const header = document.querySelector('.headright');
     if (header) {
       const strip = document.createElement('div');
