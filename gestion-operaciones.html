@@ -1163,11 +1163,20 @@ const selectType =
     : '';
 
 const specialSelect =
+ 
   selectType==='veritrade'
-    ? `<select class="tsf-cell-select" data-select="veritrade" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Veritrade">
+    ? `<select class="tsf-cell-select"
+         data-select="veritrade"
+         data-id="${esc(keyID(row))}"
+         data-col="${i}"
+         aria-label="Veritrade">
+         <option value="" ${val===''?'selected':''} disabled>
+           Seleccionar...
+         </option>
          <option value="Sí" ${val==='Sí'?'selected':''}>Sí</option>
          <option value="No" ${val==='No'?'selected':''}>No</option>
        </select>`
+
     : selectType==='state'
     ? `<select class="tsf-cell-select tsf-state-select ${stateTone(val)}" data-select="state" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Estado de operación">${trackingStateOptions(val)}</select>`
     : selectType==='analyst'
