@@ -900,6 +900,183 @@ const FINANCIAL_SHARED=new Set(['COL. NETA ($)','MES DE COLOCACIÓN']);
 const MONTHS=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 function monthOptions(value=''){const current=String(value||'').trim().toUpperCase();const historic=/^\d{2}\/\d{2}\/\d{4}$/.test(current);const items=[...new Set([...MONTHS,...(current&&!MONTHS.includes(current)?[current]:[])])];return '<option value="">Seleccionar mes...</option>'+items.map(m=>`<option value="${esc(m)}" ${m===current?'selected':''}>${esc(historic&&m===current?'Validar histórico: '+m:m)}</option>`).join('')}
 function isMonthField(idx,col,row){return col==='MES DE COLOCACIÓN'&&isEditableColumn(idx,col,row)}
+
+const TSF_CATALOGOS = {
+  "0|PRODUCTO": [
+    "CAPITAL DE TRABAJO - AL VENCIMIENTO",
+    "CAPITAL DE TRABAJO - AMORTIZADA",
+    "CRÉDITO DIRECTO",
+    "CREDITO DIRECTO - TOTALYA",
+    "LEASEBACK",
+    "LEASING",
+    "LEASING - TOTALYA",
+    "LEASING-VENDOR"
+  ],
+  "0|TIPO DE BIEN": [
+    "Capital de trabajo",
+    "Equipos de Computo",
+    "Inmueble",
+    "Maquinaria",
+    "Unidad de Transporte"
+  ],
+  "0|MONEDA": [
+    "Dólares",
+    "Soles"
+  ],
+  "1|ORIGEN DE FONDOS CI Y/O SE": [
+    "Compensación Factoring",
+    "Compensación Proveedor",
+    "Fondos cliente",
+    "Fondos cliente + Compensación",
+    "Sin cuota inicial"
+  ],
+  "1|TIPO_FORMALIZACION CONTRATOS": [
+    "Escritura Pública",
+    "Minutas firma electrónica",
+    "Minutas firma legalizada",
+    "Minutas firma simple"
+  ],
+  "1|TIPO_COFIDE": [
+    "Fondeo",
+    "Cobertura",
+    "Fondeo + Cobertura"
+  ],
+  "1|NOTARIA ASIGNADA": [
+    "AGUILAR CALVO",
+    "ACOSTA IPARRAGUIRRE",
+    "ESPINOSA ORÉ",
+    "RODRIGUEZ CRUZADO",
+    "RODRIGUEZ VELARDE",
+    "VELA VELASQUEZ",
+    "CORCUERA",
+    "VIGO",
+    "GUERRA SALAS"
+  ],
+  "2|TIPO_GPS": [
+    "Del proveedor",
+    "Endosado",
+    "Financiado",
+    "No aplica",
+    "45667"
+  ],
+  "2|PROVEEDOR_GPS": [
+    "CONREIVIC",
+    "FERREYROS",
+    "HUNTER",
+    "IPESA",
+    "TRACKLOG",
+    "UNIMAQ"
+  ],
+  "2|TIPO_SEGURO": [
+    "Endosado",
+    "Financiado"
+  ],
+  "3|PRODUCTO": [
+    "CRÉDITO DIRECTO",
+    "CROSS",
+    "DESCUENTO",
+    "FACTORING",
+    "LEASEBACK",
+    "LEASING"
+  ],
+  "3|PROCESO": [
+    "CONSTITUCIÓN DE GARANTÍA",
+    "LEVANTAMIENTO DE GARANTÍA",
+    "MODIFICACIÓN DE GARANTÍA",
+    "SUSTITUCIÓN DE GARANTÍA"
+  ],
+  "3|TIPO DE BIEN_EN_GARANTIA": [
+    "INMUEBLE",
+    "MAQUINARIA",
+    "UTT"
+  ],
+  "4|PRODUCTO": [
+    "CRÉDITO DIRECTO",
+    "CROSS",
+    "DESCUENTO",
+    "FACTORING",
+    "LEASEBACK",
+    "LEASING"
+  ],
+  "5|PROCESO": [
+    "CONTRATOS COMPLEMENTARIOS",
+    "MODIFICACIÓN DEL BIEN",
+    "MODIFICACIÓN DEL CRÉDITO",
+    "RECUPERACIÓN",
+    "RESOLUCIÓN",
+    "TRANSFERENCIA VEHICULAR"
+  ],
+  "5|SUBPROCESO": [
+    "ACLARACIÓN DETALLE DEL BIEN",
+    "ACLARATORIA DE TRANSFERENCIA",
+    "ACTA DE TRANSFERENCIA",
+    "CAMBIO DE BIEN",
+    "CAMBIO DE DENOMINACIÓN",
+    "CAMBIO DE MONEDA",
+    "CAMBIO DE TASA",
+    "CESIÓN",
+    "COMPRA VENTA",
+    "COMPRAVENTA DE BIEN USADO",
+    "COMPROMISO A CONTRATAR",
+    "CONVENIO PRIVADO",
+    "DACIÓN EN PAGO",
+    "DECLARACIÓN UNILATERAL OPCIÓN DE COMPRA",
+    "FUSIÓN",
+    "MUTUO ACUERDO",
+    "OBLIGACIONES ALTERNATIVAS",
+    "POR SINIESTRO",
+    "PRECANCELACIÓN PARCIAL",
+    "PRECANCELACIÓN TOTAL",
+    "RECOLOCACIÓN BIEN RECUPERADO",
+    "RECOMPRA",
+    "REESTRUCTURACIÓN",
+    "REFINANCIACIÓN",
+    "REPROGRAMACIÓN",
+    "TRANSACCIÓN EXTRAJUDICIAL",
+    "TRANSFERENCIA BIEN RECUPERADO",
+    "UNILATERAL"
+  ],
+  "5|NOTARÍA": [
+    "AGUILAR CALVO",
+    "ACOSTA IPARRAGUIRRE",
+    "ESPINOSA ORÉ",
+    "RODRIGUEZ CRUZADO",
+    "RODRIGUEZ VELARDE",
+    "VELA VELASQUEZ",
+    "CORCUERA",
+    "VIGO",
+    "GUERRA SALAS"
+  ]
+};
+
+function tsfTieneCatalogo(indice, columna) {
+  return Object.prototype.hasOwnProperty.call(
+    TSF_CATALOGOS,
+    indice + "|" + columna
+  );
+}
+
+function tsfOpcionesCatalogo(indice, columna, valor = "") {
+  const actual = String(valor ?? "").trim();
+
+  const disponibles =
+    TSF_CATALOGOS[indice + "|" + columna] || [];
+
+  // Conservar valores históricos aunque no estén
+  // incluidos en el catálogo actual.
+  const opciones =
+    actual && !disponibles.includes(actual)
+      ? [actual, ...disponibles]
+      : disponibles;
+
+  return (
+    `<option value="" ${actual === "" ? "selected" : ""}>Seleccionar...</option>` +
+    opciones.map(item =>
+      `<option value="${esc(item)}" ${item === actual ? "selected" : ""}>${esc(item)}</option>`
+    ).join("")
+  );
+}
+
 const TRACKING_STATES=['EN PROCESO','DESEMBOLSADO','ANULADO'];
 const addedAnalysts=new Set();
 function analystNames(selected=''){
@@ -1151,39 +1328,37 @@ function tableRender(){
   const val=String(row[col]??''),hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
   let style='width:'+widths[i]+'px;';
    
+
 const selectType =
-  mIdx===0 && col==='VERITRADE' && editable
+  mIdx === 0 && col === 'VERITRADE' && editable
     ? 'veritrade'
-    : isTrackingStateField(mIdx,col) && editable
+    : isTrackingStateField(mIdx, col) && editable
     ? 'state'
-    : editable && isAnalystField(mIdx,col,row)
+    : editable && isAnalystField(mIdx, col, row)
     ? 'analyst'
-    : editable && isMonthField(mIdx,col,row) && !isTrackingSp()
+    : editable && isMonthField(mIdx, col, row) && !isTrackingSp()
     ? 'month'
+    : editable && tsfTieneCatalogo(mIdx, col)
+    ? 'catalogo'
     : '';
 
 const specialSelect =
- 
-  selectType==='veritrade'
-    ? `<select class="tsf-cell-select"
-         data-select="veritrade"
-         data-id="${esc(keyID(row))}"
-         data-col="${i}"
-         aria-label="Veritrade">
-         <option value="" ${val===''?'selected':''} disabled>
-           Seleccionar...
-         </option>
-         <option value="Sí" ${val==='Sí'?'selected':''}>Sí</option>
-         <option value="No" ${val==='No'?'selected':''}>No</option>
+  selectType === 'veritrade'
+    ? `<select class="tsf-cell-select" data-select="veritrade" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Veritrade">
+         <option value="" ${val === '' ? 'selected' : ''} disabled>Seleccionar...</option>
+         <option value="Sí" ${val === 'Sí' ? 'selected' : ''}>Sí</option>
+         <option value="No" ${val === 'No' ? 'selected' : ''}>No</option>
        </select>`
-
-    : selectType==='state'
+    : selectType === 'state'
     ? `<select class="tsf-cell-select tsf-state-select ${stateTone(val)}" data-select="state" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Estado de operación">${trackingStateOptions(val)}</select>`
-    : selectType==='analyst'
+    : selectType === 'analyst'
     ? `<select class="tsf-cell-select tsf-analyst-select" data-select="analyst" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Analista operativo">${analystOptions(val)}</select>`
-    : selectType==='month'
+    : selectType === 'month'
     ? `<select class="tsf-cell-select tsf-month-select" data-select="month" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Mes de colocación">${monthOptions(val)}</select>`
+    : selectType === 'catalogo'
+    ? `<select class="tsf-cell-select" data-select="catalogo" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="${esc(col)}">${tsfOpcionesCatalogo(mIdx, col, val)}</select>`
     : '';
+
 
    const spDifference=isSpPreview()&&spPreview.mode==='merge'&&row.__spDifferences?.[col];
    const cellHint=spDifference?`${col} · MOSTRANDO SHAREPOINT: ${val} · Valor local anterior: ${spDifference.local} · No guardado`:`${col}: ${val||'Sin información'} · ${descriptions[role]}`;
@@ -1317,12 +1492,18 @@ function openDrawer(id){
   const role=fieldRole(mIdx,col,r),editable=isEditableColumn(mIdx,col,r),dateField=isDateField(col,m);
    const hint=isRemoteView()?(editable?'Campo editable · guarda directamente en SharePoint':'Campo protegido en esta lista'):role==='inherited'?'Heredado del maestro · bloqueado':role==='extracted'?'Dato documental protegido · no editable':role==='auto'?'Fecha automática de asignación · bloqueada':role==='manual'?'Dato pendiente de completar · editable':'Editable';
    const value=String(r[col]??'');
-   const drawerSelect=isTrackingStateField(mIdx,col)&&editable
-    ?`<select class="tsf-drawer-select tsf-state-select ${stateTone(value)}" data-drawer-col="${esc(col)}" data-drawer-kind="state">${trackingStateOptions(value)}</select>`
-    :editable&&isAnalystField(mIdx,col,r)
-    ?`<select class="tsf-drawer-select tsf-analyst-select" data-drawer-col="${esc(col)}" data-drawer-kind="analyst">${analystOptions(value)}</select>`
-    :editable&&isMonthField(mIdx,col,r)&&!isTrackingSp()
-    ?`<select class="tsf-drawer-select tsf-month-select" data-drawer-col="${esc(col)}" data-drawer-kind="month">${monthOptions(value)}</select>`:'';
+ 
+const drawerSelect =
+  isTrackingStateField(mIdx, col) && editable
+    ? `<select class="tsf-drawer-select tsf-state-select ${stateTone(value)}" data-drawer-col="${esc(col)}" data-drawer-kind="state">${trackingStateOptions(value)}</select>`
+    : editable && isAnalystField(mIdx, col, r)
+    ? `<select class="tsf-drawer-select tsf-analyst-select" data-drawer-col="${esc(col)}" data-drawer-kind="analyst">${analystOptions(value)}</select>`
+    : editable && isMonthField(mIdx, col, r) && !isTrackingSp()
+    ? `<select class="tsf-drawer-select tsf-month-select" data-drawer-col="${esc(col)}" data-drawer-kind="month">${monthOptions(value)}</select>`
+    : editable && tsfTieneCatalogo(mIdx, col)
+    ? `<select class="tsf-drawer-select" data-drawer-col="${esc(col)}" data-drawer-kind="catalogo">${tsfOpcionesCatalogo(mIdx, col, value)}</select>`
+    : '';
+
    return `<div class="form-item"><label>${esc(col)} ${editable?'':'🔒'}</label><div class="tsf-drawer-field">${dateField&&editable&&mIdx!==0?`<label class="tsf-quick-date" title="Marcar para colocar fecha/hora actual"><input type="checkbox" class="tsf-drawer-stamp" data-drawer-stamp="${esc(col)}"/><span>Ahora</span></label>`:''}${drawerSelect||`<input class="${role==='manual'?'form-manual':editable?'':'form-locked'} ${role==='auto'?'form-auto':''}" data-drawer-col="${esc(col)}" value="${esc(dateField?minuteDisplay(value):value)}" ${!editable?'readonly tabindex="-1"':''} placeholder="${editable?'Sin dato registrado':'—'}"/>`}</div><span class="field-note">${hint}</span></div>`;
  }).join('');
  const progress=mIdx===0&&!isSpPreview()?`<div class="tipbox">Campos requeridos para habilitar los módulos automáticos: ${3-assignmentMissing(r).length}/3. ${assignmentMissing(r).length?'Faltan: '+assignmentMissing(r).map(esc).join(', '):'Operación lista para módulos automáticos; Reprocesos se crea manualmente.'}</div>`:'';
