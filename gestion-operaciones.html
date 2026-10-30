@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V12.1 — carga progresiva TB2 a TB6</title>
+<title>TSF | Operaciones V12.2 — carga progresiva TB2 a TB6</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -288,12 +288,12 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.1 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.2 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V12.1 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.2 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1105,7 +1105,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V12.1 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -2223,7 +2223,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     await tsfVerificarGPS();
 
     // ============================================
-    // TSF V12.1 — CARGA PROGRESIVA TB3, TB4, TB5, TB6
+    // TSF V12.2 — CARGA PROGRESIVA TB3, TB4, TB5, TB6
     // No habilita edición, creación, borrado ni elimina históricos.
     // Activar ANTES de pintar los módulos para impedir datos demo.
     // ============================================
@@ -2310,7 +2310,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       const raw=await response.text();let json;
       try{json=JSON.parse(raw)}catch(_){throw new Error('El flujo no devolvió JSON para '+accion);}
       if(!response.ok||json?.ok===false){
-        throw new Error('HTTP '+response.status+': '+String(json?.error||json?.mensaje||'Acción rechazada').slice(0,150));
+        throw new Error('HTTP '+response.status+(Number.isInteger(json?.codigo)?' (flujo '+json.codigo+')':'')+': '+String(json?.error||json?.mensaje||'Acción rechazada').slice(0,150));
       }
       const records=Array.isArray(json)?json:
         Array.isArray(json?.value)?json.value:
@@ -2472,13 +2472,22 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         });
       }
     };
-    setTimeout(()=>{
-      if(document.hidden)return;
-      void Promise.allSettled([
-        (async()=>{for(const i of [2,4])await tsfCargarListaModulo(i,{prefetch:true});})(),
-        (async()=>{for(const i of [3,5])await tsfCargarListaModulo(i,{prefetch:true});})()
-      ]);
-    },400);
+    // V12.2: evitar que TB3-TB6 compitan con las cargas iniciales de Gestión y Tracking.
+    // Cuando ambos módulos principales terminan, precargar TB3-TB6 UNO POR UNO.
+    // Si el usuario abre otro módulo, detener la precarga (su consulta es prioritaria).
+    // Si algún flujo falla, no saturar Power Automate con otros intentos automáticos.
+    async function tsfPrecargarRemotosV122(cargaPrincipal){
+      await cargaPrincipal;
+      await new Promise(resolve=>setTimeout(resolve,1500));
+      for(const idx of [2,3,4,5]){
+        if(document.hidden||isTsfRemoteIndex()||tsfSyncBloqueado())break;
+        const store=tsfRemoteStores[idx];
+        if(!store||store.loaded||store.loading)continue;
+        await tsfCargarListaModulo(idx,{prefetch:true});
+        if(store.error)break;
+        await new Promise(resolve=>setTimeout(resolve,500));
+      }
+    }
     // Mostrar listas reales, no los registros simulados
     spPreview.active = true;
     trackingSp.active = true;
@@ -2502,11 +2511,13 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       if(isTsfRemoteIndex())return tsfCargarListaModulo(mIdx,{force:true});
       return tsfRecargarAntes?.();
     };
-    // Carga inicial desde las listas existentes
-    void Promise.allSettled([
+    // Carga principal en paralelo (TB1 + TB2), sin sumar 4 llamadas simultáneas.
+    const tsfCargaPrincipalV122=Promise.allSettled([
       loadSpPreview(),
       loadTrackingSp(true)
     ]);
+    // Las tablas nuevas precargan únicamente después, de forma secuencial.
+    void tsfPrecargarRemotosV122(tsfCargaPrincipalV122);
     
     // ==========================================
     // TSF V11.7 - SINCRONIZACION MULTIUSUARIO
