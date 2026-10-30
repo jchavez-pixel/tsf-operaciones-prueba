@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V11.7 — Piloto con acceso</title>
+<title>TSF | Operaciones V11.9 — Tracking y GPS en TB2</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -214,6 +214,8 @@ body.tsf-gestion-sp #saveBtn:disabled{opacity:.63;cursor:not-allowed}
 @media(max-width:1150px){.tsf-kpi-row{flex-wrap:wrap}.tsf-kpi-row .kpis{flex-basis:100%}.tsf-pending-tools{margin-left:auto}}
 @media(max-width:760px){.tsf-header-ident{display:none}.tsf-pending-tools{width:100%;justify-content:space-between}}
 #spPilotButton,#ownerSharePointLink,#trackingMapButton,#sharepointViewBtn{display:none!important}
+/* GPS y Seguros: controles sobrios, sin resaltes amarillos de la bandeja. */
+body.tsf-gestion-sp .data-table td select.tsf-catalogo-select.changed {background:#f8fafc!important;border-color:#94a3b8!important;box-shadow:none!important}
 </style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
@@ -239,12 +241,12 @@ body.tsf-lector #reproManual { display:none !important; }
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V11.8 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V11.9 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V11.8 · Piloto autenticado · Gestión y Tracking conectados a SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V11.9 · Piloto autenticado · Gestión, Tracking y GPS/Seguros en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -294,9 +296,9 @@ let mIdx=0, query='', analyst='', state='', page=1, pageSize=15, pendingOnly=fal
 function loadLocal(){
  try{
   const saved=JSON.parse(localStorage.getItem(localKey)||'null');
-  if(!saved||!Array.isArray(saved.modules)||saved.modules.length!==base.length)return false;
+  if(!saved||!Array.isArray(saved.modules)||saved.modules.length<base.length)return false;
   // Compatibilidad V11.5: retirar EXP del borrador anterior, SIN perder los otros módulos.
-  const migrated=saved.modules.map(m=>({...m,
+  const migrated=saved.modules.slice(0,base.length).map(m=>({...m,
    columns:(m.columns||[]).filter(c=>c!=='EXP'),
    rows:(m.rows||[]).map(r=>{const x={...r};delete x.EXP;return x;})
   }));
@@ -325,9 +327,9 @@ function trackingMappingVerificado(){
 trackingSp.fields=trackingMappingVerificado();
 trackingSp.mappingVerifiedAt='2026-10-28';
 
-const mainMod=()=>mIdx===0&&spPreview.active?{...modules[0],rows:spPreview.rows}:mIdx===1&&trackingSp.active?{...modules[1],rows:trackingSp.rows}:modules[mIdx];
+const mainMod=()=>mIdx===0&&spPreview.active?{...modules[0],rows:spPreview.rows}:(mIdx===1||mIdx===6)&&trackingSp.active?{...modules[mIdx],rows:trackingSp.rows}:modules[mIdx];
 const isSpPreview=()=>mIdx===0&&spPreview.active;
-const isTrackingSp=()=>mIdx===1&&trackingSp.active;
+const isTrackingSp=()=>[1,6].includes(mIdx)&&trackingSp.active;
 const isRemoteView=()=>isSpPreview()||isTrackingSp();
 const SP_LOCKED_COLUMNS=new Set(['ID_OPERACION','FECHA_DE_REGISTRO']);
 // Cada entrada identifica un registro y contiene únicamente campos realmente modificados.
@@ -550,18 +552,174 @@ function trackingDisplayValue(col,v,metadata){
  if(typeof v==='object')return Array.isArray(v)?v.join(', '):String(v?.Value??'');
  return String(v).trim();
 }
+// GPS/Seguro utiliza las mismas filas y ETags de TB2 (sin duplicación de datos).
+// Nombres internos verificados mediante la API REST de SharePoint, 30/10/2026.
+const TSF_GPS_FIELDS = {
+  "TIPO_GPS": {
+    "Title": "TIPO_GPS",
+    "InternalName": "TIPO_GPS",
+    "TypeAsString": "Text",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 0
+  },
+  "PROVEEDOR_GPS": {
+    "Title": "PROVEEDOR_GPS",
+    "InternalName": "PROVEEDOR_GPS",
+    "TypeAsString": "Text",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 0
+  },
+  "SOLICITUD_INSTALACION": {
+    "Title": "SOLICITUD_INSTALACION",
+    "InternalName": "SOLICITUD_INSTALACION",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "CONFIRMACION_INSTALACIÓN": {
+    "Title": "CONFIRMACION_INSTALACIÓN",
+    "InternalName": "CONFIRMACION_INSTALACI_x00d3_N",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "TIPO_SEGURO": {
+    "Title": "TIPO_SEGURO",
+    "InternalName": "TIPO_SEGURO",
+    "TypeAsString": "Text",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 0
+  },
+  "SOLICITUD_EMISION": {
+    "Title": "SOLICITUD_EMISION",
+    "InternalName": "SOLICITUD_EMISION",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "CONFIRMACIÓN_DE_EMISIÓN": {
+    "Title": "CONFIRMACIÓN_DE_EMISIÓN",
+    "InternalName": "CONFIRMACI_x00d3_NDEEMISI_x00d3_",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "SOLICITUD_REVISIÓN ENDOSO": {
+    "Title": "SOLICITUD_REVISIÓN ENDOSO",
+    "InternalName": "SOLICITUD_REVISI_x00d3_NENDOSO",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "CONFORMIDAD REVISIÓN": {
+    "Title": "CONFORMIDAD REVISIÓN",
+    "InternalName": "CONFORMIDADREVISI_x00d3_N",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "ESTADO DEL SEGURO": {
+    "Title": "ESTADO DEL SEGURO",
+    "InternalName": "ESTADODELSEGURO",
+    "TypeAsString": "Text",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 0
+  },
+  "PRIMA EN CRONOGRAMA INC IGV": {
+    "Title": "PRIMA EN CRONOGRAMA INC IGV",
+    "InternalName": "PRIMAENCRONOGRAMAINCIGV",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "FECHA_INICIO_CONTRATO": {
+    "Title": "FECHA_INICIO_CONTRATO",
+    "InternalName": "FECHA_INICIO_CONTRATO",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "FECHA_FIN_CONTRATO": {
+    "Title": "FECHA_FIN_CONTRATO",
+    "InternalName": "FECHA_FIN_CONTRATO",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "FECHA DE INICIO DE VIGENCIA DE POLIZA": {
+    "Title": "FECHA DE INICIO DE VIGENCIA DE POLIZA",
+    "InternalName": "FECHADEINICIODEVIGENCIADEPOLIZA",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "FECHA DE FIN DE VIGENCIA DE POLIZA": {
+    "Title": "FECHA DE FIN DE VIGENCIA DE POLIZA",
+    "InternalName": "FECHADEFINDEVIGENCIADEPOLIZA",
+    "TypeAsString": "DateTime",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 1
+  },
+  "PRIMA_POLIZA_INC IGV": {
+    "Title": "PRIMA_POLIZA_INC IGV",
+    "InternalName": "PRIMA_POLIZA_INCIGV",
+    "TypeAsString": "Number",
+    "ReadOnlyField": false,
+    "Hidden": false,
+    "DisplayFormat": 0
+  }
+};
+// Sólo los campos que existen realmente en TB2 estarán habilitados para editar.
+let tsfGPSMappingValidado = false;
+async function tsfVerificarGPS() {
+  try {
+    const data = await trackingApi({accion:'TRACKING_ESQUEMA',id_operacion:''});
+    const fields = trackingListArray(data);
+    const porInterno = new Map(fields.map(f=>[trackingFieldName(f),f]));
+    const faltan=[];
+    for (const [col, esperado] of Object.entries(TSF_GPS_FIELDS)) {
+      const real=porInterno.get(esperado.InternalName);
+      if (!real || trackingFieldType(real)!==esperado.TypeAsString || real.Hidden || real.ReadOnlyField) {
+        faltan.push(col); continue;
+      }
+      trackingSp.fields[col]=real;
+    }
+    tsfGPSMappingValidado = faltan.length===0;
+    if (faltan.length) console.warn('Campos GPS sin validar:',faltan);
+    return tsfGPSMappingValidado;
+  } catch(e) {
+    console.warn('No fue posible verificar el esquema GPS en TB2:',String(e?.message||e));
+    return false;
+  }
+}
 function trackingRow(item){
  const id=String(item?.Title??item?.ID_OPERACION??'').trim();
  if(!/^MID-\d{4}-\d{4,8}$/.test(id))return null;
- const row=Object.fromEntries(modules[1].columns.map(col=>[col,'']));row.ID_OPERACION=id;
- for(const col of modules[1].columns){
+ const columnas=[...new Set([...modules[1].columns,...modules[6].columns])];
+ const row=Object.fromEntries(columnas.map(col=>[col,'']));row.ID_OPERACION=id;
+ for(const col of columnas){
   const fld=trackingSp.fields[col];if(!fld)continue;
   const key=trackingFieldName(fld);
   row[col]=trackingDisplayValue(col,item[key],fld);
  }
  row.__spId=Number(item?.ID??item?.Id??item?.sp_id??0);
  row.__spEtag=String(item?.['@odata.etag']??item?.etag??'');
- row.__spBaseline=Object.fromEntries(modules[1].columns.map(col=>[col,String(row[col]??'')]));
+ row.__spBaseline=Object.fromEntries(columnas.map(col=>[col,String(row[col]??'')]));
  return row;
 }
 function trackingEditable(col){
@@ -582,7 +740,7 @@ function trackingChange(id,col,value){
  if(next===previous)changes.delete(col);else changes.set(col,next);
  if(changes.size)trackingSp.edits.set(id,changes);else trackingSp.edits.delete(id);
  updateDirtyLabel();
- const el=[...document.querySelectorAll('[data-id][data-col]')].find(e=>e.dataset.id===id&&modules[1].columns[+e.dataset.col]===col);
+ const el=[...document.querySelectorAll('[data-id][data-col]')].find(e=>e.dataset.id===id&&modules[mIdx].columns[+e.dataset.col]===col);
  if(el)el.classList.toggle('changed',changes.has(col));
  return true;
 }
@@ -691,7 +849,7 @@ async function loadTrackingSp(forzarActualizacion=false){
  tsfWaitBegin('carga-tracking','Preparando Tracking','Cargando las operaciones registradas…');
  trackingSp.loading=true;trackingSp.historyLoading=false;trackingSp.historyDone=false;
  trackingSp.error='';trackingSp.historyError='';
- if(mIdx===1)draw();
+ if([1,6].includes(mIdx))draw();
  try{
   // Get items: solo los 10 registros con ID SharePoint más alto.
   const raw=await tsfPageFetch('TRACKING_PAGINA','');
@@ -700,7 +858,7 @@ async function loadTrackingSp(forzarActualizacion=false){
   if(raw.length&&!rows.length)throw new Error('TRACKING_PAGINA no devolvió operaciones válidas.');
   trackingSp.rows=rows;trackingSp.edits.clear();trackingSp.ready=true;
   trackingSp.lastSync=new Date();trackingSp.loading=false;
-  if(mIdx===1){page=1;tsfSafePaint(1);}
+  if([1,6].includes(mIdx)){page=1;tsfSafePaint(1);}
   // El histórico se solicita después, no bloquea la interacción con las 10.
   if(raw.length===10)void tsfFetchHistory(trackingSp,'TRACKING_PAGINA',trackingRow,1,token,tsfNextCursor(raw,''));
   else{trackingSp.historyDone=true;tsfSafePaint(1);}
@@ -884,7 +1042,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V11.8 · Piloto autenticado</b><br/>Gestión y Tracking vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V11.9 · Piloto autenticado</b><br/>Gestión y Tracking vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=!(mIdx===0||mIdx===4);
@@ -1108,13 +1266,16 @@ function fieldRole(moduleIndex,col,row=null){
  // Los reprocesos creados sin coincidencia son autónomos y completamente editables.
  if(moduleIndex===4&&row&&row.__manualReproceso===true)return 'workflow';
  if(moduleIndex===0)return MASTER_LOCKED.has(col)?'extracted':MASTER_EDITABLE.has(col)?'manual':'workflow';
- if(moduleIndex===1&&trackingSp.active)return TRACKING_INHERITED.has(col)?'inherited':col===TRACK_AUTO_DATE?'auto':'workflow';
+ if([1,6].includes(moduleIndex)&&trackingSp.active)return TRACKING_INHERITED.has(col)?'inherited':col===TRACK_AUTO_DATE?'auto':'workflow';
  if(col===ASSIGNMENT_DATE||moduleIndex===1&&col===TRACK_AUTO_DATE)return 'auto';
  // Estos dos campos se producen en Tracking y se reflejan en el maestro.
  if(moduleIndex===1&&FINANCIAL_SHARED.has(col))return 'workflow';
  return inheritedFrom(col)?'inherited':'workflow';
 }
-function isEditableColumn(moduleIndex,col,row=null){if(window.TSF_SESSION_ROLE!=='EDICION')return false;if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if(moduleIndex===1&&trackingSp.active)return trackingEditable(col);return ['manual','workflow'].includes(fieldRole(moduleIndex,col,row))}
+function isEditableColumn(moduleIndex,col,row=null){if(window.TSF_SESSION_ROLE!=='EDICION')return false;if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if([1,6].includes(moduleIndex)&&trackingSp.active){
+  if(moduleIndex===6 && !tsfGPSMappingValidado) return false;
+  return trackingEditable(col);
+ }return ['manual','workflow'].includes(fieldRole(moduleIndex,col,row))}
 function nowLima(){
  const parts=Object.fromEntries(new Intl.DateTimeFormat('es-PE',{timeZone:'America/Lima',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
  return `${parts.day}/${parts.month}/${parts.year} ${parts.hour}:${parts.minute}`;
@@ -1125,6 +1286,7 @@ function minuteDisplay(v){
 }
 // Se habilita el marcador para columnas temporales editables, nunca para la fecha automática bloqueada.
 function isDateField(col,mod){
+ if(isTrackingSp()&&trackingFieldType(trackingSp.fields[col])==='DateTime')return true;
  if(['VAF','COL. NETA ($)','MES DE COLOCACIÓN'].includes(col))return false;
  const k=String(col).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
  if(/FECHA|^FEC_|^VCTO_|^FIRMA CLIENTE$|^ENVIO[_ ]|^RECEPCION[_ ]|^ENTREGA[_ ]|^CONFIRMACION[_ ]|^SOLICITUD[_ ]|^EMISION[_ ]|^CONFORMIDAD[_ ]|^APLICACION[_ ]|^INSCRIPCION[_ ]/.test(k))return true;
@@ -1384,7 +1546,7 @@ const specialSelect =
   updateCell(box.dataset.id,col,stamp);input.classList.add('changed');
  }));
  document.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>openDrawer(b.dataset.detail));
- document.getElementById('tableMeta').textContent=mIdx===1?`${m.rows.length} registros ficticios de Tracking Operativo · ${m.columns.length} columnas · ${trackingEditsCount()} cambios pendientes · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros`+(trackingSp.error?' · Error de conexión':trackingSp.loading?' · Cargando 10 recientes…':trackingSp.historyLoading?' · 10 recientes listos · HISTÓRICO CARGANDO…':trackingSp.historyError?' · Histórico incompleto: '+trackingSp.historyError:trackingSp.historyDone?' · Histórico completo':trackingSp.missing.length?' · '+trackingSp.missing.length+' columnas sin mapear':''):mIdx===0?`${m.rows.length} registros ficticios · modo local · 16 columnas editables · ${spEditCount()} cambio(s) sin guardar · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros`+(spPreview.error?' · Error de conexión':spPreview.loading?' · Cargando 10 recientes…':spPreview.historyLoading?' · 10 recientes listos · HISTÓRICO CARGANDO…':spPreview.historyError?' · Histórico incompleto: '+spPreview.historyError:spPreview.historyDone?' · Histórico completo':''):`${m.rows.length} registros · ${m.columns.length} columnas · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros por columna`;
+ document.getElementById('tableMeta').textContent=mIdx===6?`${m.rows.length} registros de GPS y Seguros · TB2 SharePoint · ${trackingEditsCount()} cambios pendientes · ${trackingSp.historyLoading?'Cargando histórico':'Sincronización cada 60 s'}`:mIdx===1?`${m.rows.length} registros ficticios de Tracking Operativo · ${m.columns.length} columnas · ${trackingEditsCount()} cambios pendientes · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros`+(trackingSp.error?' · Error de conexión':trackingSp.loading?' · Cargando 10 recientes…':trackingSp.historyLoading?' · 10 recientes listos · HISTÓRICO CARGANDO…':trackingSp.historyError?' · Histórico incompleto: '+trackingSp.historyError:trackingSp.historyDone?' · Histórico completo':trackingSp.missing.length?' · '+trackingSp.missing.length+' columnas sin mapear':''):mIdx===0?`${m.rows.length} registros ficticios · modo local · 16 columnas editables · ${spEditCount()} cambio(s) sin guardar · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros`+(spPreview.error?' · Error de conexión':spPreview.loading?' · Cargando 10 recientes…':spPreview.historyLoading?' · 10 recientes listos · HISTÓRICO CARGANDO…':spPreview.historyError?' · Histórico incompleto: '+spPreview.historyError:spPreview.historyDone?' · Histórico completo':''):`${m.rows.length} registros · ${m.columns.length} columnas · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros por columna`;
 }
 
 function setPage(p){page=p;tableRender();document.getElementById('tableWrap').scrollTop=0}
@@ -1908,6 +2070,26 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       }
     }
     // La columna virtual NO se incorpora a SP_FIELD_TO_INTERNAL.
+
+    // TB2 es una sola fuente para Tracking y GPS/Seguros; TB3 Bienes se conectará aparte.
+    // No reutilizamos datos sintéticos del módulo previo para datos corporativos.
+    // Preservar el módulo antiguo de Bienes (actualmente demostrativo).
+    base[2].name='Bienes (pendiente TB3)';
+    modules[2].name='Bienes (pendiente TB3)';
+    const moduloGPS={
+      key:'GPS_SEGUROS', name:'GPS y Seguros', icon:'truck',
+      description:'GPS y seguros conectados a TB2 - TRACKING OPERATIVO.',
+      columns:['ID_OPERACION','RUC','CLIENTE','FFNN','ANALISTA OPERATIVO','CAF',
+        ...Object.keys(TSF_GPS_FIELDS)], rows:[]
+    };
+    base.push(clone(moduloGPS));
+    modules.push(clone(moduloGPS));
+    for(const c of ['TIPO_GPS','PROVEEDOR_GPS','TIPO_SEGURO']){
+      TSF_CATALOGOS['6|'+c]=TSF_CATALOGOS['2|'+c]||[];
+    }
+    // No autorizar ediciones si el esquema GPS cambia en SharePoint.
+    // Una consulta de esquema al iniciar, reutilizada en ambas vistas.
+    await tsfVerificarGPS();
 
     // Mostrar listas reales, no los registros simulados
     spPreview.active = true;
@@ -3449,7 +3631,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         tsfWaitEnd('guardar-tracking-seguro');
         tsfActualizarEstadosGestion();
         updateDirtyLabel();
-        if(mIdx===0||mIdx===1)draw();
+        if([0,1,6].includes(mIdx))draw();
         if(error)toast('Tracking: '+error);
         else toast(`Tracking: ${guardados} operación(es) guardada(s); ${observados} celda(s) observada(s), ${coincidentes} ya coincidían.`);
         // Sin recargas destructivas: el siguiente delta actualiza los ETags.
@@ -3600,6 +3782,18 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       }
       return tsfSafePaintAntesEstado(index);
     };
+    // El refresco de Tracking también actualiza su segunda vista de GPS,
+    // sin reconstruir la tabla si alguien está escribiendo una celda.
+    const tsfSafePaintAntesGPS=tsfSafePaint;
+    tsfSafePaint=function(index){
+      if(index===1&&mIdx===6){
+        const activo=document.activeElement;
+        if(activo?.matches?.('.cell-input:not([readonly]),.tsf-cell-select,[data-drawer-col]'))return;
+        draw(); return;
+      }
+      return tsfSafePaintAntesGPS(index);
+    };
+
     // Inicializar sin tocar los borradores ni recargar la página.
     tsfActualizarEstadosGestion();
     if(mIdx===0)tableRender();
