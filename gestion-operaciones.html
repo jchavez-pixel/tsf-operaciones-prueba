@@ -837,11 +837,7 @@ function spGestionValue(column,value){
   return String(value).trim();
 }
 
- if(value===null||value===undefined)return '';
- if(column==='FECHA_DE_REGISTRO')return spGestionDate(value);
- // RUC se conserva como texto; importes y códigos se muestran sin convertirlos a enteros.
- return String(value).trim();
-}
+ 
 function spPreviewRow(item){
  const id=String(item?.id_operacion??'').trim();
  if(!/^MID-\d{4}-\d{4,8}$/.test(id))return null;
