@@ -1793,27 +1793,13 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         for (const [id, incoming] of remote) {
           const old = previous.get(id);
 
-          if (edits.has(id)) {
-            // Nunca cambiar una fila con ediciones locales.
-            if (
-              old &&
-              old.__spEtag !== incoming.__spEtag
-            ) {
-              const conflictKey = mod.index + ':' + id;
+        
+         if (edits.has(id)) {
+           // Conservar los cambios pendientes del usuario.
+           // Los conflictos se revisan por celda al guardar.
+           continue;
+         }
 
-              if (!tsfConflictsNotified.has(conflictKey)) {
-                tsfConflictsNotified.add(conflictKey);
-
-                toast(
-                  'Conflicto en ' + id +
-                  ': otro usuario modifico el registro. ' +
-                  'Tus cambios pendientes estan intactos.'
-                );
-              }
-            }
-
-            continue;
-          }
 
           if (
             !old ||
@@ -2230,6 +2216,646 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     // Redibujar si Tracking está abierto
     if (mIdx === 1) {
       tableRender();
+    }
+   
+    // TSF V11.7 - EXPORTAR EXCEL MULTIHOJA
+    const tsfExcelButton = document.getElementById('downloadCsv');
+
+    if (tsfExcelButton) {
+      tsfExcelButton.innerHTML = ic('download',14) + ' Exportar Excel';
+      tsfExcelButton.title = 'Exportar los seis módulos a Excel';
+      tsfExcelButton.onclick = tsfExportarLibro;
+    }
+
+    function tsfXml(v) {
+      return String(v ?? '')
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&apos;');
+    }
+
+    function tsfExcelCol(n) {
+      let s = '';
+      for (++n; n > 0; n = Math.floor((n - 1) / 26)) {
+        s = String.fromCharCode(65 + (n - 1) % 26) + s;
+      }
+      return s;
+    }
+
+    function tsfCrc32(bytes) {
+      let crc = -1;
+      for (const byte of bytes) {
+        crc ^= byte;
+        for (let k = 0; k < 8; k++) {
+          crc = (crc >>> 1) ^
+            ((crc & 1) ? 0xEDB88320 : 0);
+        }
+      }
+      return (crc ^ -1) >>> 0;
+    }
+
+    function tsfZip(files) {
+      const enc = new TextEncoder();
+      const out = [], central = [];
+      let offset = 0, centralSize = 0;
+
+      const u16 = v => [v & 255,(v >>> 8) & 255];
+      const u32 = v => [
+        v & 255,
+        (v >>> 8) & 255,
+        (v >>> 16) & 255,
+        (v >>> 24) & 255
+      ];
+
+      for (const [name,content] of files) {
+        const path = enc.encode(name);
+        const data = enc.encode(content);
+        const crc = tsfCrc32(data);
+
+        const local = Uint8Array.from([
+          80,75,3,4,
+          ...u16(20),...u16(0x0800),
+          ...u16(0),...u16(0),...u16(0),
+          ...u32(crc),
+          ...u32(data.length),
+          ...u32(data.length),
+          ...u16(path.length),...u16(0)
+        ]);
+
+        out.push(local,path,data);
+
+        const dir = Uint8Array.from([
+          80,75,1,2,
+          ...u16(20),...u16(20),
+          ...u16(0x0800),...u16(0),
+          ...u16(0),...u16(0),
+          ...u32(crc),
+          ...u32(data.length),
+          ...u32(data.length),
+          ...u16(path.length),
+          ...u16(0),...u16(0),
+          ...u16(0),...u16(0),
+          ...u32(0),...u32(offset)
+        ]);
+
+        central.push(dir,path);
+        centralSize += dir.length + path.length;
+        offset += local.length + path.length + data.length;
+      }
+
+      out.push(...central,Uint8Array.from([
+        80,75,5,6,
+        ...u16(0),...u16(0),
+        ...u16(files.length),...u16(files.length),
+        ...u32(centralSize),...u32(offset),
+        ...u16(0)
+      ]));
+
+      return new Blob(out,{
+        type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+    }
+
+    function tsfExportarLibro() {
+      if (!spPreview.active || !trackingSp.active ||
+          !spPreview.historyDone || !trackingSp.historyDone) {
+        toast('Espera a que termine la carga de Gestión y Tracking.');
+        return;
+      }
+
+      const sheets = modules.map((m,i) => {
+        const rows = i === 0
+          ? spPreview.rows
+          : i === 1 ? trackingSp.rows : m.rows;
+
+        const cols = [...m.columns];
+
+        if (i === 1 && !cols.includes('VAF')) {
+          const at = cols.indexOf('COL. NETA ($)');
+          cols.splice(at >= 0 ? at : cols.length,0,'VAF');
+        }
+
+        const value = (r,c) => {
+          if (i === 1 && c === 'VAF') {
+            return spPreview.rows.find(
+              x => keyID(x) === keyID(r)
+            )?.VAF ?? '';
+          }
+          return r[c] ?? '';
+        };
+
+        const cell = (v,row,col,header=false) => {
+          const ref = tsfExcelCol(col) + row;
+          const txt = String(v ?? '');
+          const numeric = !header &&
+            ['VAF','COL. NETA ($)'].includes(cols[col]);
+          const num = Number(txt.replace(',','.'));
+
+          if (numeric && txt.trim() !== '' &&
+              Number.isFinite(num)) {
+            return `<c r="${ref}" s="2"><v>${num}</v></c>`;
+          }
+
+          return `<c r="${ref}" s="${header?1:0}" t="inlineStr">`+
+            `<is><t xml:space="preserve">${tsfXml(txt)}</t></is></c>`;
+        };
+
+        const lines = [
+          `<row r="1">${cols.map(
+            (c,j) => cell(c,1,j,true)
+          ).join('')}</row>`,
+          ...rows.map((r,ri) =>
+            `<row r="${ri+2}">${cols.map(
+              (c,j) => cell(value(r,c),ri+2,j)
+            ).join('')}</row>`
+          )
+        ];
+
+        const last = tsfExcelCol(cols.length - 1);
+        const maxRow = rows.length + 1;
+
+        const widths = cols.map((c,j) =>
+          `<col min="${j+1}" max="${j+1}" `+
+          `width="${Math.min(38,Math.max(14,c.length+3))}" `+
+          `customWidth="1"/>`
+        ).join('');
+
+        return {
+          name:m.name.replace(/[\\/\[\]:*?]/g,'').slice(0,31),
+          xml:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+            `<dimension ref="A1:${last}${maxRow}"/>`+
+            '<sheetViews><sheetView workbookViewId="0">'+
+            '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>'+
+            '</sheetView></sheetViews>'+
+            `<cols>${widths}</cols>`+
+            `<sheetData>${lines.join('')}</sheetData>`+
+            `<autoFilter ref="A1:${last}${maxRow}"/>`+
+            '</worksheet>'
+        };
+      });
+
+      const files = [
+        ['[Content_Types].xml',
+          '<?xml version="1.0" encoding="UTF-8"?>'+
+          '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+          '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+          '<Default Extension="xml" ContentType="application/xml"/>'+
+          '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+          '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+
+          sheets.map((_,i) =>
+            `<Override PartName="/xl/worksheets/sheet${i+1}.xml" `+
+            'ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+          ).join('')+'</Types>'
+        ],
+        ['_rels/.rels',
+          '<?xml version="1.0" encoding="UTF-8"?>'+
+          '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+          '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'+
+          '</Relationships>'
+        ],
+        ['xl/workbook.xml',
+          '<?xml version="1.0" encoding="UTF-8"?>'+
+          '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+          'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+          '<sheets>'+sheets.map((s,i) =>
+            `<sheet name="${tsfXml(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`
+          ).join('')+'</sheets></workbook>'
+        ],
+        ['xl/_rels/workbook.xml.rels',
+          '<?xml version="1.0" encoding="UTF-8"?>'+
+          '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+          sheets.map((_,i) =>
+            `<Relationship Id="rId${i+1}" `+
+            'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" '+
+            `Target="worksheets/sheet${i+1}.xml"/>`
+          ).join('')+
+          `<Relationship Id="rId${sheets.length+1}" `+
+          'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" '+
+          'Target="styles.xml"/></Relationships>'
+        ],
+        ['xl/styles.xml',
+          '<?xml version="1.0" encoding="UTF-8"?>'+
+          '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+          '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font>'+
+          '<font><b/><sz val="11"/><color rgb="FF1C2026"/><name val="Calibri"/></font></fonts>'+
+          '<fills count="3"><fill><patternFill patternType="none"/></fill>'+
+          '<fill><patternFill patternType="gray125"/></fill>'+
+          '<fill><patternFill patternType="solid"><fgColor rgb="FFFFCB16"/>'+
+          '<bgColor indexed="64"/></patternFill></fill></fills>'+
+          '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'+
+          '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+          '<cellXfs count="3">'+
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
+          '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>'+
+          '<xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>'+
+          '</cellXfs></styleSheet>'
+        ],
+        ...sheets.map((s,i) => [
+          `xl/worksheets/sheet${i+1}.xml`,s.xml
+        ])
+      ];
+
+      const hayPendientes =
+        spEdits.size || trackingSp.edits.size || dirty.size;
+
+      const fecha = new Date().toISOString().slice(0,10);
+
+      download(
+        tsfZip(files),
+        `TSF_Operaciones_${fecha}`+
+        `${hayPendientes?'_CON_CAMBIOS_PENDIENTES':''}.xlsx`
+      );
+
+      toast('Excel generado con las seis pestañas.');
+    }
+
+     
+    // TSF V11.7 - VALIDAR U OBSERVAR CONFLICTOS POR CELDA
+
+    function tsfResolverConflicto(
+      id,col,anterior,nube,propuesto
+    ) {
+      return new Promise(resolve => {
+        const fondo = document.createElement('div');
+
+        fondo.style.cssText =
+          'position:fixed;inset:0;z-index:10000001;'+
+          'background:rgba(10,17,28,.78);display:flex;'+
+          'align-items:center;justify-content:center;padding:18px';
+
+        const panel = document.createElement('section');
+
+        panel.style.cssText =
+          'background:#fff;color:#1c2026;border-radius:12px;'+
+          'max-width:690px;width:100%;padding:22px;'+
+          'box-shadow:0 20px 50px #0005';
+
+        panel.setAttribute('role','dialog');
+        panel.setAttribute('aria-modal','true');
+
+        const h = document.createElement('h2');
+        h.textContent = 'Conflicto de edición en la misma celda';
+
+        const p = document.createElement('p');
+        p.textContent =
+          `Operación ${id} · Campo ${col}. `+
+          'Otro usuario guardó un valor diferente mientras editabas.';
+
+        panel.append(h,p);
+
+        for (const [etiqueta,valor] of [
+          ['Cuando abriste la tabla',anterior],
+          ['Valor actual en SharePoint',nube],
+          ['Tu modificación pendiente',propuesto]
+        ]) {
+          const item = document.createElement('div');
+
+          item.style.cssText =
+            'padding:11px;margin:8px 0;'+
+            'border:1px solid #e1e5ea;border-radius:8px;'+
+            'overflow-wrap:anywhere';
+
+          const strong = document.createElement('strong');
+          strong.textContent = etiqueta + ': ';
+
+          const text = document.createElement('span');
+          text.textContent = String(valor || '—');
+
+          item.append(strong,text);
+          panel.append(item);
+        }
+
+        const info = document.createElement('p');
+        info.style.cssText = 'font-size:12px;color:#5b6572';
+
+        info.textContent =
+          'Validar: tu valor reemplazará el actual. '+
+          'Observar: esta celda queda sin guardar y conserva '+
+          'tu borrador. Cancelar: detiene todo el guardado.';
+
+        panel.append(info);
+
+        const actions = document.createElement('div');
+
+        actions.style.cssText =
+          'display:flex;flex-wrap:wrap;gap:9px;'+
+          'justify-content:flex-end';
+
+        let done = false;
+
+        const choose = value => {
+          if (done) return;
+          done = true;
+          document.removeEventListener('keydown',onKey);
+          fondo.remove();
+          resolve(value);
+        };
+
+        const onKey = e => {
+          if (e.key === 'Escape') choose('cancelar');
+        };
+
+        document.addEventListener('keydown',onKey);
+
+        for (const [label,value,primary] of [
+          ['Cancelar guardado','cancelar',false],
+          ['Observar y conservar pendiente','observar',false],
+          ['Validar mi cambio','validar',true]
+        ]) {
+          const button = document.createElement('button');
+
+          button.type = 'button';
+          button.textContent = label;
+
+          button.style.cssText =
+            'border-radius:7px;border:1px solid #cfd6dd;'+
+            'padding:10px 12px;cursor:pointer;font-weight:700;'+
+            'background:'+(primary?'#ffcb16':'#fff');
+
+          button.onclick = () => choose(value);
+          actions.append(button);
+        }
+
+        panel.append(actions);
+        fondo.append(panel);
+        document.body.append(fondo);
+
+        actions.querySelector('button')?.focus();
+      });
+    }
+
+    async function tsfLeerFilasGestion(ids) {
+      const pendientes = new Set(ids);
+      const resultado = new Map();
+      let cursor = '';
+
+      for (
+        let pagina = 0;
+        pagina < 200 && pendientes.size;
+        pagina++
+      ) {
+        const raw = await tsfPageFetch(
+          'GESTION_PAGINA',cursor
+        );
+
+        for (const item of raw) {
+          const row = spPreviewRow(
+            tsfGestionRawItem(item)
+          );
+
+          if (row && pendientes.has(keyID(row))) {
+            resultado.set(keyID(row),row);
+            pendientes.delete(keyID(row));
+          }
+        }
+
+        if (raw.length < 10) break;
+
+        cursor = tsfNextCursor(raw,cursor);
+      }
+
+      if (pendientes.size) {
+        throw new Error(
+          'No se encontró en SharePoint: '+
+          [...pendientes].join(', ')
+        );
+      }
+
+      return resultado;
+    }
+
+    async function tsfGuardarGestionConConflictos() {
+      if (!isSpPreview() || spSaving) return;
+
+      if (window.TSF_SESSION_ROLE !== 'EDICION') {
+        toast('Perfil sin permiso de edición.');
+        return;
+      }
+
+      if (!spEdits.size) {
+        toast('No hay cambios pendientes.');
+        return;
+      }
+
+      const ids = [...spEdits.keys()];
+
+      if (!confirm(
+        `¿Revisar y guardar los cambios de ${ids.length} `+
+        'operación(es)? Se compararán las celdas con SharePoint.'
+      )) return;
+
+      let guardados = 0;
+      let observados = 0;
+      let iguales = 0;
+      let error = '';
+
+      spSaving = true;
+      updateDirtyLabel();
+
+      tsfWaitBegin(
+        'tsf-conflictos',
+        'Verificando celdas',
+        'Comparando tus cambios con SharePoint…'
+      );
+
+      try {
+        const actuales = await tsfLeerFilasGestion(ids);
+
+        for (const id of ids) {
+          const fila = spPreview.rows.find(
+            r => keyID(r) === id
+          );
+
+          const cambios = spEdits.get(id);
+          const remoto = actuales.get(id);
+
+          if (!fila || !cambios?.size ||
+              !remoto?.__spEtag) {
+            throw new Error(
+              'Sin versión válida para '+id
+            );
+          }
+
+          const aprobados = new Map();
+
+          for (const [campo,valor] of [...cambios]) {
+            const original = String(
+              fila.__spBaseline?.[campo] ?? ''
+            );
+
+            const actual = String(
+              remoto[campo] ?? ''
+            );
+
+            const mio = String(valor ?? '');
+
+            // El valor ya coincide con SharePoint.
+            if (actual === mio) {
+              fila.__spBaseline[campo] = actual;
+              cambios.delete(campo);
+              iguales++;
+              continue;
+            }
+
+            // Conflicto SOLO si cambió esta celda.
+            if (actual !== original) {
+              tsfWaitEnd('tsf-conflictos');
+
+              const decision = await tsfResolverConflicto(
+                id,campo,original,actual,mio
+              );
+
+              if (decision === 'cancelar') {
+                throw new Error(
+                  'Guardado cancelado. Los cambios '+
+                  'pendientes se conservan.'
+                );
+              }
+
+              if (decision === 'observar') {
+                observados++;
+
+                tsfWaitBegin(
+                  'tsf-conflictos',
+                  'Revisando otros campos',
+                  'La celda observada seguirá pendiente.'
+                );
+
+                continue;
+              }
+
+              tsfWaitBegin(
+                'tsf-conflictos',
+                'Preparando actualización',
+                'Se aplicará el cambio validado.'
+              );
+            }
+
+            aprobados.set(campo,mio);
+          }
+
+          // Actualizar campos que NO tienen
+          // modificaciones pendientes.
+          for (const campo of modules[0].columns) {
+            if (!cambios.has(campo)) {
+              fila[campo] = remoto[campo];
+
+              fila.__spBaseline[campo] = String(
+                remoto[campo] ?? ''
+              );
+            }
+          }
+
+          fila.__spEtag = remoto.__spEtag;
+
+          if (aprobados.size) {
+            const res = await fetch(
+              '/api/operaciones',{
+                method:'POST',
+                headers:{
+                  'Content-Type':'application/json'
+                },
+                cache:'no-store',
+                body:JSON.stringify({
+                  accion:'ACTUALIZAR',
+                  id_operacion:id,
+                  campos:spPayloadFields(aprobados),
+                  etag:remoto.__spEtag
+                })
+              }
+            );
+
+            const raw = await res.text();
+            let body;
+
+            try {
+              body = JSON.parse(raw);
+            } catch {
+              body = {error:raw.slice(0,150)};
+            }
+
+            if (!res.ok || body?.ok !== true) {
+              throw new Error(
+                `${id}: no se confirmó el guardado `+
+                `(HTTP ${res.status}). Se conservan `+
+                'los borradores. Revisa el historial '+
+                'antes de reintentar.'
+              );
+            }
+
+            for (const [campo,valor] of aprobados) {
+              fila.__spBaseline[campo] = valor;
+              cambios.delete(campo);
+            }
+
+            guardados++;
+          }
+
+          if (!cambios.size) {
+            spEdits.delete(id);
+          }
+        }
+
+      } catch(e) {
+        error = String(e?.message ?? e);
+
+      } finally {
+        spSaving = false;
+        tsfWaitEnd('tsf-conflictos');
+        updateDirtyLabel();
+
+        if (guardados && !spEdits.size) {
+          try {
+            await loadSpPreview();
+          } catch(e) {
+            console.warn('Refresco posguardado:',e);
+          }
+        }
+
+        if (mIdx === 0) draw();
+
+        if (error) {
+          toast('Guardado detenido: '+error.slice(0,230));
+        } else {
+          toast(
+            `Gestión: ${guardados} operación(es) guardada(s), `+
+            `${observados} celda(s) observada(s), `+
+            `${iguales} ya coincidían. `+
+            `${spEditCount()} cambio(s) siguen pendientes.`
+          );
+        }
+      }
+    }
+
+    // Aplicar guardado protegido a Gestión
+    spSaveChanges = tsfGuardarGestionConConflictos;
+
+    const tsfGuardarActual =
+      document.getElementById('saveBtn');
+
+    if (tsfGuardarActual) {
+      tsfGuardarActual.onclick = async () => {
+        if (window.TSF_SESSION_ROLE !== 'EDICION') {
+          return toast('Perfil solo consulta.');
+        }
+
+        if (isSpPreview()) {
+          return tsfGuardarGestionConConflictos();
+        }
+
+        if (isTrackingSp()) {
+          return saveTrackingSp();
+        }
+
+        toast(
+          'Guardado de este módulo pendiente '+
+          'de conectar a SharePoint.'
+        );
+      };
     }
 
     const header = document.querySelector('.headright');
