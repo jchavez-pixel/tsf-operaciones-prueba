@@ -239,12 +239,12 @@ body.tsf-lector #reproManual { display:none !important; }
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V11.7 · PILOTO AUTENTICADO · DATOS FICTICIOS</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V11.8 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V11.7 DEMOSTRACIÓN · Datos ficticios · Guardado solo en este navegador</span><span class="offline"><span class="dot"></span>Sin sincronización multiusuario</span></div>
+ <div class="statusbottom"><span>V11.8 · Piloto autenticado · Gestión y Tracking conectados a SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -884,9 +884,9 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V11.7 · Demostración pública</b><br/>Datos sintéticos · Guardado solo local';
+ if(foot)foot.innerHTML='<b>V11.8 · Piloto autenticado</b><br/>Gestión y Tracking vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
- if(save){save.innerHTML=ic('save',14)+' Guardar borrador local <span id="dirtyCount"></span>';save.disabled=false;}
+ if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=!(mIdx===0||mIdx===4);
  const link=document.getElementById('trackingMapButton');if(link)link.hidden=true;
 }
@@ -900,183 +900,161 @@ const FINANCIAL_SHARED=new Set(['COL. NETA ($)','MES DE COLOCACIÓN']);
 const MONTHS=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 function monthOptions(value=''){const current=String(value||'').trim().toUpperCase();const historic=/^\d{2}\/\d{2}\/\d{4}$/.test(current);const items=[...new Set([...MONTHS,...(current&&!MONTHS.includes(current)?[current]:[])])];return '<option value="">Seleccionar mes...</option>'+items.map(m=>`<option value="${esc(m)}" ${m===current?'selected':''}>${esc(historic&&m===current?'Validar histórico: '+m:m)}</option>`).join('')}
 function isMonthField(idx,col,row){return col==='MES DE COLOCACIÓN'&&isEditableColumn(idx,col,row)}
-
+// V11.7 — Catálogos de LISTAS(1).xlsx. Mantener valores históricos.
 const TSF_CATALOGOS = {
-  "0|PRODUCTO": [
-    "CAPITAL DE TRABAJO - AL VENCIMIENTO",
-    "CAPITAL DE TRABAJO - AMORTIZADA",
-    "CRÉDITO DIRECTO",
-    "CREDITO DIRECTO - TOTALYA",
-    "LEASEBACK",
-    "LEASING",
-    "LEASING - TOTALYA",
-    "LEASING-VENDOR"
-  ],
-  "0|TIPO DE BIEN": [
-    "Capital de trabajo",
-    "Equipos de Computo",
-    "Inmueble",
-    "Maquinaria",
-    "Unidad de Transporte"
-  ],
-  "0|MONEDA": [
-    "Dólares",
-    "Soles"
-  ],
-  "1|ORIGEN DE FONDOS CI Y/O SE": [
-    "Compensación Factoring",
-    "Compensación Proveedor",
-    "Fondos cliente",
-    "Fondos cliente + Compensación",
-    "Sin cuota inicial"
-  ],
-  "1|TIPO_FORMALIZACION CONTRATOS": [
-    "Escritura Pública",
-    "Minutas firma electrónica",
-    "Minutas firma legalizada",
-    "Minutas firma simple"
-  ],
-  "1|TIPO_COFIDE": [
-    "Fondeo",
-    "Cobertura",
-    "Fondeo + Cobertura"
-  ],
-  "1|NOTARIA ASIGNADA": [
-    "AGUILAR CALVO",
-    "ACOSTA IPARRAGUIRRE",
-    "ESPINOSA ORÉ",
-    "RODRIGUEZ CRUZADO",
-    "RODRIGUEZ VELARDE",
-    "VELA VELASQUEZ",
-    "CORCUERA",
-    "VIGO",
-    "GUERRA SALAS"
-  ],
-  "2|TIPO_GPS": [
-    "Del proveedor",
-    "Endosado",
-    "Financiado",
-    "No aplica",
-    "45667"
-  ],
-  "2|PROVEEDOR_GPS": [
-    "CONREIVIC",
-    "FERREYROS",
-    "HUNTER",
-    "IPESA",
-    "TRACKLOG",
-    "UNIMAQ"
-  ],
-  "2|TIPO_SEGURO": [
-    "Endosado",
-    "Financiado"
-  ],
-  "3|PRODUCTO": [
-    "CRÉDITO DIRECTO",
-    "CROSS",
-    "DESCUENTO",
-    "FACTORING",
-    "LEASEBACK",
-    "LEASING"
-  ],
-  "3|PROCESO": [
-    "CONSTITUCIÓN DE GARANTÍA",
-    "LEVANTAMIENTO DE GARANTÍA",
-    "MODIFICACIÓN DE GARANTÍA",
-    "SUSTITUCIÓN DE GARANTÍA"
-  ],
-  "3|TIPO DE BIEN_EN_GARANTIA": [
-    "INMUEBLE",
-    "MAQUINARIA",
-    "UTT"
-  ],
-  "4|PRODUCTO": [
-    "CRÉDITO DIRECTO",
-    "CROSS",
-    "DESCUENTO",
-    "FACTORING",
-    "LEASEBACK",
-    "LEASING"
-  ],
-  "5|PROCESO": [
-    "CONTRATOS COMPLEMENTARIOS",
-    "MODIFICACIÓN DEL BIEN",
-    "MODIFICACIÓN DEL CRÉDITO",
-    "RECUPERACIÓN",
-    "RESOLUCIÓN",
-    "TRANSFERENCIA VEHICULAR"
-  ],
-  "5|SUBPROCESO": [
-    "ACLARACIÓN DETALLE DEL BIEN",
-    "ACLARATORIA DE TRANSFERENCIA",
-    "ACTA DE TRANSFERENCIA",
-    "CAMBIO DE BIEN",
-    "CAMBIO DE DENOMINACIÓN",
-    "CAMBIO DE MONEDA",
-    "CAMBIO DE TASA",
-    "CESIÓN",
-    "COMPRA VENTA",
-    "COMPRAVENTA DE BIEN USADO",
-    "COMPROMISO A CONTRATAR",
-    "CONVENIO PRIVADO",
-    "DACIÓN EN PAGO",
-    "DECLARACIÓN UNILATERAL OPCIÓN DE COMPRA",
-    "FUSIÓN",
-    "MUTUO ACUERDO",
-    "OBLIGACIONES ALTERNATIVAS",
-    "POR SINIESTRO",
-    "PRECANCELACIÓN PARCIAL",
-    "PRECANCELACIÓN TOTAL",
-    "RECOLOCACIÓN BIEN RECUPERADO",
-    "RECOMPRA",
-    "REESTRUCTURACIÓN",
-    "REFINANCIACIÓN",
-    "REPROGRAMACIÓN",
-    "TRANSACCIÓN EXTRAJUDICIAL",
-    "TRANSFERENCIA BIEN RECUPERADO",
-    "UNILATERAL"
-  ],
-  "5|NOTARÍA": [
-    "AGUILAR CALVO",
-    "ACOSTA IPARRAGUIRRE",
-    "ESPINOSA ORÉ",
-    "RODRIGUEZ CRUZADO",
-    "RODRIGUEZ VELARDE",
-    "VELA VELASQUEZ",
-    "CORCUERA",
-    "VIGO",
-    "GUERRA SALAS"
-  ]
+ "0|PRODUCTO": [
+  "CAPITAL DE TRABAJO - AL VENCIMIENTO",
+  "CAPITAL DE TRABAJO - AMORTIZADA",
+  "CRÉDITO DIRECTO",
+  "CREDITO DIRECTO - TOTALYA",
+  "LEASEBACK",
+  "LEASING",
+  "LEASING - TOTALYA",
+  "LEASING-VENDOR"
+ ],
+ "0|TIPO DE BIEN": [
+  "Capital de trabajo",
+  "Equipos de Computo",
+  "Inmueble",
+  "Maquinaria",
+  "Unidad de Transporte"
+ ],
+ "0|MONEDA": [
+  "Dólares",
+  "Soles"
+ ],
+ "1|ORIGEN DE FONDOS CI Y/O SE": [
+  "Compensación Factoring",
+  "Compensación Proveedor",
+  "Fondos cliente",
+  "Fondos cliente + Compensación",
+  "Sin cuota inicial"
+ ],
+ "1|TIPO_FORMALIZACION CONTRATOS": [
+  "Escritura Pública",
+  "Minutas firma electrónica",
+  "Minutas firma legalizada",
+  "Minutas firma simple"
+ ],
+ "1|TIPO_COFIDE": [
+  "Fondeo",
+  "Cobertura",
+  "Fondeo + Cobertura"
+ ],
+ "1|NOTARIA ASIGNADA": [
+  "AGUILAR CALVO",
+  "ACOSTA IPARRAGUIRRE",
+  "ESPINOSA ORÉ",
+  "RODRIGUEZ CRUZADO",
+  "RODRIGUEZ VELARDE",
+  "VELA VELASQUEZ",
+  "CORCUERA",
+  "VIGO",
+  "GUERRA SALAS"
+ ],
+ "2|TIPO_GPS": [
+  "Del proveedor",
+  "Endosado",
+  "Financiado",
+  "No aplica",
+  "45667"
+ ],
+ "2|PROVEEDOR_GPS": [
+  "CONREIVIC",
+  "FERREYROS",
+  "HUNTER",
+  "IPESA",
+  "TRACKLOG",
+  "UNIMAQ"
+ ],
+ "2|TIPO_SEGURO": [
+  "Endosado",
+  "Financiado"
+ ],
+ "3|PRODUCTO": [
+  "CRÉDITO DIRECTO",
+  "CROSS",
+  "DESCUENTO",
+  "FACTORING",
+  "LEASEBACK",
+  "LEASING"
+ ],
+ "3|PROCESO": [
+  "CONSTITUCIÓN DE GARANTÍA",
+  "LEVANTAMIENTO DE GARANTÍA",
+  "MODIFICACIÓN DE GARANTÍA",
+  "SUSTITUCIÓN DE GARANTÍA"
+ ],
+ "3|TIPO DE BIEN_EN_GARANTIA": [
+  "INMUEBLE",
+  "MAQUINARIA",
+  "UTT"
+ ],
+ "4|PRODUCTO": [
+  "CRÉDITO DIRECTO",
+  "CROSS",
+  "DESCUENTO",
+  "FACTORING",
+  "LEASEBACK",
+  "LEASING"
+ ],
+ "5|PROCESO": [
+  "CONTRATOS COMPLEMENTARIOS",
+  "MODIFICACIÓN DEL BIEN",
+  "MODIFICACIÓN DEL CRÉDITO",
+  "RECUPERACIÓN",
+  "RESOLUCIÓN",
+  "TRANSFERENCIA VEHICULAR"
+ ],
+ "5|SUBPROCESO": [
+  "ACLARACIÓN DETALLE DEL BIEN",
+  "ACLARATORIA DE TRANSFERENCIA",
+  "ACTA DE TRANSFERENCIA",
+  "CAMBIO DE BIEN",
+  "CAMBIO DE DENOMINACIÓN",
+  "CAMBIO DE MONEDA",
+  "CAMBIO DE TASA",
+  "CESIÓN",
+  "COMPRA VENTA",
+  "COMPRAVENTA DE BIEN USADO",
+  "COMPROMISO A CONTRATAR",
+  "CONVENIO PRIVADO",
+  "DACIÓN EN PAGO",
+  "DECLARACIÓN UNILATERAL OPCIÓN DE COMPRA",
+  "FUSIÓN",
+  "MUTUO ACUERDO",
+  "OBLIGACIONES ALTERNATIVAS",
+  "POR SINIESTRO",
+  "PRECANCELACIÓN PARCIAL",
+  "PRECANCELACIÓN TOTAL",
+  "RECOLOCACIÓN BIEN RECUPERADO",
+  "RECOMPRA",
+  "REESTRUCTURACIÓN",
+  "REFINANCIACIÓN",
+  "REPROGRAMACIÓN",
+  "TRANSACCIÓN EXTRAJUDICIAL",
+  "TRANSFERENCIA BIEN RECUPERADO",
+  "UNILATERAL"
+ ],
+ "5|NOTARÍA": [
+  "AGUILAR CALVO",
+  "ACOSTA IPARRAGUIRRE",
+  "ESPINOSA ORÉ",
+  "RODRIGUEZ CRUZADO",
+  "RODRIGUEZ VELARDE",
+  "VELA VELASQUEZ",
+  "CORCUERA",
+  "VIGO",
+  "GUERRA SALAS"
+ ]
 };
-
-function tsfTieneCatalogo(indice, columna) {
-  return Object.prototype.hasOwnProperty.call(
-    TSF_CATALOGOS,
-    indice + "|" + columna
-  );
+function tsfTieneCatalogo(indice, columna){return Object.prototype.hasOwnProperty.call(TSF_CATALOGOS,indice+'|'+columna)}
+function tsfOpcionesCatalogo(indice,columna,valor=''){
+ const actual=String(valor??'').trim(),disponibles=TSF_CATALOGOS[indice+'|'+columna]||[];
+ const opciones=actual&&!disponibles.includes(actual)?[actual,...disponibles]:disponibles;
+ return `<option value="" ${actual===''?'selected':''}>Seleccionar...</option>`+
+  opciones.map(x=>`<option value="${esc(x)}" ${x===actual?'selected':''}>${esc(x)}</option>`).join('');
 }
-
-function tsfOpcionesCatalogo(indice, columna, valor = "") {
-  const actual = String(valor ?? "").trim();
-
-  const disponibles =
-    TSF_CATALOGOS[indice + "|" + columna] || [];
-
-  // Conservar valores históricos aunque no estén
-  // incluidos en el catálogo actual.
-  const opciones =
-    actual && !disponibles.includes(actual)
-      ? [actual, ...disponibles]
-      : disponibles;
-
-  return (
-    `<option value="" ${actual === "" ? "selected" : ""}>Seleccionar...</option>` +
-    opciones.map(item =>
-      `<option value="${esc(item)}" ${item === actual ? "selected" : ""}>${esc(item)}</option>`
-    ).join("")
-  );
-}
-
 const TRACKING_STATES=['EN PROCESO','DESEMBOLSADO','ANULADO'];
 const addedAnalysts=new Set();
 function analystNames(selected=''){
@@ -1287,6 +1265,7 @@ function getColumnWidth(column,mod,index){
   if(k==='T.CREDITO'||k==='TIPO_CREDITO')return 99;
   if(k==='FONDO_CRECER')return 106;
   if(k==='SEMIREMOLQUE')return 108;
+  if(k==='ESTADO_OPERACION')return 165;
   if(k==='TIPO_DE_BIEN'||k==='TIPO_BIEN')return 155;
   if(k==='GARANTIA')return 155;
   if(/CLIENTE|RAZON_SOCIAL/.test(k))return 171;
@@ -1328,37 +1307,34 @@ function tableRender(){
   const val=String(row[col]??''),hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
   let style='width:'+widths[i]+'px;';
    
-
 const selectType =
-  mIdx === 0 && col === 'VERITRADE' && editable
+  mIdx===0 && col==='VERITRADE' && editable
     ? 'veritrade'
-    : isTrackingStateField(mIdx, col) && editable
+    : isTrackingStateField(mIdx,col) && editable
     ? 'state'
-    : editable && isAnalystField(mIdx, col, row)
+    : editable && isAnalystField(mIdx,col,row)
     ? 'analyst'
-    : editable && isMonthField(mIdx, col, row) && !isTrackingSp()
+    : editable && isMonthField(mIdx,col,row) && !isTrackingSp()
     ? 'month'
-    : editable && tsfTieneCatalogo(mIdx, col)
+    : editable && tsfTieneCatalogo(mIdx,col)
     ? 'catalogo'
     : '';
 
 const specialSelect =
-  selectType === 'veritrade'
+  selectType==='veritrade'
     ? `<select class="tsf-cell-select" data-select="veritrade" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Veritrade">
-         <option value="" ${val === '' ? 'selected' : ''} disabled>Seleccionar...</option>
-         <option value="Sí" ${val === 'Sí' ? 'selected' : ''}>Sí</option>
-         <option value="No" ${val === 'No' ? 'selected' : ''}>No</option>
+         <option value="Sí" ${val==='Sí'?'selected':''}>Sí</option>
+         <option value="No" ${val==='No'?'selected':''}>No</option>
        </select>`
-    : selectType === 'state'
+    : selectType==='state'
     ? `<select class="tsf-cell-select tsf-state-select ${stateTone(val)}" data-select="state" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Estado de operación">${trackingStateOptions(val)}</select>`
-    : selectType === 'analyst'
+    : selectType==='analyst'
     ? `<select class="tsf-cell-select tsf-analyst-select" data-select="analyst" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Analista operativo">${analystOptions(val)}</select>`
-    : selectType === 'month'
+    : selectType==='month'
     ? `<select class="tsf-cell-select tsf-month-select" data-select="month" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Mes de colocación">${monthOptions(val)}</select>`
-    : selectType === 'catalogo'
-    ? `<select class="tsf-cell-select" data-select="catalogo" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="${esc(col)}">${tsfOpcionesCatalogo(mIdx, col, val)}</select>`
+    : selectType==='catalogo'
+    ? `<select class="tsf-cell-select tsf-catalogo-select" data-select="catalogo" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="${esc(col)}">${tsfOpcionesCatalogo(mIdx,col,val)}</select>`
     : '';
-
 
    const spDifference=isSpPreview()&&spPreview.mode==='merge'&&row.__spDifferences?.[col];
    const cellHint=spDifference?`${col} · MOSTRANDO SHAREPOINT: ${val} · Valor local anterior: ${spDifference.local} · No guardado`:`${col}: ${val||'Sin información'} · ${descriptions[role]}`;
@@ -1492,18 +1468,14 @@ function openDrawer(id){
   const role=fieldRole(mIdx,col,r),editable=isEditableColumn(mIdx,col,r),dateField=isDateField(col,m);
    const hint=isRemoteView()?(editable?'Campo editable · guarda directamente en SharePoint':'Campo protegido en esta lista'):role==='inherited'?'Heredado del maestro · bloqueado':role==='extracted'?'Dato documental protegido · no editable':role==='auto'?'Fecha automática de asignación · bloqueada':role==='manual'?'Dato pendiente de completar · editable':'Editable';
    const value=String(r[col]??'');
- 
-const drawerSelect =
-  isTrackingStateField(mIdx, col) && editable
-    ? `<select class="tsf-drawer-select tsf-state-select ${stateTone(value)}" data-drawer-col="${esc(col)}" data-drawer-kind="state">${trackingStateOptions(value)}</select>`
-    : editable && isAnalystField(mIdx, col, r)
-    ? `<select class="tsf-drawer-select tsf-analyst-select" data-drawer-col="${esc(col)}" data-drawer-kind="analyst">${analystOptions(value)}</select>`
-    : editable && isMonthField(mIdx, col, r) && !isTrackingSp()
-    ? `<select class="tsf-drawer-select tsf-month-select" data-drawer-col="${esc(col)}" data-drawer-kind="month">${monthOptions(value)}</select>`
-    : editable && tsfTieneCatalogo(mIdx, col)
-    ? `<select class="tsf-drawer-select" data-drawer-col="${esc(col)}" data-drawer-kind="catalogo">${tsfOpcionesCatalogo(mIdx, col, value)}</select>`
-    : '';
-
+   const drawerSelect=isTrackingStateField(mIdx,col)&&editable
+    ?`<select class="tsf-drawer-select tsf-state-select ${stateTone(value)}" data-drawer-col="${esc(col)}" data-drawer-kind="state">${trackingStateOptions(value)}</select>`
+    :editable&&isAnalystField(mIdx,col,r)
+    ?`<select class="tsf-drawer-select tsf-analyst-select" data-drawer-col="${esc(col)}" data-drawer-kind="analyst">${analystOptions(value)}</select>`
+    :editable&&isMonthField(mIdx,col,r)&&!isTrackingSp()
+    ?`<select class="tsf-drawer-select tsf-month-select" data-drawer-col="${esc(col)}" data-drawer-kind="month">${monthOptions(value)}</select>`
+    :editable&&tsfTieneCatalogo(mIdx,col)
+    ?`<select class="tsf-drawer-select" data-drawer-col="${esc(col)}" data-drawer-kind="catalogo">${tsfOpcionesCatalogo(mIdx,col,value)}</select>`:'';
    return `<div class="form-item"><label>${esc(col)} ${editable?'':'🔒'}</label><div class="tsf-drawer-field">${dateField&&editable&&mIdx!==0?`<label class="tsf-quick-date" title="Marcar para colocar fecha/hora actual"><input type="checkbox" class="tsf-drawer-stamp" data-drawer-stamp="${esc(col)}"/><span>Ahora</span></label>`:''}${drawerSelect||`<input class="${role==='manual'?'form-manual':editable?'':'form-locked'} ${role==='auto'?'form-auto':''}" data-drawer-col="${esc(col)}" value="${esc(dateField?minuteDisplay(value):value)}" ${!editable?'readonly tabindex="-1"':''} placeholder="${editable?'Sin dato registrado':'—'}"/>`}</div><span class="field-note">${hint}</span></div>`;
  }).join('');
  const progress=mIdx===0&&!isSpPreview()?`<div class="tipbox">Campos requeridos para habilitar los módulos automáticos: ${3-assignmentMissing(r).length}/3. ${assignmentMissing(r).length?'Faltan: '+assignmentMissing(r).map(esc).join(', '):'Operación lista para módulos automáticos; Reprocesos se crea manualmente.'}</div>`:'';
@@ -1928,6 +1900,15 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     // Registrar como campo de la lista maestra.
     MASTER_COLUMNS.add('VERITRADE');
 
+    // Columna virtual de Gestión vinculada a TB2 - TRACKING OPERATIVO.
+    // Es la última columna de datos, antes de DETALLE; no crea campo en Gestión.
+    for (const modelo of [base[0],modules[0]]) {
+      if(!modelo.columns.includes('ESTADO_OPERACIÓN')) {
+        modelo.columns.push('ESTADO_OPERACIÓN');
+      }
+    }
+    // La columna virtual NO se incorpora a SP_FIELD_TO_INTERNAL.
+
     // Mostrar listas reales, no los registros simulados
     spPreview.active = true;
     trackingSp.active = true;
@@ -1956,193 +1937,119 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     // Conserva los cambios pendientes y ETags.
     // ==========================================
 
-    const TSF_SYNC_INTERVAL = 30000;
+    // Sincronización eficiente: un delta por módulo cada 60s; pestañas ocultas no consultan.
+    // El backend de Power Automate ya contiene GESTION_CAMBIOS/TRACKING_CAMBIOS.
+    const TSF_SYNC_INTERVAL = 60000;
+    const TSF_SYNC_OVERLAP_MS = 120000;
     let tsfSyncBusy = false;
-    const tsfConflictsNotified = new Set();
+    const tsfDeltaDisponible = {0:true,1:true};
+    const tsfLastFullCheck = {0:Date.now(),1:Date.now()};
 
-    async function tsfSyncSafe() {
-      if (
-        tsfSyncBusy ||
-        document.hidden ||
-        !['LECTURA', 'EDICION'].includes(window.TSF_SESSION_ROLE)
-      ) return;
-
-      // No interrumpir a alguien mientras escribe.
-      if (
-        document.querySelector('#overlays .drawer') ||
-        document.activeElement?.matches?.(
-          '.cell-input, .tsf-cell-select, #q, [data-drawer-col]'
-        )
-      ) return;
-
-      const mod = mIdx === 0 ? {
-        index: 0,
-        store: spPreview,
-        edits: spEdits,
-        action: 'GESTION_PAGINA',
-        convert: item => spPreviewRow(
-          tsfGestionRawItem(item)
-        ),
-        saving: () => spSaving
-      } : mIdx === 1 ? {
-        index: 1,
-        store: trackingSp,
-        edits: trackingSp.edits,
-        action: 'TRACKING_PAGINA',
-        convert: trackingRow,
-        saving: () => trackingSp.saving
-      } : null;
-
-      if (!mod) return;
-
-      const { store, edits } = mod;
-
-      if (
-        !store.active ||
-        store.loading ||
-        store.historyLoading ||
-        mod.saving()
-      ) return;
-
-      tsfSyncBusy = true;
-      const token = store.loadToken;
-
-      try {
-        const remote = new Map();
-        let cursor = '';
-
-        // Consultar todas las paginas del modulo.
-        for (let pageNum = 0; pageNum < 150; pageNum++) {
-          const batch = await tsfPageFetch(
-            mod.action,
-            cursor
+    function tsfSyncBloqueado(){
+      return document.hidden || !!document.querySelector('#overlays .drawer') ||
+        !!document.activeElement?.matches?.(
+          '.cell-input:not([readonly]),.tsf-cell-select,#q,[data-drawer-col],.tsf-estado-gestion'
+        );
+    }
+    function tsfDeltaTimestamp(date){
+      return new Date(date).toISOString().replace(/\.\d{3}Z$/,'Z');
+    }
+    async function tsfObtenerCambios(accion,desde){
+      const response=await fetch('/api/operaciones',{
+        method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
+        body:JSON.stringify({accion,id_operacion:'',desde})
+      });
+      const raw=await response.text();let data;
+      try{data=JSON.parse(raw)}catch(_){throw new Error('Sincronización: respuesta no JSON');}
+      if(!response.ok||data?.ok===false){
+        throw new Error('Cambios '+accion+' HTTP '+response.status+': '+String(data?.error||'No disponible').slice(0,80));
+      }
+      return tsfListItems(data);
+    }
+    async function tsfSincronizarModulo(index){
+      const store=index===0?spPreview:trackingSp;
+      const edits=index===0?spEdits:trackingSp.edits;
+      const convert=index===0?(item=>spPreviewRow(tsfGestionRawItem(item))):trackingRow;
+      if(!store.active||store.loading||store.historyLoading||
+         (index===0?spSaving:trackingSp.saving)) return;
+      const token=store.loadToken;
+      const watermark=new Date();
+      let incoming=[];
+      let esDelta=tsfDeltaDisponible[index];
+      if(esDelta){
+        const since=new Date((store.lastSync?.getTime()||Date.now())-TSF_SYNC_OVERLAP_MS);
+        try{
+          incoming=await tsfObtenerCambios(
+            index===0?'GESTION_CAMBIOS':'TRACKING_CAMBIOS',
+            tsfDeltaTimestamp(since)
           );
-
-          for (const row of tsfPagingRows(
-            batch,
-            mod.convert
-          )) {
-            const id = keyID(row);
-
-            if (remote.has(id)) {
-              throw new Error(
-                'ID duplicado en sincronizacion: ' + id
-              );
-            }
-
-            remote.set(id, row);
-          }
-
-          if (batch.length < 10) {
-            cursor = null;
-            break;
-          }
-
-          cursor = tsfNextCursor(batch, cursor);
+        }catch(err){
+          // Si el flujo aún no ofrece la acción CAMBIOS, sigue funcionando
+          // la consulta completa, sin impedir que los usuarios editen.
+          console.warn('Sincronización incremental no disponible:',err);
+          tsfDeltaDisponible[index]=false;
+          esDelta=false;
         }
-
-        if (cursor !== null) {
-          throw new Error(
-            'Historial demasiado largo para esta sincronizacion'
-          );
+      }
+      if(!esDelta){
+        // Fallback validado: paginar la fuente original sin perder borradores.
+        let cursor='',all=[];
+        for(let n=0;n<150;n++){
+          const batch=await tsfPageFetch(index===0?'GESTION_PAGINA':'TRACKING_PAGINA',cursor);
+          all.push(...batch);
+          if(batch.length<10){cursor=null;break;}
+          cursor=tsfNextCursor(batch,cursor);
         }
+        if(cursor!==null)throw new Error('La sincronización completa no terminó.');
+        incoming=all;
+      }
+      if(token!==store.loadToken||store.loading||store.historyLoading||
+         tsfSyncBloqueado()||(index===0?spSaving:trackingSp.saving)) return;
 
-        // No aplicar datos si comenzo otro guardado,
-        // otra carga o alguien esta escribiendo.
-        if (
-          store.loadToken !== token ||
-          store.loading ||
-          store.historyLoading ||
-          mod.saving() ||
-          document.hidden ||
-          mIdx !== mod.index ||
-          document.querySelector('#overlays .drawer') ||
-          document.activeElement?.matches?.(
-            '.cell-input, .tsf-cell-select, #q, [data-drawer-col]'
-          )
-        ) return;
-
-        const previous = new Map(
-          store.rows.map(row => [keyID(row), row])
-        );
-
-        let updated = 0;
-
-        for (const [id, incoming] of remote) {
-          const old = previous.get(id);
-
-        
-         if (edits.has(id)) {
-           // Conservar los cambios pendientes del usuario.
-           // Los conflictos se revisan por celda al guardar.
-           continue;
-         }
-
-
-          if (
-            !old ||
-            old.__spEtag !== incoming.__spEtag ||
-            JSON.stringify(old.__spBaseline) !==
-            JSON.stringify(incoming.__spBaseline)
-          ) {
-            updated++;
-          }
-        }
-
-        for (const [id] of previous) {
-          if (!remote.has(id) && !edits.has(id)) {
-            updated++;
-          }
-        }
-
-        // Las filas pendientes conservan sus valores
-        // y ETags originales.
-        const merged = [...remote.values()].map(row => {
-          const id = keyID(row);
-
-          return edits.has(id) && previous.has(id)
-            ? previous.get(id)
-            : row;
-        });
-
-        // Conservar tambien borradores de filas
-        // que hayan desaparecido de SharePoint.
-        for (const [id, row] of previous) {
-          if (edits.has(id) && !remote.has(id)) {
-            merged.push(row);
-          }
-        }
-
-        store.rows = merged.sort(
-          (a, b) => b.__spId - a.__spId
-        );
-
-        store.lastSync = new Date();
-
-        if (mod.index === 0) {
-          store.stats.remote = remote.size;
-        }
-
-        // Repintar solo si hay novedades.
-        if (updated > 0) {
-          tsfSafePaint(mod.index);
-        }
-
-        // IMPORTANTE:
-        // spEdits y trackingSp.edits permanecen intactos.
-
-      } catch (error) {
-        console.warn(
-          'Sincronizacion TSF no aplicada:',
-          String(error?.message || error)
-        );
-      } finally {
-        tsfSyncBusy = false;
+      const added=tsfPagingRows(incoming,convert);
+      const old=new Map(store.rows.map(row=>[keyID(row),row]));
+      const diffs=added.some(row=>{
+        const previous=old.get(keyID(row));
+        return !previous||previous.__spEtag!==row.__spEtag||
+          JSON.stringify(previous.__spBaseline)!==JSON.stringify(row.__spBaseline);
+      });
+      if(esDelta){
+        store.rows=tsfMergePage(store.rows,added,edits);
+      }else{
+        const remote=new Map(added.map(row=>[keyID(row),row]));
+        store.rows=[...added.map(row=>edits.has(keyID(row))&&old.has(keyID(row))?old.get(keyID(row)):row),
+          ...[...old.values()].filter(row=>edits.has(keyID(row))&&!remote.has(keyID(row)))];
+      }
+      store.rows.sort((a,b)=>b.__spId-a.__spId);
+      store.lastSync=watermark;
+      if(index===0)store.stats.remote=store.rows.length;
+      if(diffs){
+        if(index===1)tsfActualizarEstadosGestion();
+        if(mIdx===index)tsfSafePaint(index);
+        else if(index===1&&mIdx===0)tsfSafePaint(1);
       }
     }
-
-    // Sincronizar cada 30 segundos.
-    setInterval(tsfSyncSafe, TSF_SYNC_INTERVAL);
+    async function tsfSyncSafe(){
+      if(tsfSyncBusy||tsfSyncBloqueado()||
+         !['LECTURA','EDICION'].includes(window.TSF_SESSION_ROLE))return;
+      tsfSyncBusy=true;
+      try{
+        // Mantener ambos módulos al día; Gestión siempre ve estado desde Tracking.
+        for(const i of [0,1]){
+          if(tsfSyncBloqueado())break;
+          try{await tsfSincronizarModulo(i)}catch(error){
+            console.warn('Sincronización TSF no aplicada:',String(error?.message||error));
+          }
+        }
+      }finally{tsfSyncBusy=false;}
+    }
+    setInterval(tsfSyncSafe,TSF_SYNC_INTERVAL);
+    document.addEventListener('visibilitychange',()=>{
+      if(!document.hidden && !tsfSyncBusy &&
+         (!spPreview.lastSync||Date.now()-spPreview.lastSync.getTime()>TSF_SYNC_INTERVAL)){
+        void tsfSyncSafe();
+      }
+    });
    
     // ============================================
     // TSF V11.7 - VAF Y REPROCESOS
@@ -3135,11 +3042,9 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         );
       };
     }
-   
-    // ================================================
-    // TSF V11.7 - ANALISTAS Y VERITRADE CHECKBOX
-    // ================================================
 
+    // TSF V11.7 - ANALISTAS OFICIALES Y VERITRADE CHECKBOX
+    // Instalar una sola vez, dentro del control de acceso exitoso.
     const tsfAnalistasExcel = [
       'Antonella Rodriguez',
       'Fabio Salazar',
@@ -3148,216 +3053,102 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       'Karina Riva'
     ];
 
-    // Reemplazar catálogo de analistas.
-    // Conservar nombres históricos ya asignados.
     analystNames = function(selected = '') {
       const names = new Map();
-
       for (const raw of [
         ...tsfAnalistasExcel,
         ...addedAnalysts,
         selected
       ]) {
         const name = String(raw ?? '').trim();
-
-        if (!name || /^completar$/i.test(name)) {
-          continue;
-        }
-
+        if (!name || /^completar$/i.test(name)) continue;
         const clave = name.toLocaleLowerCase('es');
-
-        if (!names.has(clave)) {
-          names.set(clave, name);
-        }
+        if (!names.has(clave)) names.set(clave, name);
       }
-
       return [...names.values()];
     };
 
-    // Convertir valores SharePoint a Sí / No.
+    // Normalizar la columna Sí/No al leer desde SharePoint.
     const tsfValorOriginal = spGestionValue;
-
     spGestionValue = function(columna, valor) {
       if (columna !== 'VERITRADE') {
         return tsfValorOriginal(columna, valor);
       }
-
       const v = String(valor ?? '').trim().toLowerCase();
-
-      return (
-        valor === true ||
-        valor === 1 ||
-        ['true', '1', 'sí', 'si'].includes(v)
-      ) ? 'Sí' : 'No';
+      return valor === true || valor === 1 ||
+        ['true', '1', 'sí', 'si'].includes(v) ? 'Sí' : 'No';
     };
 
-    // Guardar renderizador anterior.
     const tsfRenderAntesCheckbox = tableRender;
-
-    // Dibujar checkbox en VERITRADE.
     tableRender = function(...args) {
+      const resultado = tsfRenderAntesCheckbox.apply(this, args);
+      if (mIdx !== 0) return resultado;
 
-      const resultado =
-        tsfRenderAntesCheckbox.apply(this, args);
-
-      if (mIdx !== 0) {
-        return resultado;
-      }
-
-      const tabla =
-        document.getElementById('dataTable');
-
-      const indice =
-        modules[0].columns.indexOf('VERITRADE');
-
-      if (
-        !tabla ||
-        indice < 0 ||
-        !tabla.tBodies?.[0]
-      ) {
-        return resultado;
-      }
+      const tabla = document.getElementById('dataTable');
+      const indice = modules[0].columns.indexOf('VERITRADE');
+      if (!tabla || indice < 0 || !tabla.tBodies?.[0]) return resultado;
 
       for (const tr of tabla.tBodies[0].rows) {
-
         const id = tr.dataset.id;
-
-        const fila = spPreview.rows.find(
-          r => keyID(r) === id
-        );
-
+        const fila = spPreview.rows.find(r => keyID(r) === id);
         const celda = tr.cells[indice];
+        if (!fila || !celda) continue;
 
-        if (!fila || !celda) {
-          continue;
-        }
+        const textoSiNo = v =>
+          String(v ?? '').trim().toLowerCase() === 'sí' ? 'Sí' : 'No';
+        const editable = isEditableColumn(0, 'VERITRADE', fila);
 
-        const textoSiNo = v => {
-          const texto = String(v ?? '')
-            .trim()
-            .toLowerCase();
-
-          return (
-            v === true ||
-            v === 1 ||
-            ['sí', 'si', 'true', '1'].includes(texto)
-          ) ? 'Sí' : 'No';
-        };
-
-        const editable =
-          isEditableColumn(0, 'VERITRADE', fila);
-
-        // Contenedor del checkbox.
         const label = document.createElement('label');
+        label.style.cssText = 'display:inline-flex;align-items:center;gap:9px;'+
+          'padding:4px 6px;white-space:nowrap;'+
+          (editable ? 'cursor:pointer' : 'cursor:default');
 
-        label.style.cssText =
-          'display:inline-flex;' +
-          'align-items:center;' +
-          'gap:9px;' +
-          'padding:4px 6px;' +
-          'white-space:nowrap;' +
-          (editable
-            ? 'cursor:pointer;'
-            : 'cursor:default;');
-
-        // Casilla.
         const check = document.createElement('input');
-
         check.type = 'checkbox';
-
-        check.checked =
-          textoSiNo(fila.VERITRADE) === 'Sí';
-
+        check.checked = textoSiNo(fila.VERITRADE) === 'Sí';
         check.disabled = !editable;
+        check.setAttribute('aria-label', `Veritrade ${id}`);
+        check.style.cssText = 'width:19px;height:19px;accent-color:#ffcb16;';
 
-        check.setAttribute(
-          'aria-label',
-          'Veritrade ' + id
-        );
-
-        check.style.cssText =
-          'width:19px;' +
-          'height:19px;' +
-          'accent-color:#ffcb16;';
-
-        // Texto Sí / No.
-        const etiqueta =
-          document.createElement('span');
-
-        etiqueta.textContent =
-          check.checked ? 'Sí' : 'No';
-
+        const etiqueta = document.createElement('span');
+        etiqueta.textContent = check.checked ? 'Sí' : 'No';
         etiqueta.style.fontWeight = '600';
-
         label.append(check, etiqueta);
-
         celda.replaceChildren(label);
 
-        // Resaltar cambios sin guardar.
         const pintarPendiente = () => {
-
-          const pendiente =
-            !!spEdits.get(id)?.has('VERITRADE');
-
-          celda.style.background =
-            pendiente ? '#fff2bc' : '';
+          const pendiente = !!spEdits.get(id)?.has('VERITRADE');
+          celda.style.background = pendiente ? '#fff2bc' : '';
         };
-
         pintarPendiente();
 
-        // Registrar cambio usando la función
-        // existente de Gestión de Operaciones.
         check.addEventListener('change', () => {
-
-          const elegido =
-            check.checked ? 'Sí' : 'No';
-
-          const correcto =
-            window.TSF_SESSION_ROLE === 'EDICION' &&
-            updateCell(
-              id,
-              'VERITRADE',
-              elegido
-            );
-
-          if (!correcto) {
-            check.checked =
-              textoSiNo(fila.VERITRADE) === 'Sí';
+          const elegido = check.checked ? 'Sí' : 'No';
+          if (window.TSF_SESSION_ROLE !== 'EDICION' ||
+              !updateCell(id, 'VERITRADE', elegido)) {
+            check.checked = textoSiNo(fila.VERITRADE) === 'Sí';
           }
-
-          etiqueta.textContent =
-            check.checked ? 'Sí' : 'No';
-
+          etiqueta.textContent = check.checked ? 'Sí' : 'No';
           pintarPendiente();
-
         });
-
       }
-
       return resultado;
     };
 
-    // Actualizar la tabla actual.
-    if (mIdx === 0) {
-      tableRender();
-    }
+    // Refrescar la tabla después de actualizar los renderizadores.
+    if (mIdx === 0) tableRender();
 
-    // FIN DE MEJORAS TSF V11.7
-   
     // =====================================================
-    // TSF V11.7 - VERITRADE Y SEMIREMOLQUE
-    // CASILLAS SIN AMARILLO + SELECTORES SI/NO EN DETALLE
+    // TSF V11.7 | SEMIREMOLQUE Y VERITRADE — DISEÑO SOBRIO
+    // Un único bloque. Conserva todos los módulos y guardados.
     // =====================================================
-
     const tsfBooleano = valor =>
       valor === true || valor === 1 ||
       ['sí', 'si', 'true', '1', 'yes'].includes(
         String(valor ?? '').trim().toLowerCase()
       );
 
-    // DISEÑO NEUTRO: SIN FONDOS AMARILLOS
     const tsfEstiloBooleano = document.createElement('style');
-
     tsfEstiloBooleano.textContent = `
       body.tsf-gestion-sp .tsf-boolean-cell,
       body.tsf-gestion-sp .tsf-boolean-cell.field-workflow,
@@ -3365,7 +3156,6 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         background: transparent !important;
         box-shadow: none !important;
       }
-
       .tsf-boolean-label {
         display: inline-flex;
         align-items: center;
@@ -3376,7 +3166,6 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         color: #475569;
         font-weight: 500;
       }
-
       .tsf-boolean-check {
         width: 17px;
         height: 17px;
@@ -3384,70 +3173,40 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         accent-color: #64748b;
         cursor: pointer;
       }
-
-      .tsf-boolean-check:disabled {
-        cursor: default;
-        opacity: .75;
-      }
-
+      .tsf-boolean-check:disabled {cursor:default;opacity:.75}
       .tsf-boolean-cell.tsf-pending .tsf-boolean-label {
         outline: 1px solid #cbd5e1;
         outline-offset: 2px;
         border-radius: 3px;
       }
-
       .tsf-boolean-drawer {
-        width: 100%;
-        min-height: 36px;
-        padding: 7px 10px;
-        border: 1px solid #d8e0e9;
-        border-radius: 7px;
-        background: #fff;
-        color: #334155;
-        font: inherit;
+        width:100%;min-height:36px;padding:7px 10px;
+        border:1px solid #d8e0e9;border-radius:7px;
+        background:#fff;color:#334155;font:inherit;
       }
     `;
-
     document.head.appendChild(tsfEstiloBooleano);
 
-    // ======================================
-    // CASILLAS EN LA TABLA DE GESTION
-    // ======================================
-
+    // La tabla existente sigue construyéndose con su renderizador original.
     const tsfRenderAntesSemiremolque = tableRender;
-
     tableRender = function (...argumentos) {
-
-      const resultado =
-        tsfRenderAntesSemiremolque.apply(this, argumentos);
-
+      const resultado = tsfRenderAntesSemiremolque.apply(this, argumentos);
       if (mIdx !== 0) return resultado;
 
       const tabla = document.getElementById('dataTable');
-
       if (!tabla?.tBodies?.[0]) return resultado;
 
       for (const columna of ['VERITRADE', 'SEMIREMOLQUE']) {
-
         const posicion = modules[0].columns.indexOf(columna);
-
         if (posicion < 0) continue;
 
         for (const tr of tabla.tBodies[0].rows) {
-
           const id = tr.dataset.id;
-
-          const fila = mainMod().rows.find(
-            r => keyID(r) === id
-          );
-
+          const fila = mainMod().rows.find(r => keyID(r) === id);
           const celda = tr.cells[posicion];
-
           if (!fila || !celda) continue;
 
-          const editable =
-            isEditableColumn(0, columna, fila);
-
+          const editable = isEditableColumn(0, columna, fila);
           const casilla = document.createElement('input');
           const nombre = document.createElement('span');
           const etiqueta = document.createElement('label');
@@ -3456,145 +3215,394 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
           casilla.className = 'tsf-boolean-check';
           casilla.checked = tsfBooleano(fila[columna]);
           casilla.disabled = !editable;
-
-          casilla.setAttribute(
-            'aria-label',
-            columna + ' ' + id
-          );
-
-          nombre.textContent =
-            casilla.checked ? 'Sí' : 'No';
-
+          casilla.setAttribute('aria-label', columna + ' ' + id);
+          nombre.textContent = casilla.checked ? 'Sí' : 'No';
           etiqueta.className = 'tsf-boolean-label';
-
-          etiqueta.style.cursor =
-            editable ? 'pointer' : 'default';
-
+          etiqueta.style.cursor = editable ? 'pointer' : 'default';
           etiqueta.append(casilla, nombre);
 
           celda.replaceChildren(etiqueta);
-
           celda.classList.add('tsf-boolean-cell');
-
-          // Eliminar resaltado amarillo anterior.
           celda.style.background = '';
 
           const actualizarIndicador = () => {
             celda.classList.toggle(
-              'tsf-pending',
-              !!spEdits.get(id)?.has(columna)
+              'tsf-pending', !!spEdits.get(id)?.has(columna)
             );
           };
-
           actualizarIndicador();
 
           casilla.addEventListener('change', () => {
-
-            if (
-              !editable ||
-              window.TSF_SESSION_ROLE !== 'EDICION'
-            ) {
-              casilla.checked =
-                tsfBooleano(fila[columna]);
-
+            if (!editable || window.TSF_SESSION_ROLE !== 'EDICION') {
+              casilla.checked = tsfBooleano(fila[columna]);
             } else {
-
-              const nuevo =
-                casilla.checked ? 'Sí' : 'No';
-
+              const nuevo = casilla.checked ? 'Sí' : 'No';
               updateCell(id, columna, nuevo);
-
-              casilla.checked =
-                tsfBooleano(fila[columna]);
+              // Estado definitivo, incluso si la actualización se rechaza.
+              casilla.checked = tsfBooleano(fila[columna]);
             }
-
-            nombre.textContent =
-              casilla.checked ? 'Sí' : 'No';
-
+            nombre.textContent = casilla.checked ? 'Sí' : 'No';
             actualizarIndicador();
           });
         }
       }
-
       return resultado;
     };
 
-    // ======================================
-    // SELECTOR SI/NO EN DETALLE DE OPERACION
-    // ======================================
-
+    // Detalle lateral: ambos campos con desplegable Sí / No.
     const tsfAbrirDetalleAnterior = openDrawer;
-
     openDrawer = function (...argumentos) {
-
-      const resultado =
-        tsfAbrirDetalleAnterior.apply(this, argumentos);
-
+      const resultado = tsfAbrirDetalleAnterior.apply(this, argumentos);
       if (mIdx !== 0) return resultado;
 
       const id = String(argumentos[0] ?? '');
-
-      const fila = mainMod().rows.find(
-        r => keyID(r) === id
-      );
-
+      const fila = mainMod().rows.find(r => keyID(r) === id);
       if (!fila) return resultado;
 
       for (const columna of ['VERITRADE', 'SEMIREMOLQUE']) {
-
-        const campo = [
-          ...document.querySelectorAll(
-            '#overlays [data-drawer-col]'
-          )
-        ].find(
-          el => el.dataset.drawerCol === columna
-        );
-
+        const campo = [...document.querySelectorAll('#overlays [data-drawer-col]')]
+          .find(el => el.dataset.drawerCol === columna);
         if (!campo) continue;
 
-        const original =
-          String(fila[columna] ?? '');
-
-        const selector =
-          document.createElement('select');
-
+        const original = String(fila[columna] ?? '');
+        const selector = document.createElement('select');
         selector.className = 'tsf-boolean-drawer';
         selector.dataset.drawerCol = columna;
         selector.dataset.drawerKind = 'boolean';
+        selector.disabled = !isEditableColumn(0, columna, fila);
 
-        selector.disabled =
-          !isEditableColumn(0, columna, fila);
-
-        // Conservar el valor histórico original
-        // mientras el usuario no modifique el campo.
+        // Mantener el dato original cuando no se toca este selector.
+        // Por ejemplo NO, si o vacío no se modifican al editar otro campo.
         if (original !== 'Sí' && original !== 'No') {
-
-          const historico = new Option(
-            tsfBooleano(original) ? 'Sí' : 'No',
-            original
-          );
-
+          const historico = new Option(tsfBooleano(original) ? 'Sí' : 'No', original);
           historico.hidden = true;
           selector.add(historico);
         }
-
         selector.add(new Option('Sí', 'Sí'));
         selector.add(new Option('No', 'No'));
-
         selector.value = original;
-
         campo.replaceWith(selector);
       }
-
       return resultado;
     };
 
-    // Refrescar solamente la tabla actual.
-    if (mIdx === 0) {
-      tableRender();
+    // Aplicar la mejora a la vista que ya está abierta.
+    if (mIdx === 0) tableRender();
+
+
+    // ================================================================
+    // TSF V11.8 - ESTADO_OPERACIÓN compartido Gestión <-> Tracking TB2
+    // Solo una fuente de verdad: TB2 - TRACKING OPERATIVO (field_11).
+    // No escribir este campo en la lista Gestión / DATOS PRUEBA.
+    // ================================================================
+    const TSF_ESTADO_COLUMNA='ESTADO_OPERACIÓN';
+    const tsfEstadoEditadoEnGestion=new Set();
+    const tsfEstadoPorId=id=>trackingSp.rows.find(r=>keyID(r)===id);
+    // Para el tablero Gestión, no utilizar los estados ficticios embebidos.
+    const tsfStatusOfAnterior=statusOf;
+    statusOf=function(row,mod=mainMod()){
+      if(mIdx===0&&spPreview.active){
+        return String(tsfEstadoPorId(keyID(row))?.[TSF_ESTADO_COLUMNA]??'');
+      }
+      return tsfStatusOfAnterior(row,mod);
+    };
+
+    function tsfActualizarEstadosGestion(){
+      let cambia=false;
+      for(const fila of spPreview.rows){
+        const registro=tsfEstadoPorId(keyID(fila));
+        const nuevo=String(registro?.[TSF_ESTADO_COLUMNA]??'');
+        if(fila[TSF_ESTADO_COLUMNA]!==nuevo){
+          fila[TSF_ESTADO_COLUMNA]=nuevo;
+          cambia=true;
+        }
+      }
+      return cambia;
     }
 
-    // FIN ACTUALIZACION TSF V11.7
+    function tsfPendientesEstadoGestion(){
+      return [...tsfEstadoEditadoEnGestion].filter(id=>
+        trackingSp.edits.get(id)?.has(TSF_ESTADO_COLUMNA)
+      );
+    }
+
+    function tsfCambiarEstadoGestion(id,valor){
+      if(window.TSF_SESSION_ROLE!=='EDICION')return false;
+      const registro=tsfEstadoPorId(id);
+      if(!registro||!trackingEditable(TSF_ESTADO_COLUMNA)){
+        toast('Esta operación aún no tiene seguimiento cargado en Tracking. Comprueba la lista TB2.');
+        return false;
+      }
+      const nuevo=String(valor??'').trim();
+      const anterior=String(registro.__spBaseline?.[TSF_ESTADO_COLUMNA]??'');
+      const pendientes=trackingSp.edits.get(id)||new Map();
+      registro[TSF_ESTADO_COLUMNA]=nuevo;
+      if(nuevo===anterior){
+        pendientes.delete(TSF_ESTADO_COLUMNA);
+        tsfEstadoEditadoEnGestion.delete(id);
+      }else{
+        pendientes.set(TSF_ESTADO_COLUMNA,nuevo);
+        tsfEstadoEditadoEnGestion.add(id);
+      }
+      if(pendientes.size)trackingSp.edits.set(id,pendientes);
+      else trackingSp.edits.delete(id);
+      tsfActualizarEstadosGestion();
+      updateDirtyLabel();
+      return true;
+    }
+
+    // Read current Tracking state before every write, preserving ETags.
+    async function tsfLeerFilasTracking(ids){
+      const faltan=new Set(ids), resultado=new Map();
+      let cursor='';
+      for(let i=0;i<150&&faltan.size;i++){
+        const raw=await tsfPageFetch('TRACKING_PAGINA',cursor);
+        for(const item of raw){
+          const registro=trackingRow(item);
+          if(registro && faltan.has(keyID(registro))){
+            resultado.set(keyID(registro),registro);
+            faltan.delete(keyID(registro));
+          }
+        }
+        if(raw.length<10)break;
+        cursor=tsfNextCursor(raw,cursor);
+      }
+      if(faltan.size)throw new Error('No se encontraron operaciones en Tracking: '+[...faltan].slice(0,5).join(', '));
+      return resultado;
+    }
+
+    async function tsfGuardarTrackingConConflictos(soloGestion=false){
+      if(trackingSp.saving)return;
+      if(window.TSF_SESSION_ROLE!=='EDICION')return toast('Perfil sin edición.');
+      const ids=(soloGestion?tsfPendientesEstadoGestion():[...trackingSp.edits.keys()])
+        .filter(id=>trackingSp.edits.get(id)?.size);
+      if(!ids.length){
+        if(!soloGestion)toast('No hay cambios pendientes en Tracking.');
+        return;
+      }
+      const n=ids.reduce((total,id)=>total+(soloGestion?1:trackingSp.edits.get(id).size),0);
+      if(!confirm(`¿Revisar y guardar ${n} cambio(s) de Tracking en ${ids.length} operación(es)?`))return;
+      trackingSp.saving=true;
+      updateDirtyLabel();
+      tsfWaitBegin('guardar-tracking-seguro','Verificando versiones','Comparando cambios con TB2 - Tracking Operativo…');
+      let guardados=0,observados=0,coincidentes=0,error='';
+      try{
+        const actuales=await tsfLeerFilasTracking(ids);
+        for(const id of ids){
+          const fila=tsfEstadoPorId(id);
+          const changes=trackingSp.edits.get(id);
+          const remoto=actuales.get(id);
+          if(!fila||!changes||!remoto?.__spEtag)throw new Error('No se pudo validar Tracking para '+id);
+          const aprobados=new Map();
+          const porRevisar=soloGestion
+            ? [...changes].filter(([col])=>col===TSF_ESTADO_COLUMNA)
+            : [...changes];
+          for(const [col,propuesto] of porRevisar){
+            if(!trackingEditable(col))throw new Error('Campo no editable en Tracking: '+col);
+            const previo=String(fila.__spBaseline?.[col]??'');
+            const actual=String(remoto[col]??'');
+            const mio=String(propuesto??'');
+            if(actual===mio){
+              fila.__spBaseline[col]=actual;
+              changes.delete(col);
+              if(col===TSF_ESTADO_COLUMNA)tsfEstadoEditadoEnGestion.delete(id);
+              coincidentes++;
+              continue;
+            }
+            if(actual!==previo){
+              tsfWaitEnd('guardar-tracking-seguro');
+              const decision=await tsfResolverConflicto(id,col,previo,actual,mio);
+              if(decision==='cancelar')throw new Error('Guardado cancelado; los borradores siguen pendientes.');
+              if(decision==='observar'){
+                observados++;
+                tsfWaitBegin('guardar-tracking-seguro','Revisando campos','El cambio observado se conserva sin guardar.');
+                continue;
+              }
+              tsfWaitBegin('guardar-tracking-seguro','Preparando guardado','Se aplicará el valor validado.');
+            }
+            aprobados.set(col,mio);
+          }
+          if(aprobados.size){
+            const campos={};
+            for(const [col,val] of aprobados){
+              campos[trackingFieldName(trackingSp.fields[col])]=val;
+            }
+            await trackingApi({
+              accion:'TRACKING_ACTUALIZAR',
+              id_operacion:id,campos,etag:remoto.__spEtag
+            });
+            // Solo borrar los borradores cuando la API confirmó el guardado.
+            for(const [col,val] of aprobados){
+              fila.__spBaseline[col]=val;
+              fila[col]=val;
+              changes.delete(col);
+              if(col===TSF_ESTADO_COLUMNA)tsfEstadoEditadoEnGestion.delete(id);
+            }
+            guardados++;
+          }
+          if(!changes.size)trackingSp.edits.delete(id);
+          // Se vuelve a comprobar ETag real antes de futuras escrituras.
+        }
+      }catch(e){error=String(e?.message||e).slice(0,230)}
+      finally{
+        trackingSp.saving=false;
+        tsfWaitEnd('guardar-tracking-seguro');
+        tsfActualizarEstadosGestion();
+        updateDirtyLabel();
+        if(mIdx===0||mIdx===1)draw();
+        if(error)toast('Tracking: '+error);
+        else toast(`Tracking: ${guardados} operación(es) guardada(s); ${observados} celda(s) observada(s), ${coincidentes} ya coincidían.`);
+        // Sin recargas destructivas: el siguiente delta actualiza los ETags.
+      }
+    }
+    saveTrackingSp = () => tsfGuardarTrackingConConflictos(false);
+
+    // La vista de Gestión presenta el estado de TB2 y no inventa una columna SP.
+    const tsfRenderAntesEstado=tableRender;
+    tableRender=function(...args){
+      if(mIdx===0)tsfActualizarEstadosGestion();
+      const resultado=tsfRenderAntesEstado.apply(this,args);
+      if(mIdx!==0)return resultado;
+      const tabla=document.getElementById('dataTable');
+      const posicion=modules[0].columns.indexOf(TSF_ESTADO_COLUMNA);
+      if(posicion<0||!tabla?.tBodies?.[0])return resultado;
+      for(const tr of tabla.tBodies[0].rows){
+        const id=tr.dataset.id;
+        const td=tr.cells[posicion];
+        const registro=tsfEstadoPorId(id);
+        if(!td)continue;
+        td.replaceChildren();
+        const editable=window.TSF_SESSION_ROLE==='EDICION'&&
+          !!registro&&trackingEditable(TSF_ESTADO_COLUMNA);
+        if(!registro){
+          const aviso=document.createElement('span');
+          aviso.style.color='#8993a0';aviso.textContent=trackingSp.loading||trackingSp.historyLoading?'Cargando Tracking…':'Sin registro en Tracking';
+          td.append(aviso);
+          continue;
+        }
+        const selector=document.createElement('select');
+        selector.className='tsf-cell-select tsf-estado-gestion';
+        selector.dataset.id=id;
+        selector.dataset.col=String(posicion);
+        selector.setAttribute('aria-label','Estado de operación de '+id);
+        selector.disabled=!editable;
+        selector.innerHTML=trackingStateOptions(String(registro[TSF_ESTADO_COLUMNA]??''));
+        selector.value=String(registro[TSF_ESTADO_COLUMNA]??'');
+        selector.style.cssText='background:#fff !important;border:1px solid #d8e0e9 !important;color:#334155;box-shadow:none !important';
+        if(trackingSp.edits.get(id)?.has(TSF_ESTADO_COLUMNA)){
+          selector.style.borderColor='#64748b';
+          td.title='Estado pendiente de guardar en Tracking';
+        }
+        selector.onchange=()=>{
+          if(!tsfCambiarEstadoGestion(id,selector.value)){
+            selector.value=String(registro[TSF_ESTADO_COLUMNA]??'');
+          }
+          td.title=trackingSp.edits.get(id)?.has(TSF_ESTADO_COLUMNA)?'Pendiente de guardar en Tracking':'';
+          updateDirtyLabel();
+          drawKpis();
+          drawSelectors();
+        };
+        td.append(selector);
+      }
+      // Etiqueta exacta: los dos módulos conectados son SharePoint.
+      const meta=document.getElementById('tableMeta');
+      if(meta&&spPreview.active){
+        meta.textContent=spPreview.rows.length+' registros de Gestión (SharePoint) · '+
+          (spEditCount()+tsfPendientesEstadoGestion().length)+' cambios pendientes · sincronización automática cada 60 s';
+      }
+      return resultado;
+    };
+
+    // Estado en el panel lateral: el selector lee y escribe en Tracking.
+    const tsfDrawerAntesEstado=openDrawer;
+    openDrawer=function(id){
+      const resultado=tsfDrawerAntesEstado.call(this,id);
+      if(mIdx!==0)return resultado;
+      const field=[...document.querySelectorAll('#overlays [data-drawer-col]')]
+        .find(el=>el.dataset.drawerCol===TSF_ESTADO_COLUMNA);
+      if(!field)return resultado;
+      const registro=tsfEstadoPorId(id);
+      const select=document.createElement('select');
+      select.className='tsf-boolean-drawer tsf-estado-drawer';
+      select.dataset.drawerCol=TSF_ESTADO_COLUMNA;
+      select.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!registro||!trackingEditable(TSF_ESTADO_COLUMNA);
+      select.innerHTML=trackingStateOptions(String(registro?.[TSF_ESTADO_COLUMNA]??''));
+      select.value=String(registro?.[TSF_ESTADO_COLUMNA]??'');
+      field.replaceWith(select);
+      const btn=document.getElementById('drawerApply');
+      if(btn && window.TSF_SESSION_ROLE==='EDICION'){
+        btn.onclick=async()=>{
+          btn.disabled=true;
+          const fila=spPreview.rows.find(row=>keyID(row)===id);
+          const invalidos=[];
+          for(const el of document.querySelectorAll('#overlays [data-drawer-col]')){
+            const col=el.dataset.drawerCol;
+            if(col===TSF_ESTADO_COLUMNA){
+              if(registro&&el.value!==String(registro[TSF_ESTADO_COLUMNA]??'') &&
+                 !tsfCambiarEstadoGestion(id,el.value))invalidos.push(col);
+              continue;
+            }
+            if(!SP_LOCKED_COLUMNS.has(col)&&col in SP_FIELD_TO_INTERNAL &&
+               String(el.value??'').trim()!==String(fila?.[col]??'').trim() &&
+               !spChange(id,col,el.value))invalidos.push(col);
+          }
+          if(invalidos.length){btn.disabled=false;return toast('Corrige: '+invalidos.join(', '));}
+          closeOverlays();draw();
+          if(spEdits.size||tsfPendientesEstadoGestion().length)await tsfGuardarAmbosGestion();
+          else toast('No hay cambios nuevos que guardar.');
+        };
+      }
+      return resultado;
+    };
+
+    // Guardado conjunto: gestión en su lista y estados en Tracking.
+    async function tsfGuardarAmbosGestion(){
+      if(mIdx!==0)return;
+      // Las dos escrituras se comprueban por separado y conservan sus borradores.
+      if(spEdits.size)await tsfGuardarGestionConConflictos();
+      if(tsfPendientesEstadoGestion().length)await tsfGuardarTrackingConConflictos(true);
+    }
+
+    // El contador refleja también estados editados desde Gestión.
+    const tsfUpdateDirtyAntesEstado=updateDirtyLabel;
+    updateDirtyLabel=function(){
+      tsfUpdateDirtyAntesEstado();
+      if(mIdx===0){
+        const total=spEditCount()+tsfPendientesEstadoGestion().length;
+        const contador=document.getElementById('dirtyCount');
+        if(contador)contador.textContent=total?'· '+total:'';
+        const boton=document.getElementById('saveBtn');
+        if(boton)boton.disabled=spSaving||trackingSp.saving||total===0;
+      }
+    };
+
+    const tsfGuardarBoton=document.getElementById('saveBtn');
+    if(tsfGuardarBoton){
+      tsfGuardarBoton.onclick=async()=>{
+        if(window.TSF_SESSION_ROLE!=='EDICION')return toast('Perfil solo consulta.');
+        if(isSpPreview())return tsfGuardarAmbosGestion();
+        if(isTrackingSp())return tsfGuardarTrackingConConflictos(false);
+        toast('Guardado de este módulo pendiente de conectar a SharePoint.');
+      };
+    }
+
+    // Si la lista Tracking termina de cargar mientras estamos en Gestión,
+    // actualizar solo la vista, sin borrar celdas que el usuario esté editando.
+    const tsfSafePaintAntesEstado=tsfSafePaint;
+    tsfSafePaint=function(index){
+      if(index===1&&mIdx===0){
+        if(tsfActualizarEstadosGestion()&& !tsfSyncBloqueado()){
+          const area=document.getElementById('tableWrap'),x=area?.scrollLeft||0,y=area?.scrollTop||0;
+          drawKpis();drawSelectors();tableRender();
+          if(area){area.scrollLeft=x;area.scrollTop=y;}
+        }
+        return;
+      }
+      return tsfSafePaintAntesEstado(index);
+    };
+    // Inicializar sin tocar los borradores ni recargar la página.
+    tsfActualizarEstadosGestion();
+    if(mIdx===0)tableRender();
 
     const header = document.querySelector('.headright');
     if (header) {
@@ -3613,19 +3621,10 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     }
     document.body.classList.toggle('tsf-lector',session.rol==='LECTURA');
     document.documentElement.classList.remove('tsf-auth-pending');
-  
   } catch (error) {
-    console.error("TSF ERROR DE INGRESO:", error);
-
-    alert(
-      "Se detectó un error al abrir el portal:\n\n" +
-      String(error?.name || "Error") + ": " +
-      String(error?.message || "Sin detalle")
-    );
-
+    // Fail closed: nunca liberar la vista cuando no pudo verificarse la sesión.
     salir();
   }
-
 })();
 </script>
 </body></html>
