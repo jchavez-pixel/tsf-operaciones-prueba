@@ -2972,10 +2972,19 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     }
     document.body.classList.toggle('tsf-lector',session.rol==='LECTURA');
     document.documentElement.classList.remove('tsf-auth-pending');
+  
   } catch (error) {
-    // Fail closed: nunca liberar la vista cuando no pudo verificarse la sesión.
+    console.error("TSF ERROR DE INGRESO:", error);
+
+    alert(
+      "Se detectó un error al abrir el portal:\n\n" +
+      String(error?.name || "Error") + ": " +
+      String(error?.message || "Sin detalle")
+    );
+
     salir();
   }
+
 })();
 </script>
 </body></html>
