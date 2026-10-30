@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V12.0 — TB2 a TB6 en SharePoint</title>
+<title>TSF | Operaciones V12.1 — carga progresiva TB2 a TB6</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -288,12 +288,12 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V11.9 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.1 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V12.0 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.1 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -377,13 +377,15 @@ trackingSp.mappingVerifiedAt='2026-10-28';
 // TB3–TB6 comparten interfaz, pero cada lista conserva su propio ID de elemento.
 // Lectura real bajo demanda, sin mostrar registros ficticios en caso de error.
 const TSF_REMOTE_LISTS={
-  2:{accion:'BIENES_LISTAR',lista:'TB3 - BIEN'},
-  3:{accion:'GARANTIAS_LISTAR',lista:'TB4 - GARANTÍAS'},
-  4:{accion:'REPROCESOS_LISTAR',lista:'TB5 - REPROCESOS'},
-  5:{accion:'MODIFICACIONES_LISTAR',lista:'TB6 - MODIFICACIONES'}
+  2:{accion:'BIENES_LISTAR',pagina:'BIENES_PAGINA',cambios:'BIENES_CAMBIOS',lista:'TB3 - BIEN'},
+  3:{accion:'GARANTIAS_LISTAR',pagina:'GARANTIAS_PAGINA',cambios:'GARANTIAS_CAMBIOS',lista:'TB4 - GARANTÍAS'},
+  4:{accion:'REPROCESOS_LISTAR',pagina:'REPROCESOS_PAGINA',cambios:'REPROCESOS_CAMBIOS',lista:'TB5 - REPROCESOS'},
+  5:{accion:'MODIFICACIONES_LISTAR',pagina:'MODIFICACIONES_PAGINA',cambios:'MODIFICACIONES_CAMBIOS',lista:'TB6 - MODIFICACIONES'}
 };
 const tsfRemoteStores=Object.fromEntries(Object.keys(TSF_REMOTE_LISTS).map(k=>[k,{
-  active:false,loading:false,loaded:false,rows:[],error:'',lastSync:null,request:0
+  active:false,loading:false,loaded:false,rows:[],error:'',lastSync:null,request:0,
+  loadPromise:null,historyPromise:null,historyLoading:false,historyDone:false,
+  historyStarted:false,historyError:'',nextCursor:null,syncBusy:false
 }]));
 const isTsfRemoteIndex=(idx=mIdx)=>Boolean(tsfRemoteStores[idx]?.active);
 const mainMod=()=>mIdx===0&&spPreview.active?{...modules[0],rows:spPreview.rows}:
@@ -1103,7 +1105,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V12.0 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.1 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -1670,9 +1672,9 @@ const specialSelect =
  if(isTsfRemoteIndex()){
    const t=tsfRemoteStores[mIdx];
    document.getElementById('tableMeta').textContent=TSF_REMOTE_LISTS[mIdx].lista+
-     ' · '+t.rows.length+' registros reales · '+(t.loading?'Cargando…':t.error?'Error de lectura':
+     ' · '+t.rows.length+' registros reales · '+(t.loading?'Cargando 10 recientes…':t.error?'Error de lectura':
      'Solo lectura · última consulta '+(t.lastSync?t.lastSync.toLocaleTimeString('es-PE'):'pendiente'))+
-     ' · máximo 1000 por consulta';
+     ' · '+(t.historyLoading?'10 recientes listos · cargando histórico':t.historyError?'Histórico incompleto':t.historyDone?'histórico completo':t.loading?'10 recientes en curso':'histórico pendiente')+' · sincronización cada 60 s al estar visible';
  }
 }
 
@@ -2221,7 +2223,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     await tsfVerificarGPS();
 
     // ============================================
-    // TSF V12.0 — LECTURA REAL TB3, TB4, TB5, TB6
+    // TSF V12.1 — CARGA PROGRESIVA TB3, TB4, TB5, TB6
     // No habilita edición, creación, borrado ni elimina históricos.
     // Activar ANTES de pintar los módulos para impedir datos demo.
     // ============================================
@@ -2293,52 +2295,190 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       if(typeof value==='object')return String(value.Value??'');
       return String(value).trim();
     }
-    async function tsfCargarListaModulo(i,{force=false}={}){
-      const t=tsfRemoteStores[i],config=TSF_REMOTE_LISTS[i];
-      if(!config||!t||t.loading||(!force&&t.loaded))return;
-      const requestId=++t.request;
-      t.loading=true;t.error='';
-      if(mIdx===i)draw();
-      try{
-        const response=await fetch('/api/operaciones',{
-          method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
-          body:JSON.stringify({accion:config.accion,id_operacion:''})
-        });
-        const raw=await response.text();
-        let json;
-        try{json=JSON.parse(raw)}catch(_){throw new Error('Respuesta no JSON del flujo');}
-        if(!response.ok||json?.ok===false)throw new Error('HTTP '+response.status+' · '+String(json?.error||json?.mensaje||'Consulta rechazada').slice(0,155));
-        const records=Array.isArray(json)?json:Array.isArray(json?.value)?json.value:Array.isArray(json?.body?.value)?json.body.value:null;
-        if(!records)throw new Error('Response de '+config.accion+' no devolvió un arreglo de elementos');
-        const seen=new Set(),rows=[];
-        for(const item of records){
-          const spId=Number(item?.ID??item?.Id);
-          const operation=String(item?.Title??'').trim();
-          if(!Number.isSafeInteger(spId)||spId<=0||!operation)continue;
-          if(seen.has(spId))continue;seen.add(spId);
-          const row={ID_OPERACION:operation,__spId:spId,
-            __spEtag:String(item?.['@odata.etag']??item?.etag??''),
-            __tsfRecordKey:'SP:'+i+':'+spId};
-          for(const [name,key,type] of tsfModuloCampos[i])row[name]=tsfRemoteValue(item[key],type);
-          rows.push(row);
-        }
-        if(requestId!==t.request)return;
-        t.rows=rows;t.loaded=true;t.lastSync=new Date();t.error='';
-      }catch(e){
-        if(requestId!==t.request)return;
-        t.error=String(e?.message||e).slice(0,230);
-        // Nunca mostrar demo por un error de conexión; conservar registros verificados anteriores.
-        if(mIdx===i)toast('No se pudo consultar '+config.lista+': '+t.error);
-      }finally{
-        if(requestId===t.request){t.loading=false;if(mIdx===i)draw();}
+    // PRIMERA PÁGINA = 10 registros. HISTÓRICO = lotes de 100 (ID desc).
+    // Las filas de TB3–TB6 se identifican por ID del elemento de SharePoint,
+    // NO por Title: una operación puede tener varios bienes/reprocesos.
+    const TSF_REMOTE_RECENT_COUNT=10;
+    const TSF_REMOTE_HISTORY_COUNT=100;
+    const TSF_REMOTE_HISTORY_LIMIT=300;
+    function tsfRemotePaint(i){if(mIdx===i)tsfSafePaint(i);}
+    async function tsfRemoteRequest(i,accion,params={}){
+      const response=await fetch('/api/operaciones',{
+        method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
+        body:JSON.stringify({accion,id_operacion:'',...params})
+      });
+      const raw=await response.text();let json;
+      try{json=JSON.parse(raw)}catch(_){throw new Error('El flujo no devolvió JSON para '+accion);}
+      if(!response.ok||json?.ok===false){
+        throw new Error('HTTP '+response.status+': '+String(json?.error||json?.mensaje||'Acción rechazada').slice(0,150));
       }
+      const records=Array.isArray(json)?json:
+        Array.isArray(json?.value)?json.value:
+        Array.isArray(json?.body?.value)?json.body.value:null;
+      if(!records)throw new Error('Response de '+accion+' no devolvió el arreglo value de SharePoint.');
+      return records;
     }
-    // Carga diferida: no hacer 4 consultas adicionales cuando el usuario ingresa.
+    function tsfRemoteConvertir(i,records){
+      const seen=new Set(),rows=[];
+      for(const item of records){
+        const spId=Number(item?.ID??item?.Id);
+        const operation=String(item?.Title??'').trim();
+        if(!Number.isSafeInteger(spId)||spId<1||!operation)continue;
+        if(seen.has(spId))continue;seen.add(spId);
+        const row={ID_OPERACION:operation,__spId:spId,
+          __spEtag:String(item?.['@odata.etag']??item?.etag??''),
+          __tsfRecordKey:'SP:'+i+':'+spId};
+        for(const [name,key,type] of tsfModuloCampos[i])row[name]=tsfRemoteValue(item?.[key],type);
+        rows.push(row);
+      }
+      return rows.sort((a,b)=>b.__spId-a.__spId);
+    }
+    function tsfRemoteCombinar(rows,incremento){
+      const all=new Map(rows.map(row=>[row.__spId,row]));
+      for(const row of incremento)all.set(row.__spId,row);
+      return [...all.values()].sort((a,b)=>b.__spId-a.__spId);
+    }
+    function tsfRemoteCursor(raw,anterior=''){
+      const ids=raw.map(item=>Number(item?.ID??item?.Id));
+      if(!ids.length||ids.some(id=>!Number.isSafeInteger(id)||id<1)){
+        throw new Error('Página de SharePoint sin ID numérico válido.');
+      }
+      const cursor=String(Math.min(...ids));
+      if(anterior&&Number(cursor)>=Number(anterior))throw new Error('El cursor de paginación no avanzó.');
+      return cursor;
+    }
+    function tsfCargarHistorial(i,{permitirOculto=false}={}){
+      const t=tsfRemoteStores[i],c=TSF_REMOTE_LISTS[i];
+      if(!t?.loaded||t.historyDone||t.loading)return Promise.resolve();
+      if(t.historyLoading)return t.historyPromise||Promise.resolve();
+      if(!permitirOculto&&mIdx!==i)return Promise.resolve();
+      const token=t.request;
+      t.historyStarted=true;t.historyLoading=true;t.historyError='';tsfRemotePaint(i);
+      const task=(async()=>{
+        try{
+          let batches=0;
+          while(t.nextCursor&&token===t.request&&batches<TSF_REMOTE_HISTORY_LIMIT){
+            // Dejar de consultar cuando se abandona el módulo; retomar en la siguiente visita.
+            if(!permitirOculto&&(mIdx!==i||document.hidden))break;
+            const prev=t.nextCursor;
+            const raw=await tsfRemoteRequest(i,c.pagina,{cursor:prev});
+            if(token!==t.request)return;
+            const rows=tsfRemoteConvertir(i,raw);
+            t.rows=tsfRemoteCombinar(t.rows,rows);
+            batches++;
+            if(!raw.length||raw.length<TSF_REMOTE_HISTORY_COUNT){
+              t.nextCursor=null;t.historyDone=true;
+            }else t.nextCursor=tsfRemoteCursor(raw,prev);
+            if(batches===1||batches%4===0||t.historyDone)tsfRemotePaint(i);
+            if(t.historyDone)break;
+            await new Promise(resolve=>setTimeout(resolve,40));
+          }
+          if(batches>=TSF_REMOTE_HISTORY_LIMIT&&t.nextCursor){
+            throw new Error('Se alcanzó el límite de páginas; el histórico puede estar incompleto.');
+          }
+        }catch(e){
+          if(token!==t.request)return;
+          t.historyError=String(e?.message||e).slice(0,220);
+          if(mIdx===i)toast('Histórico incompleto de '+c.lista+': '+t.historyError);
+        }finally{
+          if(token===t.request){
+            t.historyLoading=false;
+            t.historyStarted=!!t.historyDone;
+            tsfRemotePaint(i);
+          }
+        }
+      })();
+      t.historyPromise=task;
+      return task;
+    }
+    function tsfCargarListaModulo(i,{force=false,prefetch=false}={}){
+      const t=tsfRemoteStores[i],c=TSF_REMOTE_LISTS[i];
+      if(!t||!c)return Promise.resolve();
+      if(t.loading)return t.loadPromise||Promise.resolve();
+      if(!force&&t.loaded){
+        if(!prefetch)void tsfCargarHistorial(i);
+        return Promise.resolve();
+      }
+      const token=++t.request,stamp=new Date();
+      t.loading=true;t.error='';tsfRemotePaint(i);
+      const task=(async()=>{
+        try{
+          const raw=await tsfRemoteRequest(i,c.pagina,{cursor:''});
+          if(token!==t.request)return;
+          t.rows=tsfRemoteConvertir(i,raw);
+          t.loaded=true;t.lastSync=stamp;t.error='';
+          t.nextCursor=raw.length===TSF_REMOTE_RECENT_COUNT?tsfRemoteCursor(raw):null;
+          t.historyDone=!t.nextCursor;t.historyStarted=false;t.historyError='';
+          tsfRemotePaint(i); // Primera pantalla utilizable antes de cargar el histórico.
+        }catch(e){
+          if(token!==t.request)return;
+          t.error=String(e?.message||e).slice(0,230);
+          // Si hubo una conexión anterior válida, conservarla en vez de mostrar datos demo.
+          if(mIdx===i)toast('No se pudo consultar '+c.lista+': '+t.error);
+        }finally{
+          if(token===t.request){
+            t.loading=false;
+            tsfRemotePaint(i);
+            if(t.loaded&&!prefetch&&mIdx===i)void tsfCargarHistorial(i);
+          }
+        }
+      })();
+      t.loadPromise=task;
+      return task;
+    }
+    async function tsfRemoteSyncUno(i){
+      const t=tsfRemoteStores[i],c=TSF_REMOTE_LISTS[i];
+      if(!t?.loaded||!t.historyDone||t.loading||t.historyLoading||t.syncBusy||document.hidden||mIdx!==i)return;
+      t.syncBusy=true;
+      const token=t.request,stamp=new Date();
+      try{
+        const desde=new Date((t.lastSync?.getTime()||stamp.getTime())-120000)
+          .toISOString().replace(/\.\d{3}Z$/,'Z');
+        const raw=await tsfRemoteRequest(i,c.cambios,{desde});
+        if(token!==t.request||document.hidden||mIdx!==i)return;
+        const next=tsfRemoteConvertir(i,raw);
+        // Cambios por ID de SharePoint: no colapsar operaciones con múltiples registros.
+        const old=new Map(t.rows.map(r=>[r.__spId,r]));
+        const changed=next.some(r=>!old.has(r.__spId)||
+          r.__spEtag!==old.get(r.__spId).__spEtag||
+          JSON.stringify(r)!==JSON.stringify(old.get(r.__spId)));
+        if(changed){t.rows=tsfRemoteCombinar(t.rows,next);tsfRemotePaint(i);}
+        t.lastSync=stamp;
+      }catch(e){
+        // La sincronización no debe borrar datos ya cargados ni interrumpir la interfaz.
+        console.warn('Sincronización incremental '+c.lista+': '+String(e?.message||e).slice(0,150));
+      }finally{t.syncBusy=false;}
+    }
+    async function tsfRemoteCompletarParaExcel(i){
+      const t=tsfRemoteStores[i],c=TSF_REMOTE_LISTS[i];
+      await tsfCargarListaModulo(i,{prefetch:true});
+      if(!t.loaded||t.error)throw new Error('Consulta incompleta de '+c.lista+': '+t.error);
+      let rondas=0;
+      while(!t.historyDone&&rondas++<TSF_REMOTE_HISTORY_LIMIT){
+        if(t.historyLoading)await t.historyPromise;
+        else await tsfCargarHistorial(i,{permitirOculto:true});
+        if(t.historyError)throw new Error('Histórico incompleto de '+c.lista+': '+t.historyError);
+      }
+      if(!t.historyDone)throw new Error('Histórico no completado de '+c.lista);
+    }
+    // Igual que Tracking: datos recientes disponibles antes del clic.
+    // Dos líneas de precarga y sin descargar el histórico de módulos no abiertos.
     const tsfSwitchOriginal=switchModule;
     switchModule=function(idx){
       tsfSwitchOriginal(idx);
-      if(isTsfRemoteIndex(idx))void tsfCargarListaModulo(idx);
+      if(isTsfRemoteIndex(idx)){
+        void tsfCargarListaModulo(idx).then(()=>{
+          if(mIdx===idx)void tsfCargarHistorial(idx);
+        });
+      }
     };
+    setTimeout(()=>{
+      if(document.hidden)return;
+      void Promise.allSettled([
+        (async()=>{for(const i of [2,4])await tsfCargarListaModulo(i,{prefetch:true});})(),
+        (async()=>{for(const i of [3,5])await tsfCargarListaModulo(i,{prefetch:true});})()
+      ]);
+    },400);
     // Mostrar listas reales, no los registros simulados
     spPreview.active = true;
     trackingSp.active = true;
@@ -2477,12 +2617,17 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
             console.warn('Sincronización TSF no aplicada:',String(error?.message||error));
           }
         }
+        if(!tsfSyncBloqueado()&&isTsfRemoteIndex()){
+          await tsfRemoteSyncUno(mIdx);
+        }
       }finally{tsfSyncBusy=false;}
     }
     setInterval(tsfSyncSafe,TSF_SYNC_INTERVAL);
     document.addEventListener('visibilitychange',()=>{
       if(!document.hidden && !tsfSyncBusy &&
-         (!spPreview.lastSync||Date.now()-spPreview.lastSync.getTime()>TSF_SYNC_INTERVAL)){
+         ((isTsfRemoteIndex()&&tsfRemoteStores[mIdx].loaded&&
+           Date.now()-(tsfRemoteStores[mIdx].lastSync?.getTime()||0)>TSF_SYNC_INTERVAL)||
+           !spPreview.lastSync||Date.now()-spPreview.lastSync.getTime()>TSF_SYNC_INTERVAL)){
         void tsfSyncSafe();
       }
     });
@@ -2946,10 +3091,18 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         toast('Espera a que termine la carga de Gestión y Tracking.');
         return;
       }
-      // No exportar jamás los registros ficticios embebidos como si fueran SharePoint.
-      // Solo consultar listas aún no cargadas cuando el usuario solicita el Excel.
-      await Promise.all([2,3,4,5].map(i=>tsfCargarListaModulo(i)));
-      const missing=[2,3,4,5].filter(i=>!tsfRemoteStores[i].loaded||tsfRemoteStores[i].error);
+      // Exportar únicamente datos completos y reales de TB3–TB6.
+      // Dos consultas simultáneas como máximo para no saturar Power Automate.
+      try{
+        await Promise.all([
+          (async()=>{for(const i of [2,4])await tsfRemoteCompletarParaExcel(i);})(),
+          (async()=>{for(const i of [3,5])await tsfRemoteCompletarParaExcel(i);})()
+        ]);
+      }catch(e){
+        toast('Exportación detenida: '+String(e?.message||e).slice(0,185));return;
+      }
+      const missing=[2,3,4,5].filter(i=>!tsfRemoteStores[i].loaded||
+        !tsfRemoteStores[i].historyDone||tsfRemoteStores[i].error||tsfRemoteStores[i].historyError);
       if(missing.length){
         toast('No se generó Excel: comprueba la conexión de '+missing.map(i=>TSF_REMOTE_LISTS[i].lista).join(', '));
         return;
