@@ -363,18 +363,41 @@ function spChange(id,col,val){
  if(input)input.classList.toggle('changed',fields.has(col));
  return true;
 }
+
 function spPayloadFields(fields){
- const out={};
- for(const [col,val] of fields){
-  const key=SP_FIELD_TO_INTERNAL[col];if(!key)throw new Error('Columna no permitida: '+col);
-  if(col==='VAF'||col==='COL. NETA ($)'){
-   const n=Number(String(val).replace(',','.'));
-   if(val!==''&&!Number.isFinite(n))throw new Error('Importe inválido en '+col);
-   out[key]=val===''?null:n;
-  }else out[key]=val;
- }
- return out;
+  const out={};
+
+  for(const [col,val] of fields){
+    const key=SP_FIELD_TO_INTERNAL[col];
+
+    if(!key){
+      throw new Error('Columna no permitida: '+col);
+    }
+
+    if(col==='VERITRADE'){
+      if(val!=='Sí' && val!=='No'){
+        throw new Error('VERITRADE debe ser Sí o No');
+      }
+
+      out[key]=(val==='Sí');
+    }
+    else if(col==='VAF'||col==='COL. NETA ($)'){
+      const n=Number(String(val).replace(',','.'));
+
+      if(val!==''&&!Number.isFinite(n)){
+        throw new Error('Importe inválido en '+col);
+      }
+
+      out[key]=val===''?null:n;
+    }
+    else{
+      out[key]=val;
+    }
+  }
+
+  return out;
 }
+
 // ===== Indicador profesional para sincronizaciones y guardados =====
 const tsfWaitState = new Map();
 let tsfWaitTimer = null;
@@ -794,7 +817,26 @@ function spGestionDate(value){
  }
  return v;
 }
+
 function spGestionValue(column,value){
+  if(value===null || value===undefined)return '';
+
+  if(column==='VERITRADE'){
+    const v=String(value).trim().toLowerCase();
+    return (
+      value===true ||
+      value===1 ||
+      ['true','1','sí','si'].includes(v)
+    ) ? 'Sí' : 'No';
+  }
+
+  if(column==='FECHA_DE_REGISTRO'){
+    return spGestionDate(value);
+  }
+
+  return String(value).trim();
+}
+
  if(value===null||value===undefined)return '';
  if(column==='FECHA_DE_REGISTRO')return spGestionDate(value);
  // RUC se conserva como texto; importes y códigos se muestran sin convertirlos a enteros.
@@ -1112,13 +1154,32 @@ function tableRender(){
  let body=records.map(row=>`<tr data-id="${esc(keyID(row))}">${m.columns.map((col,i)=>{
   const val=String(row[col]??''),hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
   let style='width:'+widths[i]+'px;';
-   const selectType=isTrackingStateField(mIdx,col)&&editable?'state':editable&&isAnalystField(mIdx,col,row)?'analyst':editable&&isMonthField(mIdx,col,row)&&!isTrackingSp()?'month':'';
-   const specialSelect=selectType==='state'
-    ?`<select class="tsf-cell-select tsf-state-select ${stateTone(val)}" data-select="state" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Estado de operación">${trackingStateOptions(val)}</select>`
-    :selectType==='analyst'
-    ?`<select class="tsf-cell-select tsf-analyst-select" data-select="analyst" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Analista operativo">${analystOptions(val)}</select>`
-    :selectType==='month'
-    ?`<select class="tsf-cell-select tsf-month-select" data-select="month" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Mes de colocación">${monthOptions(val)}</select>`:'';
+   
+const selectType =
+  mIdx===0 && col==='VERITRADE' && editable
+    ? 'veritrade'
+    : isTrackingStateField(mIdx,col) && editable
+    ? 'state'
+    : editable && isAnalystField(mIdx,col,row)
+    ? 'analyst'
+    : editable && isMonthField(mIdx,col,row) && !isTrackingSp()
+    ? 'month'
+    : '';
+
+const specialSelect =
+  selectType==='veritrade'
+    ? `<select class="tsf-cell-select" data-select="veritrade" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Veritrade">
+         <option value="Sí" ${val==='Sí'?'selected':''}>Sí</option>
+         <option value="No" ${val==='No'?'selected':''}>No</option>
+       </select>`
+    : selectType==='state'
+    ? `<select class="tsf-cell-select tsf-state-select ${stateTone(val)}" data-select="state" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Estado de operación">${trackingStateOptions(val)}</select>`
+    : selectType==='analyst'
+    ? `<select class="tsf-cell-select tsf-analyst-select" data-select="analyst" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Analista operativo">${analystOptions(val)}</select>`
+    : selectType==='month'
+    ? `<select class="tsf-cell-select tsf-month-select" data-select="month" data-id="${esc(keyID(row))}" data-col="${i}" aria-label="Mes de colocación">${monthOptions(val)}</select>`
+    : '';
+
    const spDifference=isSpPreview()&&spPreview.mode==='merge'&&row.__spDifferences?.[col];
    const cellHint=spDifference?`${col} · MOSTRANDO SHAREPOINT: ${val} · Valor local anterior: ${spDifference.local} · No guardado`:`${col}: ${val||'Sin información'} · ${descriptions[role]}`;
    return `<td class="field-${role}" style="${style}" title="${esc(cellHint)}">${specialSelect||(
