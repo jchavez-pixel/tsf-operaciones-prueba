@@ -3343,6 +3343,258 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     }
 
     // FIN DE MEJORAS TSF V11.7
+   
+    // =====================================================
+    // TSF V11.7 - VERITRADE Y SEMIREMOLQUE
+    // CASILLAS SIN AMARILLO + SELECTORES SI/NO EN DETALLE
+    // =====================================================
+
+    const tsfBooleano = valor =>
+      valor === true || valor === 1 ||
+      ['sí', 'si', 'true', '1', 'yes'].includes(
+        String(valor ?? '').trim().toLowerCase()
+      );
+
+    // DISEÑO NEUTRO: SIN FONDOS AMARILLOS
+    const tsfEstiloBooleano = document.createElement('style');
+
+    tsfEstiloBooleano.textContent = `
+      body.tsf-gestion-sp .tsf-boolean-cell,
+      body.tsf-gestion-sp .tsf-boolean-cell.field-workflow,
+      body.tsf-gestion-sp .tsf-boolean-cell.field-manual {
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+
+      .tsf-boolean-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 3px 4px;
+        white-space: nowrap;
+        font-size: 11px;
+        color: #475569;
+        font-weight: 500;
+      }
+
+      .tsf-boolean-check {
+        width: 17px;
+        height: 17px;
+        margin: 0;
+        accent-color: #64748b;
+        cursor: pointer;
+      }
+
+      .tsf-boolean-check:disabled {
+        cursor: default;
+        opacity: .75;
+      }
+
+      .tsf-boolean-cell.tsf-pending .tsf-boolean-label {
+        outline: 1px solid #cbd5e1;
+        outline-offset: 2px;
+        border-radius: 3px;
+      }
+
+      .tsf-boolean-drawer {
+        width: 100%;
+        min-height: 36px;
+        padding: 7px 10px;
+        border: 1px solid #d8e0e9;
+        border-radius: 7px;
+        background: #fff;
+        color: #334155;
+        font: inherit;
+      }
+    `;
+
+    document.head.appendChild(tsfEstiloBooleano);
+
+    // ======================================
+    // CASILLAS EN LA TABLA DE GESTION
+    // ======================================
+
+    const tsfRenderAntesSemiremolque = tableRender;
+
+    tableRender = function (...argumentos) {
+
+      const resultado =
+        tsfRenderAntesSemiremolque.apply(this, argumentos);
+
+      if (mIdx !== 0) return resultado;
+
+      const tabla = document.getElementById('dataTable');
+
+      if (!tabla?.tBodies?.[0]) return resultado;
+
+      for (const columna of ['VERITRADE', 'SEMIREMOLQUE']) {
+
+        const posicion = modules[0].columns.indexOf(columna);
+
+        if (posicion < 0) continue;
+
+        for (const tr of tabla.tBodies[0].rows) {
+
+          const id = tr.dataset.id;
+
+          const fila = mainMod().rows.find(
+            r => keyID(r) === id
+          );
+
+          const celda = tr.cells[posicion];
+
+          if (!fila || !celda) continue;
+
+          const editable =
+            isEditableColumn(0, columna, fila);
+
+          const casilla = document.createElement('input');
+          const nombre = document.createElement('span');
+          const etiqueta = document.createElement('label');
+
+          casilla.type = 'checkbox';
+          casilla.className = 'tsf-boolean-check';
+          casilla.checked = tsfBooleano(fila[columna]);
+          casilla.disabled = !editable;
+
+          casilla.setAttribute(
+            'aria-label',
+            columna + ' ' + id
+          );
+
+          nombre.textContent =
+            casilla.checked ? 'Sí' : 'No';
+
+          etiqueta.className = 'tsf-boolean-label';
+
+          etiqueta.style.cursor =
+            editable ? 'pointer' : 'default';
+
+          etiqueta.append(casilla, nombre);
+
+          celda.replaceChildren(etiqueta);
+
+          celda.classList.add('tsf-boolean-cell');
+
+          // Eliminar resaltado amarillo anterior.
+          celda.style.background = '';
+
+          const actualizarIndicador = () => {
+            celda.classList.toggle(
+              'tsf-pending',
+              !!spEdits.get(id)?.has(columna)
+            );
+          };
+
+          actualizarIndicador();
+
+          casilla.addEventListener('change', () => {
+
+            if (
+              !editable ||
+              window.TSF_SESSION_ROLE !== 'EDICION'
+            ) {
+              casilla.checked =
+                tsfBooleano(fila[columna]);
+
+            } else {
+
+              const nuevo =
+                casilla.checked ? 'Sí' : 'No';
+
+              updateCell(id, columna, nuevo);
+
+              casilla.checked =
+                tsfBooleano(fila[columna]);
+            }
+
+            nombre.textContent =
+              casilla.checked ? 'Sí' : 'No';
+
+            actualizarIndicador();
+          });
+        }
+      }
+
+      return resultado;
+    };
+
+    // ======================================
+    // SELECTOR SI/NO EN DETALLE DE OPERACION
+    // ======================================
+
+    const tsfAbrirDetalleAnterior = openDrawer;
+
+    openDrawer = function (...argumentos) {
+
+      const resultado =
+        tsfAbrirDetalleAnterior.apply(this, argumentos);
+
+      if (mIdx !== 0) return resultado;
+
+      const id = String(argumentos[0] ?? '');
+
+      const fila = mainMod().rows.find(
+        r => keyID(r) === id
+      );
+
+      if (!fila) return resultado;
+
+      for (const columna of ['VERITRADE', 'SEMIREMOLQUE']) {
+
+        const campo = [
+          ...document.querySelectorAll(
+            '#overlays [data-drawer-col]'
+          )
+        ].find(
+          el => el.dataset.drawerCol === columna
+        );
+
+        if (!campo) continue;
+
+        const original =
+          String(fila[columna] ?? '');
+
+        const selector =
+          document.createElement('select');
+
+        selector.className = 'tsf-boolean-drawer';
+        selector.dataset.drawerCol = columna;
+        selector.dataset.drawerKind = 'boolean';
+
+        selector.disabled =
+          !isEditableColumn(0, columna, fila);
+
+        // Conservar el valor histórico original
+        // mientras el usuario no modifique el campo.
+        if (original !== 'Sí' && original !== 'No') {
+
+          const historico = new Option(
+            tsfBooleano(original) ? 'Sí' : 'No',
+            original
+          );
+
+          historico.hidden = true;
+          selector.add(historico);
+        }
+
+        selector.add(new Option('Sí', 'Sí'));
+        selector.add(new Option('No', 'No'));
+
+        selector.value = original;
+
+        campo.replaceWith(selector);
+      }
+
+      return resultado;
+    };
+
+    // Refrescar solamente la tabla actual.
+    if (mIdx === 0) {
+      tableRender();
+    }
+
+    // FIN ACTUALIZACION TSF V11.7
 
     const header = document.querySelector('.headright');
     if (header) {
