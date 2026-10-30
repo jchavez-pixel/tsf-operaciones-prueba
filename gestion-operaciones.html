@@ -3135,6 +3135,214 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         );
       };
     }
+   
+    // ================================================
+    // TSF V11.7 - ANALISTAS Y VERITRADE CHECKBOX
+    // ================================================
+
+    const tsfAnalistasExcel = [
+      'Antonella Rodriguez',
+      'Fabio Salazar',
+      'Yesenia Gomez',
+      'Sergio Pereyra',
+      'Karina Riva'
+    ];
+
+    // Reemplazar catálogo de analistas.
+    // Conservar nombres históricos ya asignados.
+    analystNames = function(selected = '') {
+      const names = new Map();
+
+      for (const raw of [
+        ...tsfAnalistasExcel,
+        ...addedAnalysts,
+        selected
+      ]) {
+        const name = String(raw ?? '').trim();
+
+        if (!name || /^completar$/i.test(name)) {
+          continue;
+        }
+
+        const clave = name.toLocaleLowerCase('es');
+
+        if (!names.has(clave)) {
+          names.set(clave, name);
+        }
+      }
+
+      return [...names.values()];
+    };
+
+    // Convertir valores SharePoint a Sí / No.
+    const tsfValorOriginal = spGestionValue;
+
+    spGestionValue = function(columna, valor) {
+      if (columna !== 'VERITRADE') {
+        return tsfValorOriginal(columna, valor);
+      }
+
+      const v = String(valor ?? '').trim().toLowerCase();
+
+      return (
+        valor === true ||
+        valor === 1 ||
+        ['true', '1', 'sí', 'si'].includes(v)
+      ) ? 'Sí' : 'No';
+    };
+
+    // Guardar renderizador anterior.
+    const tsfRenderAntesCheckbox = tableRender;
+
+    // Dibujar checkbox en VERITRADE.
+    tableRender = function(...args) {
+
+      const resultado =
+        tsfRenderAntesCheckbox.apply(this, args);
+
+      if (mIdx !== 0) {
+        return resultado;
+      }
+
+      const tabla =
+        document.getElementById('dataTable');
+
+      const indice =
+        modules[0].columns.indexOf('VERITRADE');
+
+      if (
+        !tabla ||
+        indice < 0 ||
+        !tabla.tBodies?.[0]
+      ) {
+        return resultado;
+      }
+
+      for (const tr of tabla.tBodies[0].rows) {
+
+        const id = tr.dataset.id;
+
+        const fila = spPreview.rows.find(
+          r => keyID(r) === id
+        );
+
+        const celda = tr.cells[indice];
+
+        if (!fila || !celda) {
+          continue;
+        }
+
+        const textoSiNo = v => {
+          const texto = String(v ?? '')
+            .trim()
+            .toLowerCase();
+
+          return (
+            v === true ||
+            v === 1 ||
+            ['sí', 'si', 'true', '1'].includes(texto)
+          ) ? 'Sí' : 'No';
+        };
+
+        const editable =
+          isEditableColumn(0, 'VERITRADE', fila);
+
+        // Contenedor del checkbox.
+        const label = document.createElement('label');
+
+        label.style.cssText =
+          'display:inline-flex;' +
+          'align-items:center;' +
+          'gap:9px;' +
+          'padding:4px 6px;' +
+          'white-space:nowrap;' +
+          (editable
+            ? 'cursor:pointer;'
+            : 'cursor:default;');
+
+        // Casilla.
+        const check = document.createElement('input');
+
+        check.type = 'checkbox';
+
+        check.checked =
+          textoSiNo(fila.VERITRADE) === 'Sí';
+
+        check.disabled = !editable;
+
+        check.setAttribute(
+          'aria-label',
+          'Veritrade ' + id
+        );
+
+        check.style.cssText =
+          'width:19px;' +
+          'height:19px;' +
+          'accent-color:#ffcb16;';
+
+        // Texto Sí / No.
+        const etiqueta =
+          document.createElement('span');
+
+        etiqueta.textContent =
+          check.checked ? 'Sí' : 'No';
+
+        etiqueta.style.fontWeight = '600';
+
+        label.append(check, etiqueta);
+
+        celda.replaceChildren(label);
+
+        // Resaltar cambios sin guardar.
+        const pintarPendiente = () => {
+
+          const pendiente =
+            !!spEdits.get(id)?.has('VERITRADE');
+
+          celda.style.background =
+            pendiente ? '#fff2bc' : '';
+        };
+
+        pintarPendiente();
+
+        // Registrar cambio usando la función
+        // existente de Gestión de Operaciones.
+        check.addEventListener('change', () => {
+
+          const elegido =
+            check.checked ? 'Sí' : 'No';
+
+          const correcto =
+            window.TSF_SESSION_ROLE === 'EDICION' &&
+            updateCell(
+              id,
+              'VERITRADE',
+              elegido
+            );
+
+          if (!correcto) {
+            check.checked =
+              textoSiNo(fila.VERITRADE) === 'Sí';
+          }
+
+          etiqueta.textContent =
+            check.checked ? 'Sí' : 'No';
+
+          pintarPendiente();
+
+        });
+
+      }
+
+      return resultado;
+    };
+
+    // Actualizar la tabla actual.
+    if (mIdx === 0) {
+      tableRender();
+    }
+
+    // FIN DE MEJORAS TSF V11.7
 
     const header = document.querySelector('.headright');
     if (header) {
