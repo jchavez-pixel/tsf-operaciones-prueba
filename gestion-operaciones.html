@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V11.9 — Tracking y GPS en TB2</title>
+<title>TSF | Operaciones V12.0 — TB2 a TB6 en SharePoint</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -259,6 +259,8 @@ body.tsf-gestion-sp .data-table tbody td.tsf-area-control .changed {
 
 /* GPS y Seguros: controles sobrios, sin resaltes amarillos de la bandeja. */
 body.tsf-gestion-sp .data-table td select.tsf-catalogo-select.changed {background:#f8fafc!important;border-color:#94a3b8!important;box-shadow:none!important}
+/* TSF TB3–TB6: vista de lectura real, discreta. */
+body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
 </style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
@@ -273,6 +275,8 @@ body.tsf-lector #reproManual { display:none !important; }
 .tsf-access-strip { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-left:12px; }
 .tsf-access-badge { background:rgba(255,203,22,.16); border:1px solid rgba(255,203,22,.6); color:#fff; padding:7px 10px; font-weight:750; font-size:11px; border-radius:7px; }
 .tsf-exit { padding:7px 10px; border:0; border-radius:7px; background:#ffcb16; color:#171b22; font-weight:750; cursor:pointer; }
+/* TSF TB3–TB6: vista de lectura real, discreta. */
+body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
 </style>
 <script>document.documentElement.classList.add('tsf-auth-pending');</script>
 </head>
@@ -289,7 +293,7 @@ body.tsf-lector #reproManual { display:none !important; }
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V11.9 · Piloto autenticado · Gestión, Tracking y GPS/Seguros en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.0 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -370,10 +374,24 @@ function trackingMappingVerificado(){
 trackingSp.fields=trackingMappingVerificado();
 trackingSp.mappingVerifiedAt='2026-10-28';
 
-const mainMod=()=>mIdx===0&&spPreview.active?{...modules[0],rows:spPreview.rows}:(mIdx===1||mIdx===6)&&trackingSp.active?{...modules[mIdx],rows:trackingSp.rows}:modules[mIdx];
+// TB3–TB6 comparten interfaz, pero cada lista conserva su propio ID de elemento.
+// Lectura real bajo demanda, sin mostrar registros ficticios en caso de error.
+const TSF_REMOTE_LISTS={
+  2:{accion:'BIENES_LISTAR',lista:'TB3 - BIEN'},
+  3:{accion:'GARANTIAS_LISTAR',lista:'TB4 - GARANTÍAS'},
+  4:{accion:'REPROCESOS_LISTAR',lista:'TB5 - REPROCESOS'},
+  5:{accion:'MODIFICACIONES_LISTAR',lista:'TB6 - MODIFICACIONES'}
+};
+const tsfRemoteStores=Object.fromEntries(Object.keys(TSF_REMOTE_LISTS).map(k=>[k,{
+  active:false,loading:false,loaded:false,rows:[],error:'',lastSync:null,request:0
+}]));
+const isTsfRemoteIndex=(idx=mIdx)=>Boolean(tsfRemoteStores[idx]?.active);
+const mainMod=()=>mIdx===0&&spPreview.active?{...modules[0],rows:spPreview.rows}:
+  (mIdx===1||mIdx===6)&&trackingSp.active?{...modules[mIdx],rows:trackingSp.rows}:
+  isTsfRemoteIndex()?{...modules[mIdx],rows:tsfRemoteStores[mIdx].rows}:modules[mIdx];
 const isSpPreview=()=>mIdx===0&&spPreview.active;
 const isTrackingSp=()=>[1,6].includes(mIdx)&&trackingSp.active;
-const isRemoteView=()=>isSpPreview()||isTrackingSp();
+const isRemoteView=()=>isSpPreview()||isTrackingSp()||isTsfRemoteIndex();
 const SP_LOCKED_COLUMNS=new Set(['ID_OPERACION','FECHA_DE_REGISTRO']);
 // Cada entrada identifica un registro y contiene únicamente campos realmente modificados.
 const spEdits=new Map();
@@ -1085,10 +1103,11 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V11.9 · Piloto autenticado</b><br/>Gestión y Tracking vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.0 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
- if(newButton)newButton.disabled=!(mIdx===0||mIdx===4);
+ if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
+ if(isTsfRemoteIndex()){if(save){save.disabled=true;save.title='Lectura conectada. Escritura pendiente de habilitación y pruebas.';}if(newButton){newButton.disabled=true;newButton.title='Alta de nuevos registros pendiente de conexión con SharePoint';}}
  const link=document.getElementById('trackingMapButton');if(link)link.hidden=true;
 }
 
@@ -1306,6 +1325,7 @@ function inheritedFrom(col){
  return DERIVED_ALIASES[col]||null;
 }
 function fieldRole(moduleIndex,col,row=null){
+ if(isTsfRemoteIndex(moduleIndex))return col==='ID_OPERACION'?'extracted':'workflow';
  // Los reprocesos creados sin coincidencia son autónomos y completamente editables.
  if(moduleIndex===4&&row&&row.__manualReproceso===true)return 'workflow';
  if(moduleIndex===0)return MASTER_LOCKED.has(col)?'extracted':MASTER_EDITABLE.has(col)?'manual':'workflow';
@@ -1315,7 +1335,7 @@ function fieldRole(moduleIndex,col,row=null){
  if(moduleIndex===1&&FINANCIAL_SHARED.has(col))return 'workflow';
  return inheritedFrom(col)?'inherited':'workflow';
 }
-function isEditableColumn(moduleIndex,col,row=null){if(window.TSF_SESSION_ROLE!=='EDICION')return false;if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if([1,6].includes(moduleIndex)&&trackingSp.active){
+function isEditableColumn(moduleIndex,col,row=null){if(isTsfRemoteIndex(moduleIndex))return false;if(window.TSF_SESSION_ROLE!=='EDICION')return false;if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if([1,6].includes(moduleIndex)&&trackingSp.active){
   if(moduleIndex===6 && !tsfGPSMappingValidado) return false;
   return trackingEditable(col);
  }return ['manual','workflow'].includes(fieldRole(moduleIndex,col,row))}
@@ -1329,6 +1349,7 @@ function minuteDisplay(v){
 }
 // Se habilita el marcador para columnas temporales editables, nunca para la fecha automática bloqueada.
 function isDateField(col,mod){
+ if(isTsfRemoteIndex())return tsfRemoteStores[mIdx].fieldTypes?.[col]==='DateTime';
  if(isTrackingSp()&&trackingFieldType(trackingSp.fields[col])==='DateTime')return true;
  if(['VAF','COL. NETA ($)','MES DE COLOCACIÓN'].includes(col))return false;
  const k=String(col).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
@@ -1395,6 +1416,7 @@ function activateOperationalModules(id){
 }
 function drawFieldLegend(){
  const el=document.getElementById('fieldLegend');
+ if(isTsfRemoteIndex()){el.innerHTML='<span class="legend-label"><i class="legend-dot extracted"></i>Datos reales de SharePoint · solo lectura</span><span class="legend-note">Un ID_OPERACION puede tener múltiples filas · el ID de SharePoint distingue cada registro</span>';return;}
  if(mIdx===0){
   if(isSpPreview()){el.innerHTML='<span class="legend-label"><i class="legend-dot extracted"></i> Gris: ID_OPERACION y FECHA REGISTRO bloqueados</span><span class="legend-label"><i class="legend-dot manual"></i> 16 columnas editables · Guardar cambios actualiza SharePoint</span>';return;}
   const waiting=mainMod().rows.filter(r=>!assignmentReady(r)).length;
@@ -1411,7 +1433,7 @@ for(const master of modules[0].rows){
  }
 }
 synchronizeDerivedFields();
-function keyID(row){return String(row.ID_OPERACION||'').trim()}
+function keyID(row){return String(row?.__tsfRecordKey??row?.ID_OPERACION??'').trim()}
 function trackingById(id){const t=modules[1];return t.rows.find(r=>keyID(r)===id)||{}}
 function statusOf(row,mod=mainMod()){if(isSpPreview()&&row.__spReadOnly)return '';let key=mod.columns.find(k=>/^(ESTADO(?:_OPERACI[ÓO]N)?|ESTADO DEL SEGURO)$/i.test(k));if(key&&row[key])return row[key];return trackingById(keyID(row)).ESTADO_OPERACIÓN||''}
 function analystOf(row){if(isSpPreview()&&row.__spReadOnly)return row['ANALISTA OPERATIVO']||'';return row['ANALISTA OPERATIVO']||modules[0].rows.find(r=>keyID(r)===keyID(row))?.['ANALISTA OPERATIVO']||''}
@@ -1554,7 +1576,7 @@ function tableRender(){
  const widths=m.columns.map((column,i)=>getColumnWidth(column,m,i));
  const colMarkup='<colgroup>'+widths.map(w=>`<col style="width:${w}px">`).join('')+'<col style="width:73px"></colgroup>';
  document.getElementById('dataTable').style.width=(widths.reduce((a,b)=>a+b,73))+'px';
- const descriptions={extracted:'Dato extraído y protegido; no editable',inherited:'Dato heredado de Gestión de Operaciones; no editable',auto:'Fecha y hora automática de asignación; no editable',manual:'Dato manual resaltado; editable',workflow:'Editable en este módulo'};
+ const descriptions={extracted:'Dato extraído y protegido; no editable',inherited:'Dato heredado de Gestión de Operaciones; no editable',auto:'Fecha y hora automática de asignación; no editable',manual:'Dato manual resaltado; editable',workflow:isTsfRemoteIndex()?'Dato real de SharePoint · solo lectura':'Editable en este módulo'};
  let head=colMarkup+'<thead>'+tsfEncabezadoGruposGPS(m.columns)+'<tr'+(mIdx===6?' class="tsf-columnas-gps"':'')+'>'+m.columns.map((column,i)=>{
   const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${esc(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
  }).join('')+'<th style="width:73px;text-align:center">DETALLE</th></tr></thead>';
@@ -1609,6 +1631,11 @@ const specialSelect =
     empty.innerHTML='<div class="empty">'+ic('refresh',28)+'<h3>Consultando Tracking en SharePoint…</h3><p>Cargando registros reales de TB2 - TRACKING OPERATIVO.</p></div>';
   }else if(!all.length&&isTrackingSp()&&trackingSp.error){
     empty.innerHTML='<div class="empty">'+ic('alert',28)+'<h3>No se pudo cargar Tracking desde SharePoint</h3><p>'+esc(trackingSp.error)+'</p><p>Verifica los casos del flujo y pulsa Actualizar registros.</p></div>';
+  }else if(!all.length&&isTsfRemoteIndex()){
+    const store=tsfRemoteStores[mIdx];
+    empty.innerHTML=store.loading?'<div class="empty">'+ic('refresh',28)+'<h3>Consultando '+esc(TSF_REMOTE_LISTS[mIdx].lista)+'…</h3><p>Consultando la lista real en SharePoint.</p></div>':
+      store.error?'<div class="empty">'+ic('alert',28)+'<h3>No se pudieron cargar los datos de SharePoint</h3><p>'+esc(store.error)+'</p><p>Usa «Actualizar registros» para reintentar.</p></div>':
+      '<div class="empty">'+ic('search',28)+'<h3>Sin registros en esta vista</h3><p>La lista está vacía o los filtros no tienen coincidencias.</p></div>';
   }else{
     empty.innerHTML=all.length?'':'<div class="empty">'+ic('search',28)+'<h3>Sin registros para estos filtros</h3><p>Modifica los criterios o limpia los filtros de búsqueda.</p></div>';
   }
@@ -1640,10 +1667,18 @@ const specialSelect =
  }));
  document.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>openDrawer(b.dataset.detail));
  document.getElementById('tableMeta').textContent=mIdx===6?`${m.rows.length} registros de GPS y Seguros · TB2 SharePoint · ${trackingEditsCount()} cambios pendientes · ${trackingSp.historyLoading?'Cargando histórico':'Sincronización cada 60 s'}`:mIdx===1?`${m.rows.length} registros ficticios de Tracking Operativo · ${m.columns.length} columnas · ${trackingEditsCount()} cambios pendientes · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros`+(trackingSp.error?' · Error de conexión':trackingSp.loading?' · Cargando 10 recientes…':trackingSp.historyLoading?' · 10 recientes listos · HISTÓRICO CARGANDO…':trackingSp.historyError?' · Histórico incompleto: '+trackingSp.historyError:trackingSp.historyDone?' · Histórico completo':trackingSp.missing.length?' · '+trackingSp.missing.length+' columnas sin mapear':''):mIdx===0?`${m.rows.length} registros ficticios · modo local · 16 columnas editables · ${spEditCount()} cambio(s) sin guardar · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros`+(spPreview.error?' · Error de conexión':spPreview.loading?' · Cargando 10 recientes…':spPreview.historyLoading?' · 10 recientes listos · HISTÓRICO CARGANDO…':spPreview.historyError?' · Histórico incompleto: '+spPreview.historyError:spPreview.historyDone?' · Histórico completo':''):`${m.rows.length} registros · ${m.columns.length} columnas · ${Object.keys(colFilters).filter(k=>colFilters[k]).length} filtros por columna`;
+ if(isTsfRemoteIndex()){
+   const t=tsfRemoteStores[mIdx];
+   document.getElementById('tableMeta').textContent=TSF_REMOTE_LISTS[mIdx].lista+
+     ' · '+t.rows.length+' registros reales · '+(t.loading?'Cargando…':t.error?'Error de lectura':
+     'Solo lectura · última consulta '+(t.lastSync?t.lastSync.toLocaleTimeString('es-PE'):'pendiente'))+
+     ' · máximo 1000 por consulta';
+ }
 }
 
 function setPage(p){page=p;tableRender();document.getElementById('tableWrap').scrollTop=0}
 function updateCell(id,col,val,{silent=false}={}){
+ if(isTsfRemoteIndex())return false;
  const m=mainMod();const row=m.rows.find(r=>keyID(r)===id);
  if(!row||!isEditableColumn(mIdx,col,row))return false;
  if(isSpPreview())return spChange(id,col,val);
@@ -1707,7 +1742,7 @@ function reflectFinancialEdit(fromIndex,id,col,value){
  const initial=base[otherIndex].rows.find(r=>keyID(r)===id);
  if(initial&&String(initial[col]??'')===value)dirty.delete(k);else dirty.set(k,true);
 }
-function updateDirtyLabel(){let n=isSpPreview()?spEditCount():isTrackingSp()?trackingEditsCount():dirty.size;const el=document.getElementById('dirtyCount');if(el)el.textContent=n?'· '+n:'';const save=document.getElementById('saveBtn');if(save&&isSpPreview())save.disabled=spSaving||!n;if(save&&isTrackingSp())save.disabled=trackingSp.loading||trackingSp.saving||!trackingSp.ready||!n}
+function updateDirtyLabel(){let n=isTsfRemoteIndex()?0:isSpPreview()?spEditCount():isTrackingSp()?trackingEditsCount():dirty.size;const el=document.getElementById('dirtyCount');if(el)el.textContent=n?'· '+n:'';const save=document.getElementById('saveBtn');if(save&&isSpPreview())save.disabled=spSaving||!n;if(save&&isTrackingSp())save.disabled=trackingSp.loading||trackingSp.saving||!trackingSp.ready||!n}
 function draw(){document.body.classList.toggle('tsf-gestion-sp',isRemoteView());synchronizeDerivedFields();navRender();drawFieldLegend();const m=mainMod();updateSpPreviewUI();document.getElementById('newRecord').innerHTML=ic('plus',14)+(mIdx===4?' Nuevo reproceso':' Nueva operación');document.getElementById('pageTitle').textContent=m.name;document.getElementById('pageDesc').textContent=m.description;document.getElementById('breadcrumbs').textContent='PORTAL / MEDIANO PLAZO / '+m.name.toUpperCase();document.getElementById('tableTitle').textContent='Bandeja · '+m.name;document.getElementById('q').value=query;drawKpis();drawSelectors();tableRender();updateDirtyLabel()}
 function toast(s){const h=document.getElementById('toastHolder');h.innerHTML='<div class="toast">'+esc(s)+'</div>';clearTimeout(window._to);window._to=setTimeout(()=>{h.innerHTML=''},7500)}
 function showFilter(col,anchor){currentFilter=col;const box=anchor.getBoundingClientRect();let left=Math.min(window.innerWidth-288,Math.max(12,box.left-112)),top=Math.min(window.innerHeight-215,box.bottom+8);
@@ -1734,8 +1769,9 @@ function openDrawer(id){
    return `<div class="form-item"><label>${esc(col)} ${editable?'':'🔒'}</label><div class="tsf-drawer-field">${dateField&&editable&&mIdx!==0?`<label class="tsf-quick-date" title="Marcar para colocar fecha/hora actual"><input type="checkbox" class="tsf-drawer-stamp" data-drawer-stamp="${esc(col)}"/><span>Ahora</span></label>`:''}${drawerSelect||`<input class="${role==='manual'?'form-manual':editable?'':'form-locked'} ${role==='auto'?'form-auto':''}" data-drawer-col="${esc(col)}" value="${esc(dateField?minuteDisplay(value):value)}" ${!editable?'readonly tabindex="-1"':''} placeholder="${editable?'Sin dato registrado':'—'}"/>`}</div><span class="field-note">${hint}</span></div>`;
  }).join('');
  const progress=mIdx===0&&!isSpPreview()?`<div class="tipbox">Campos requeridos para habilitar los módulos automáticos: ${3-assignmentMissing(r).length}/3. ${assignmentMissing(r).length?'Faltan: '+assignmentMissing(r).map(esc).join(', '):'Operación lista para módulos automáticos; Reprocesos se crea manualmente.'}</div>`:'';
- document.getElementById('overlays').innerHTML=`<div class="scrim" id="scrim"></div><aside class="drawer"><div class="drawerhead"><div><div class="head-eyebrow" style="color:#ffd329">DETALLE DE OPERACIÓN</div><h2>${esc(id)}</h2><p>${esc(m.name)} · ${isRemoteView()?'Cambios pendientes de guardar en SharePoint':'Edición local por campo'}</p></div><button class="button icon" id="closeDrawer">${ic('close')}</button></div><div class="drawerbody"><div class="sect">Datos del registro</div>${progress}${fields}</div><div class="drawerfoot"><button class="button" id="drawerCancel">Cerrar</button><button class="button primary" id="drawerApply">${ic('check')} Aplicar cambios</button></div></aside>`;
+ document.getElementById('overlays').innerHTML=`<div class="scrim" id="scrim"></div><aside class="drawer"><div class="drawerhead"><div><div class="head-eyebrow" style="color:#ffd329">DETALLE DE OPERACIÓN</div><h2>${esc(r.ID_OPERACION||id)}</h2><p>${esc(m.name)} · ${isTsfRemoteIndex()?'Consulta de SharePoint · registro #'+Number(r.__spId||0)+' · solo lectura':isRemoteView()?'Cambios pendientes de guardar en SharePoint':'Edición local por campo'}</p></div><button class="button icon" id="closeDrawer">${ic('close')}</button></div><div class="drawerbody"><div class="sect">Datos del registro</div>${progress}${fields}</div><div class="drawerfoot"><button class="button" id="drawerCancel">Cerrar</button><button class="button primary" id="drawerApply">${ic('check')} Aplicar cambios</button></div></aside>`;
  document.getElementById('scrim').onclick=closeOverlays;document.getElementById('closeDrawer').onclick=closeOverlays;document.getElementById('drawerCancel').onclick=closeOverlays;
+ if(isTsfRemoteIndex()){const apply=document.getElementById('drawerApply');apply.disabled=true;apply.textContent='Solo lectura';}
   document.querySelectorAll('.tsf-drawer-select').forEach(el=>el.onchange=()=>{
    if(el.dataset.drawerKind==='analyst'&&el.value==='__NEW_ANALYST__')chooseNewAnalyst(el,String(r[el.dataset.drawerCol]||''));
    if(el.dataset.drawerKind==='state')el.className='tsf-drawer-select tsf-state-select '+stateTone(el.value);
@@ -1951,7 +1987,7 @@ document.getElementById('statusFilter').onchange=e=>{state=e.target.value;page=1
 document.getElementById('pageSize').onchange=e=>{pageSize=+e.target.value;page=1;tableRender()};
 document.getElementById('pendingOnly').onclick=()=>{pendingOnly=!pendingOnly;page=1;drawKpis();tableRender()};
 document.getElementById('clearFilters').onclick=()=>{query='';analyst='';state='';page=1;pendingOnly=false;colFilters={};sorting={col:'',dir:1};draw()};
-document.getElementById('newRecord').onclick=()=>{if(mIdx===4)newReproceso();else newRecord()};
+document.getElementById('newRecord').onclick=()=>{if(isTsfRemoteIndex())return toast('Las altas en esta lista todavía están en fase de integración.');if(mIdx===4)newReproceso();else newRecord()};
 // ===== Prueba aislada de Power Automate: no reemplaza Guardar borrador local =====
 function spPilotOpen(){if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Perfil Consulta: prueba de escritura no permitida.');return;}
 
@@ -2184,6 +2220,125 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     // Una consulta de esquema al iniciar, reutilizada en ambas vistas.
     await tsfVerificarGPS();
 
+    // ============================================
+    // TSF V12.0 — LECTURA REAL TB3, TB4, TB5, TB6
+    // No habilita edición, creación, borrado ni elimina históricos.
+    // Activar ANTES de pintar los módulos para impedir datos demo.
+    // ============================================
+    const tsfModuloCampos={
+      2:[
+        ['RUC','field_1','Text'],['CLIENTE','field_2','Text'],['CAF','field_3','Text'],
+        ['BIEN USADO?','field_4','Text'],['ENVÍO_ORDEN DE COMPRA','field_5','DateTime'],
+        ['RECEPCION_FACTURA','field_6','DateTime'],['PROVEEDOR','field_7','Text'],
+        ['NUM_SERIE','field_8','Number'],['RECEPCIÓN INMATRICULACIÓN','field_9','Text'],
+        ['ENTREGA INMATRICULACIÓN','field_10','DateTime'],
+        ['EMISIÓN TARJETA DE PROPIEDAD','field_11','DateTime'],['PLACA','field_12','Text'],
+        ['INSCRIPCIÓN DEL BIEN (SAT O MUNICIPALIDAD)','field_13','DateTime'],
+        ['DV SAT','field_14','Text'],['CODIGO DE VERIFICACION','field_15','Text']
+      ],
+      3:[
+        ['CAF','field_1','Text'],['PRODUCTO','field_2','Text'],['RUC','field_3','Text'],
+        ['CLIENTE','field_4','Text'],['PROCESO','field_5','Text'],['SUBPROCESO','field_6','Text'],
+        ['TIPO_BIEN','field_7','Text'],['TIPO DE BIEN_EN_GARANTIA','field_8','Text'],
+        ['PLACA','field_9','Text'],['NUMERO_SERIE','field_10','Text'],
+        ['¿NUEVO PROCEDIMIENTO?','field_11','Text'],
+        ['FECHA DE ENVÍO DE INSTRUCCION A NOTARIA','field_12','DateTime'],
+        ['FIRMA DE CLIENTE EN LA GARANTÍA','field_13','DateTime'],
+        ['FECHA DE REGISTRO','field_14','DateTime'],
+        ['NÚMERO DE FORMULARIO','field_15','Text']
+      ],
+      4:[
+        ['RUC','field_1','Text'],['CLIENTE','field_2','Text'],['PRODUCTO','field_3','Text'],
+        ['CAF','field_4','Text'],['FUNCIONARIO','field_5','Text'],
+        ['ANALISTA OPERATIVO','field_6','Text'],['Etapa','field_7','Text'],
+        ['Tipo','field_8','Text'],['Subtipo','field_9','Text'],
+        ['FECHA REGISTRO REPROCESO','field_10','DateTime'],
+        ['FECHA COMPROMISO','field_11','DateTime'],
+        ['FECHA REGULARIZACIÓN','field_12','DateTime'],
+        ['ESTADO','field_13','Text'],['COMENTARIOS','field_14','Text']
+      ],
+      5:[
+        ['CAF','field_1','Text'],['PROCESO','field_2','Text'],
+        ['SUBPROCESO','field_3','Text'],['CIUDAD DE FIRMA','field_4','Text'],
+        ['NOTARÍA','field_5','Text'],['TIPO DE FORMALIZACION','field_6','Text'],
+        ['FECHA DE ENVIO A LEGAL','field_7','DateTime'],
+        ['FECHA DE ENVIO DE LEGAL A NOTARIA','field_8','DateTime'],
+        ['FIRMA CLIENTE','field_9','DateTime'],['ESTADO','field_10','Text'],
+        ['GESTOR LEGAL (AL FINAL)','field_11','Text'],['COMENTARIOS','field_12','Text']
+      ]
+    };
+    for(const [idx,fields] of Object.entries(tsfModuloCampos)){
+      const i=Number(idx),t=tsfRemoteStores[i];
+      t.active=true;
+      t.fieldTypes=Object.fromEntries(fields.map(([name,,type])=>[name,type]));
+      t.fieldMap=Object.fromEntries(fields.map(([name,key])=>[name,key]));
+      // Solo columnas que existen en la lista real; los campos calculados del demo no se inventan.
+      const columns=['ID_OPERACION',...fields.map(f=>f[0])];
+      for(const model of [base[i],modules[i]]){
+        model.columns=[...columns];
+        model.name=['','','Bienes','Garantías','Reprocesos','Modificaciones'][i];
+        model.description=TSF_REMOTE_LISTS[i].lista+
+          ' · Consulta de SharePoint · solo lectura en esta fase.';
+      }
+    }
+    function tsfRemoteDate(value){
+      const text=String(value??'');
+      const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(text);
+      return m?m[3]+'/'+m[2]+'/'+m[1]:text;
+    }
+    function tsfRemoteValue(value,type){
+      if(value===null||value===undefined)return '';
+      if(type==='DateTime')return tsfRemoteDate(value);
+      if(typeof value==='boolean')return value?'Sí':'No';
+      if(typeof value==='object')return String(value.Value??'');
+      return String(value).trim();
+    }
+    async function tsfCargarListaModulo(i,{force=false}={}){
+      const t=tsfRemoteStores[i],config=TSF_REMOTE_LISTS[i];
+      if(!config||!t||t.loading||(!force&&t.loaded))return;
+      const requestId=++t.request;
+      t.loading=true;t.error='';
+      if(mIdx===i)draw();
+      try{
+        const response=await fetch('/api/operaciones',{
+          method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
+          body:JSON.stringify({accion:config.accion,id_operacion:''})
+        });
+        const raw=await response.text();
+        let json;
+        try{json=JSON.parse(raw)}catch(_){throw new Error('Respuesta no JSON del flujo');}
+        if(!response.ok||json?.ok===false)throw new Error('HTTP '+response.status+' · '+String(json?.error||json?.mensaje||'Consulta rechazada').slice(0,155));
+        const records=Array.isArray(json)?json:Array.isArray(json?.value)?json.value:Array.isArray(json?.body?.value)?json.body.value:null;
+        if(!records)throw new Error('Response de '+config.accion+' no devolvió un arreglo de elementos');
+        const seen=new Set(),rows=[];
+        for(const item of records){
+          const spId=Number(item?.ID??item?.Id);
+          const operation=String(item?.Title??'').trim();
+          if(!Number.isSafeInteger(spId)||spId<=0||!operation)continue;
+          if(seen.has(spId))continue;seen.add(spId);
+          const row={ID_OPERACION:operation,__spId:spId,
+            __spEtag:String(item?.['@odata.etag']??item?.etag??''),
+            __tsfRecordKey:'SP:'+i+':'+spId};
+          for(const [name,key,type] of tsfModuloCampos[i])row[name]=tsfRemoteValue(item[key],type);
+          rows.push(row);
+        }
+        if(requestId!==t.request)return;
+        t.rows=rows;t.loaded=true;t.lastSync=new Date();t.error='';
+      }catch(e){
+        if(requestId!==t.request)return;
+        t.error=String(e?.message||e).slice(0,230);
+        // Nunca mostrar demo por un error de conexión; conservar registros verificados anteriores.
+        if(mIdx===i)toast('No se pudo consultar '+config.lista+': '+t.error);
+      }finally{
+        if(requestId===t.request){t.loading=false;if(mIdx===i)draw();}
+      }
+    }
+    // Carga diferida: no hacer 4 consultas adicionales cuando el usuario ingresa.
+    const tsfSwitchOriginal=switchModule;
+    switchModule=function(idx){
+      tsfSwitchOriginal(idx);
+      if(isTsfRemoteIndex(idx))void tsfCargarListaModulo(idx);
+    };
     // Mostrar listas reales, no los registros simulados
     spPreview.active = true;
     trackingSp.active = true;
@@ -2201,6 +2356,12 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       ]);
     };
 
+    // Refrescar solo el módulo seleccionado, sin descartar otras listas cargadas.
+    const tsfRecargarAntes=document.getElementById('resetView').onclick;
+    document.getElementById('resetView').onclick=async()=>{
+      if(isTsfRemoteIndex())return tsfCargarListaModulo(mIdx,{force:true});
+      return tsfRecargarAntes?.();
+    };
     // Carga inicial desde las listas existentes
     void Promise.allSettled([
       loadSpPreview(),
@@ -2589,9 +2750,9 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
           ? 'Agregado a Reprocesos'
           : 'Agregar a Reprocesos';
 
-        boton.disabled =
-          yaMarcado ||
-          window.TSF_SESSION_ROLE !== 'EDICION';
+        // TB5 todavía es solo lectura. Evitar que el check aparente una alta real.
+        boton.disabled = true;
+        boton.title = 'Pendiente: crear el reproceso en TB5 - REPROCESOS';
 
         detalle.appendChild(boton);
 
@@ -2779,17 +2940,24 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       });
     }
 
-    function tsfExportarLibro() {
+    async function tsfExportarLibro() {
       if (!spPreview.active || !trackingSp.active ||
           !spPreview.historyDone || !trackingSp.historyDone) {
         toast('Espera a que termine la carga de Gestión y Tracking.');
         return;
       }
-
+      // No exportar jamás los registros ficticios embebidos como si fueran SharePoint.
+      // Solo consultar listas aún no cargadas cuando el usuario solicita el Excel.
+      await Promise.all([2,3,4,5].map(i=>tsfCargarListaModulo(i)));
+      const missing=[2,3,4,5].filter(i=>!tsfRemoteStores[i].loaded||tsfRemoteStores[i].error);
+      if(missing.length){
+        toast('No se generó Excel: comprueba la conexión de '+missing.map(i=>TSF_REMOTE_LISTS[i].lista).join(', '));
+        return;
+      }
       const sheets = modules.map((m,i) => {
-        const rows = i === 0
-          ? spPreview.rows
-          : i === 1 ? trackingSp.rows : m.rows;
+        const rows = i === 0 ? spPreview.rows :
+          (i === 1 || i === 6) ? trackingSp.rows :
+          tsfRemoteStores[i]?.rows || [];
 
         const cols = [...m.columns];
 
@@ -3857,6 +4025,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         if(window.TSF_SESSION_ROLE!=='EDICION')return toast('Perfil solo consulta.');
         if(isSpPreview())return tsfGuardarAmbosGestion();
         if(isTrackingSp())return tsfGuardarTrackingConConflictos(false);
+        if(isTsfRemoteIndex())return toast('Solo lectura: el guardado de esta lista aún no está habilitado.');
         toast('Guardado de este módulo pendiente de conectar a SharePoint.');
       };
     }
