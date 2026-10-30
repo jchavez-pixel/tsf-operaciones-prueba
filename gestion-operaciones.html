@@ -214,6 +214,49 @@ body.tsf-gestion-sp #saveBtn:disabled{opacity:.63;cursor:not-allowed}
 @media(max-width:1150px){.tsf-kpi-row{flex-wrap:wrap}.tsf-kpi-row .kpis{flex-basis:100%}.tsf-pending-tools{margin-left:auto}}
 @media(max-width:760px){.tsf-header-ident{display:none}.tsf-pending-tools{width:100%;justify-content:space-between}}
 #spPilotButton,#ownerSharePointLink,#trackingMapButton,#sharepointViewBtn{display:none!important}
+/* V11.9 - Orden y grupos visuales para GPS y Seguros (suave, accesible). */
+.data-table .tsf-groups-row th {
+  position:sticky;top:0;z-index:7;height:29px;min-height:29px;
+  text-align:center;vertical-align:middle;padding:5px 10px;
+  font-size:10px;font-weight:750;letter-spacing:.06em;
+  text-transform:uppercase;border-bottom:1px solid #e1e8ee;
+  white-space:nowrap;
+}
+.data-table thead .tsf-groups-row th:first-child {
+  min-width:0!important;max-width:none!important;left:auto;
+  box-shadow:none;z-index:7;
+}
+.data-table .tsf-groups-row .tsf-grupo-base {background:#f0f3f7;color:#637083}
+.data-table .tsf-groups-row .tsf-grupo-gps {background:#e6f1fb;color:#315b7f;border-left:2px solid #bad3e8}
+.data-table .tsf-groups-row .tsf-grupo-seguro {background:#e6f5ee;color:#316853;border-left:2px solid #b4dccc}
+.data-table .tsf-groups-row .tsf-grupo-control {background:#f1f3f7;color:#58677a;border-left:2px solid #d9e1ea}
+.data-table .tsf-groups-row .tsf-grupo-detalle {background:#f7f8fa;color:#5f6c78}
+.data-table thead .tsf-columnas-gps th {top:29px}
+.data-table thead .tsf-columnas-gps th.tsf-area-gps {background:#f2f7fc;color:#3f6180}
+.data-table thead .tsf-columnas-gps th.tsf-area-seguro {background:#eff8f3;color:#3d6d58}
+.data-table thead .tsf-columnas-gps th.tsf-area-control {background:#f4f6f9;color:#5d6a7c}
+.data-table thead .tsf-columnas-gps th.tsf-grupo-inicio {border-left:2px solid #c3d6e5}
+.data-table thead .tsf-columnas-gps th.tsf-area-seguro.tsf-grupo-inicio {border-left-color:#bddac9}
+.data-table thead .tsf-columnas-gps th.tsf-area-control.tsf-grupo-inicio {border-left-color:#dce2e9}
+body.tsf-gestion-sp .data-table tbody td.tsf-area-gps.field-workflow,
+body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.tsf-area-gps.field-workflow {
+  background:#fbfdff!important;
+}
+body.tsf-gestion-sp .data-table tbody td.tsf-area-seguro.field-workflow,
+body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.tsf-area-seguro.field-workflow {
+  background:#fbfefc!important;
+}
+.data-table tbody td.tsf-grupo-inicio {border-left:2px solid #e2eaf2}
+.data-table tbody td.tsf-area-seguro.tsf-grupo-inicio {border-left-color:#dcece3}
+.data-table tbody td.tsf-area-control.tsf-grupo-inicio {border-left-color:#e3e8ed}
+/* No convertir los pendientes en bloques amarillos dentro del módulo GPS. */
+body.tsf-gestion-sp .data-table tbody td.tsf-area-gps .changed,
+body.tsf-gestion-sp .data-table tbody td.tsf-area-seguro .changed,
+body.tsf-gestion-sp .data-table tbody td.tsf-area-control .changed {
+  background:#f1f5f9!important;border-color:#94a3b8!important;
+  box-shadow:none!important;
+}
+
 /* GPS y Seguros: controles sobrios, sin resaltes amarillos de la bandeja. */
 body.tsf-gestion-sp .data-table td select.tsf-catalogo-select.changed {background:#f8fafc!important;border-color:#94a3b8!important;box-shadow:none!important}
 </style>
@@ -1235,7 +1278,7 @@ function trackingStateOptions(value=''){
  return '<option value=""'+(!value?' selected':'')+'>Seleccionar estado...</option>'+
  [...new Set([...TRACKING_STATES,...(value&& !TRACKING_STATES.includes(value)?[value]:[])])].map(st=>`<option value="${esc(st)}" ${st===value?'selected':''}>${esc(st)}</option>`).join('');
 }
-function isTrackingStateField(idx,col){return idx===1 && col==='ESTADO_OPERACIÓN'}
+function isTrackingStateField(idx,col){return (idx===1||idx===6) && col==='ESTADO_OPERACIÓN'}
 function isAnalystField(idx,col,row){return col==='ANALISTA OPERATIVO'&&isEditableColumn(idx,col,row)}
 function stateTone(value){const normalized=String(value||'').trim().toUpperCase();return normalized==='DESEMBOLSADO'?'status-green':normalized==='ANULADO'?'status-red':normalized==='EN PROCESO'?'status-blue':'status-empty'}
 function chooseNewAnalyst(select,previous){
@@ -1397,7 +1440,15 @@ function visible(){let rows=mainMod().rows.filter(r=>{
  if(sorting.col){const k=sorting.col,d=sorting.dir;rows.sort((a,b)=>String(a[k]??'').localeCompare(String(b[k]??''),'es',{numeric:true,sensitivity:'base'})*d)}
  return rows;
 }
-function navRender(){document.getElementById('sidenav').innerHTML=modules.map((m,i)=>`<button type="button" class="nav-button ${mIdx===i?'active':''}" title="${esc(m.name)}" data-module="${i}">${ic(m.icon)}<span class="navlabel">${esc(m.name)}</span></button>`).join('');document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>switchModule(+b.dataset.module))}
+function navRender(){
+ // Cambiar solo el orden visual; NO renumerar los seis módulos ni sus permisos.
+ const orden=[0,1,6,2,3,4,5].filter(i=>i<modules.length);
+ document.getElementById('sidenav').innerHTML=orden.map(i=>{
+  const m=modules[i];
+  return `<button type="button" class="nav-button ${mIdx===i?'active':''}" title="${esc(m.name)}" data-module="${i}">${ic(m.icon)}<span class="navlabel">${esc(m.name)}</span></button>`;
+ }).join('');
+ document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>switchModule(+b.dataset.module));
+}
 function switchModule(idx){mIdx=idx;query='';analyst='';state='';page=1;pendingOnly=false;sorting={col:'',dir:1};colFilters={};drawerId=null;document.getElementById('q').value='';draw();}
 function statCount(terms){return mainMod().rows.filter(r=>terms.some(s=>statusOf(r).toUpperCase().includes(s))).length}
 function drawKpis(){const total=mainMod().rows.length,inProcess=statCount(['EN PROCESO','EN TRÁMITE','EN TRAMITE']),disb=statCount(['DESEMBOLSAD']),sent=statCount(['TESORER']),pending=mainMod().rows.filter(r=>pendingRow(r)).length;
@@ -1454,6 +1505,48 @@ function getColumnWidth(column,mod,index){
   return estimated;
 }
 function columnLabel(column){if(column==='FECHA_DE_REGISTRO')return 'FECHA REGISTRO';if(column==='COL. NETA ($)')return 'COL. NETA ($)';return column}
+// Grupos de columnas; todos los valores y ETags siguen perteneciendo a TB2.
+const TSF_GPS_ZONA_AZUL = new Set([
+ 'TIPO_GPS','PROVEEDOR_GPS','SOLICITUD_INSTALACION','CONFIRMACION_INSTALACIÓN'
+]);
+const TSF_GPS_ZONA_VERDE = new Set([
+ 'TIPO_SEGURO','SOLICITUD_EMISION','CONFIRMACIÓN_DE_EMISIÓN',
+ 'SOLICITUD_REVISIÓN ENDOSO','CONFORMIDAD REVISIÓN','ESTADO DEL SEGURO',
+ 'PRIMA EN CRONOGRAMA INC IGV','FECHA_INICIO_CONTRATO','FECHA_FIN_CONTRATO',
+ 'FECHA DE INICIO DE VIGENCIA DE POLIZA','FECHA DE FIN DE VIGENCIA DE POLIZA',
+ 'PRIMA_POLIZA_INC IGV'
+]);
+function tsfZonaGPS(col){
+ if(mIdx!==6)return '';
+ if(TSF_GPS_ZONA_AZUL.has(col))return 'tsf-area-gps';
+ if(TSF_GPS_ZONA_VERDE.has(col))return 'tsf-area-seguro';
+ if(col==='ESTADO_OPERACIÓN'||col==='COMENTARIOS')return 'tsf-area-control';
+ return '';
+}
+function tsfClaseZonaGPS(cols,col){
+ if(mIdx!==6)return '';
+ const zona=tsfZonaGPS(col);
+ if(!zona)return '';
+ const indice=cols.indexOf(col);
+ const anterior=indice>0?tsfZonaGPS(cols[indice-1]):'';
+ return zona+(zona!==anterior?' tsf-grupo-inicio':'');
+}
+function tsfEncabezadoGruposGPS(cols){
+ if(mIdx!==6)return '';
+ const count=filter=>cols.filter(filter).length;
+ const nBase=count(col=>!tsfZonaGPS(col));
+ const nGPS=count(col=>TSF_GPS_ZONA_AZUL.has(col));
+ const nSeguro=count(col=>TSF_GPS_ZONA_VERDE.has(col));
+ const nControl=count(col=>col==='ESTADO_OPERACIÓN'||col==='COMENTARIOS');
+ if(!nGPS||!nSeguro)return '';
+ return '<tr class="tsf-groups-row">'
+  +`<th class="tsf-grupo-base" colspan="${nBase}" scope="colgroup">Datos de operación</th>`
+  +`<th class="tsf-grupo-gps" colspan="${nGPS}" scope="colgroup">Seguimiento de GPS</th>`
+  +`<th class="tsf-grupo-seguro" colspan="${nSeguro}" scope="colgroup">Seguimiento de Seguro</th>`
+  +`<th class="tsf-grupo-control" colspan="${nControl}" scope="colgroup">Seguimiento operativo</th>`
+  +'<th class="tsf-grupo-detalle" scope="colgroup" aria-label="Detalle"></th>'
+  +'</tr>';
+}
 function tableRender(){
  const m=mainMod(),all=visible(),maxPage=Math.max(1,Math.ceil(all.length/pageSize));
  page=Math.max(1,Math.min(page,maxPage));
@@ -1462,8 +1555,8 @@ function tableRender(){
  const colMarkup='<colgroup>'+widths.map(w=>`<col style="width:${w}px">`).join('')+'<col style="width:73px"></colgroup>';
  document.getElementById('dataTable').style.width=(widths.reduce((a,b)=>a+b,73))+'px';
  const descriptions={extracted:'Dato extraído y protegido; no editable',inherited:'Dato heredado de Gestión de Operaciones; no editable',auto:'Fecha y hora automática de asignación; no editable',manual:'Dato manual resaltado; editable',workflow:'Editable en este módulo'};
- let head=colMarkup+'<thead><tr>'+m.columns.map((column,i)=>{
-  const role=fieldRole(mIdx,column);return `<th class="field-${role}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${esc(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
+ let head=colMarkup+'<thead>'+tsfEncabezadoGruposGPS(m.columns)+'<tr'+(mIdx===6?' class="tsf-columnas-gps"':'')+'>'+m.columns.map((column,i)=>{
+  const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${esc(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
  }).join('')+'<th style="width:73px;text-align:center">DETALLE</th></tr></thead>';
  let body=records.map(row=>`<tr data-id="${esc(keyID(row))}">${m.columns.map((col,i)=>{
   const val=String(row[col]??''),hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
@@ -1500,7 +1593,7 @@ const specialSelect =
 
    const spDifference=isSpPreview()&&spPreview.mode==='merge'&&row.__spDifferences?.[col];
    const cellHint=spDifference?`${col} · MOSTRANDO SHAREPOINT: ${val} · Valor local anterior: ${spDifference.local} · No guardado`:`${col}: ${val||'Sin información'} · ${descriptions[role]}`;
-   return `<td class="field-${role}" style="${style}" title="${esc(cellHint)}">${specialSelect||(
+   return `<td class="field-${role} ${tsfClaseZonaGPS(m.columns,col)}" style="${style}" title="${esc(cellHint)}">${specialSelect||(
     hl&&!editable&&(['ESTADO','ESTADO_OPERACIÓN','ESTADO DEL SEGURO'].includes(col))?
     `<span class="value-badge ${hl}">${esc(val)}</span>`:
     `<div class="${dateField?'tsf-date-cell':'tsf-text-cell'}">${dateField&&editable&&mIdx!==0?`<input type="checkbox" class="tsf-date-now" data-id="${esc(keyID(row))}" data-col="${i}" title="Colocar fecha y hora actual (hora de Lima); luego puedes editarla" aria-label="Poner fecha y hora actual en ${esc(col)}"/>`:''}<input aria-label="${esc(col)}" aria-readonly="${!editable}" class="cell-input ${!editable?'readonly':''} ${(isTrackingSp()?trackingSp.edits.get(keyID(row))?.has(col):isSpPreview()?spEdits.get(keyID(row))?.has(col):dirty.has(m.key+'|'+keyID(row)+'|'+col))?'changed':''}" data-id="${esc(keyID(row))}" data-col="${i}" ${!editable?'readonly tabindex="-1"':''} value="${esc(dateField?minuteDisplay(val):val)}" placeholder="${editable?'Completar':'—'}"/></div>`)}</td>`;
@@ -2080,7 +2173,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       key:'GPS_SEGUROS', name:'GPS y Seguros', icon:'truck',
       description:'GPS y seguros conectados a TB2 - TRACKING OPERATIVO.',
       columns:['ID_OPERACION','RUC','CLIENTE','FFNN','ANALISTA OPERATIVO','CAF',
-        ...Object.keys(TSF_GPS_FIELDS)], rows:[]
+        ...Object.keys(TSF_GPS_FIELDS),'ESTADO_OPERACIÓN','COMENTARIOS'], rows:[]
     };
     base.push(clone(moduloGPS));
     modules.push(clone(moduloGPS));
