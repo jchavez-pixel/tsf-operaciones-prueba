@@ -1649,6 +1649,37 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
 
       return fetchOriginal(recurso, opciones);
     };
+   
+    // ============================================
+    // TSF V11.7 - NUEVA COLUMNA VERITRADE
+    // Ubicación: ANALISTA OPERATIVO -> VERITRADE -> T.CREDITO
+    // ============================================
+
+    const TSF_VERITRADE_INTERNO = 'Veritrade';
+
+    // Incorporar columna sin alterar las existentes.
+    for (const modelo of [base[0], modules[0]]) {
+
+      if (!modelo.columns.includes('VERITRADE')) {
+
+        const posicion = modelo.columns.indexOf('T.CREDITO');
+
+        modelo.columns.splice(
+          posicion >= 0 ? posicion : modelo.columns.length,
+          0,
+          'VERITRADE'
+        );
+      }
+    }
+
+    // Correspondencia con SharePoint.
+    SP_FIELDS['VERITRADE'] = 'veritrade';
+
+    SP_FIELD_TO_INTERNAL['VERITRADE'] =
+      TSF_VERITRADE_INTERNO;
+
+    // Registrar como campo de la lista maestra.
+    MASTER_COLUMNS.add('VERITRADE');
 
     // Mostrar listas reales, no los registros simulados
     spPreview.active = true;
