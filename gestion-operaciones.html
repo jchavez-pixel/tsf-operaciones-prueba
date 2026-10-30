@@ -1879,6 +1879,358 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
 
     // Sincronizar cada 30 segundos.
     setInterval(tsfSyncSafe, TSF_SYNC_INTERVAL);
+   
+    // ============================================
+    // TSF V11.7 - VAF Y REPROCESOS
+    // Mejoras de interfaz - Operaciones
+    // ============================================
+
+    const tsfEstilos = document.createElement('style');
+
+    tsfEstilos.textContent = `
+      .tsf-vaf-input {
+        width: 100%;
+        min-width: 90px;
+        padding: 7px 5px;
+        border: 1px solid #ead68a;
+        border-radius: 6px;
+        background: #fff9e6;
+        font: inherit;
+        color: inherit;
+        text-align: right;
+      }
+
+      .tsf-vaf-input.changed {
+        background: #fff0ab;
+        border-color: #d5a900;
+        font-weight: 700;
+      }
+
+      .tsf-vaf-input[readonly] {
+        background: transparent;
+        border-color: transparent;
+      }
+
+      .tsf-repro-check {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 33px;
+        height: 29px;
+        margin-left: 5px;
+        border: 1px solid #d7dde5;
+        border-radius: 7px;
+        background: white;
+        color: #293545;
+        font-size: 18px;
+        vertical-align: middle;
+        cursor: pointer;
+      }
+
+      .tsf-repro-check.is-checked {
+        background: #fff2ba;
+        color: #126747;
+        border-color: #efc849;
+        font-weight: 700;
+      }
+
+      .tsf-repro-check:disabled {
+        opacity: 0.75;
+        cursor: default;
+      }
+    `;
+
+    document.head.appendChild(tsfEstilos);
+
+    // Guardar renderizador original
+    const tsfRenderOriginal = tableRender;
+
+    // Ampliar tabla Tracking
+    tableRender = function (...args) {
+
+      const resultado = tsfRenderOriginal(...args);
+
+      if (mIdx !== 1 || !trackingSp.active) {
+        return resultado;
+      }
+
+      const tabla = document.getElementById('dataTable');
+      const cabecera = tabla?.tHead?.rows?.[0];
+      const cuerpo = tabla?.tBodies?.[0];
+
+      if (!cabecera || !cuerpo) {
+        return resultado;
+      }
+
+      const indice = Math.max(
+        1,
+        modules[1].columns.indexOf('COL. NETA ($)')
+      );
+
+      // NUEVA COLUMNA VAF
+      const th = document.createElement('th');
+      th.textContent = 'VAF';
+      th.className = 'field-workflow';
+      th.style.width = '115px';
+
+      th.title =
+        'VAF vinculado a Gestión de Operaciones';
+
+      cabecera.insertBefore(
+        th,
+        cabecera.cells[indice]
+      );
+
+      const grupo = tabla.querySelector('colgroup');
+
+      if (grupo) {
+        const columna = document.createElement('col');
+        columna.style.width = '115px';
+
+        grupo.insertBefore(
+          columna,
+          grupo.children[indice]
+        );
+      }
+
+      // Cambiar título de última columna
+      const ultimoEncabezado =
+        cabecera.lastElementChild;
+
+      ultimoEncabezado.textContent =
+        'DETALLE / REPROCESO';
+
+      ultimoEncabezado.style.width = '151px';
+
+      tabla.style.width =
+        (parseFloat(tabla.style.width) + 193) + 'px';
+
+      if (grupo?.lastElementChild) {
+        grupo.lastElementChild.style.width = '151px';
+      }
+
+      // PROCESAR CADA REGISTRO
+      for (const fila of cuerpo.rows) {
+
+        const id = fila.dataset.id;
+
+        const gestion = spPreview.rows.find(
+          r => keyID(r) === id
+        );
+
+        const valorVAF = String(
+          gestion?.VAF ?? ''
+        );
+
+        const pendientes = spEdits.get(id);
+
+        const puedeEditar =
+          window.TSF_SESSION_ROLE === 'EDICION' &&
+          Boolean(gestion?.__spEtag) &&
+          !spSaving;
+
+        // CELDA VAF
+        const celdaVAF = document.createElement('td');
+        celdaVAF.className = 'field-workflow';
+        celdaVAF.style.width = '115px';
+
+        const entrada = document.createElement('input');
+
+        entrada.type = 'text';
+        entrada.inputMode = 'decimal';
+
+        entrada.className =
+          'tsf-vaf-input' +
+          (pendientes?.has('VAF') ? ' changed' : '');
+
+        entrada.value = valorVAF;
+
+        entrada.placeholder =
+          gestion ? 'Completar' : 'Sin Gestión';
+
+        entrada.readOnly = !puedeEditar;
+
+        entrada.title =
+          'VAF vinculado a Gestión de Operaciones';
+
+        celdaVAF.appendChild(entrada);
+
+        fila.insertBefore(
+          celdaVAF,
+          fila.cells[indice]
+        );
+
+        // EDITAR VAF
+        if (puedeEditar) {
+
+          entrada.addEventListener('change', () => {
+
+            const nuevo = entrada.value.trim();
+
+            if (
+              nuevo &&
+              !/^-?(?:\d+(?:[.,]\d+)?|[.,]\d+)$/.test(nuevo)
+            ) {
+              entrada.value = String(
+                gestion.VAF ?? ''
+              );
+
+              toast('VAF debe ser un número válido.');
+              return;
+            }
+
+            const original = String(
+              gestion.__spBaseline?.VAF ?? ''
+            );
+
+            const cambios =
+              spEdits.get(id) || new Map();
+
+            if (nuevo === original) {
+              cambios.delete('VAF');
+            } else {
+              cambios.set('VAF', nuevo);
+            }
+
+            if (cambios.size) {
+              spEdits.set(id, cambios);
+            } else {
+              spEdits.delete(id);
+            }
+
+            gestion.VAF = nuevo;
+
+            entrada.classList.toggle(
+              'changed',
+              cambios.has('VAF')
+            );
+
+            updateDirtyLabel();
+
+            toast(
+              'VAF actualizado en pantalla. ' +
+              'Para guardar en SharePoint, entra a ' +
+              'Gestión de Operaciones y pulsa Guardar cambios.'
+            );
+          });
+        }
+
+        // BOTÓN CHECK DE REPROCESOS
+        const detalle = fila.lastElementChild;
+
+        detalle.style.width = '151px';
+        detalle.style.whiteSpace = 'nowrap';
+
+        const reprocesos = modules[4];
+
+        const yaMarcado = reprocesos.rows.some(
+          r => keyID(r) === id &&
+          r.__manualReproceso === true
+        );
+
+        const boton = document.createElement('button');
+
+        boton.type = 'button';
+
+        boton.className =
+          'tsf-repro-check' +
+          (yaMarcado ? ' is-checked' : '');
+
+        boton.textContent =
+          yaMarcado ? '☑' : '☐';
+
+        boton.title = yaMarcado
+          ? 'Agregado a Reprocesos'
+          : 'Agregar a Reprocesos';
+
+        boton.disabled =
+          yaMarcado ||
+          window.TSF_SESSION_ROLE !== 'EDICION';
+
+        detalle.appendChild(boton);
+
+        boton.onclick = () => {
+
+          if (
+            window.TSF_SESSION_ROLE !== 'EDICION'
+          ) return;
+
+          const existente = reprocesos.rows.find(
+            r => keyID(r) === id &&
+            r.__manualReproceso === true
+          );
+
+          if (existente) {
+            toast(
+              'Esta operación ya fue agregada a Reprocesos.'
+            );
+            return;
+          }
+
+          const origen =
+            spPreview.rows.find(r => keyID(r) === id) ||
+            trackingSp.rows.find(r => keyID(r) === id);
+
+          if (!origen) {
+            toast('No se encontró la operación.');
+            return;
+          }
+
+          // Si ya existe una fila local con ese ID,
+          // reutilizarla para evitar duplicados.
+          let nuevoReproceso = reprocesos.rows.find(
+            r => keyID(r) === id
+          );
+
+          if (!nuevoReproceso) {
+
+            nuevoReproceso = Object.fromEntries(
+              reprocesos.columns.map(c => [c, ''])
+            );
+
+            nuevoReproceso.ID_OPERACION = id;
+
+            reprocesos.rows.unshift(nuevoReproceso);
+          }
+
+          // Copiar datos disponibles desde la operación
+          for (const columna of reprocesos.columns) {
+
+            if (
+              columna !== 'ID_OPERACION' &&
+              origen[columna] !== undefined
+            ) {
+              nuevoReproceso[columna] =
+                String(origen[columna] ?? '');
+            }
+          }
+
+          nuevoReproceso.__manualReproceso = true;
+          nuevoReproceso.__tsfPendienteDePersistir = true;
+
+          dirty.set(
+            'NEW|REPROCESOS|' + id,
+            true
+          );
+
+          boton.textContent = '☑';
+          boton.classList.add('is-checked');
+          boton.disabled = true;
+
+          toast(
+            'Operación ' + id +
+            ' agregada al módulo Reprocesos.'
+          );
+        };
+      }
+
+      return resultado;
+    };
+
+    // Redibujar si Tracking está abierto
+    if (mIdx === 1) {
+      tableRender();
+    }
 
     const header = document.querySelector('.headright');
     if (header) {
