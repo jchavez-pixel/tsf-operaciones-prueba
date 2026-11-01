@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V15.8 — GPS CAF fijo y PRODUCTO</title>
+<title>TSF | Operaciones V15.9 — GPS CAF fijo y PRODUCTO</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -861,7 +861,7 @@ body.tsf-v150-gps #dataTable thead tr.tsf-groups-row th {top:0!important;}
 </style>
 
 <style id="tsf-v151-caf-fine">
-/* V15.8: la franja superior de CAF forma parte del encabezado fijo, sin desplazar columnas. */
+/* V15.9: la franja superior de CAF forma parte del encabezado fijo, sin desplazar columnas. */
 body.tsf-v130-tracking #dataTable thead tr.tsf-groups-row th.tsf-caf-group-cap,
 body.tsf-v150-gps #dataTable thead tr.tsf-groups-row th.tsf-caf-group-cap {
   position:sticky!important;left:0!important;top:0!important;
@@ -892,7 +892,7 @@ body.tsf-v150-gps #dataTable tbody td.tsf-v150-caf input {
 </style>
 
 <style id="tsf-v152-identificadores-unificados">
-/* V15.8: misma tipografia, dimensiones y densidad para identificadores de Tracking y GPS. */
+/* V15.9: misma tipografia, dimensiones y densidad para identificadores de Tracking y GPS. */
 body.tsf-v130-tracking #dataTable,
 body.tsf-v150-gps #dataTable { border-collapse:separate!important; border-spacing:0!important; }
 body.tsf-v130-tracking #dataTable thead tr:last-child th,
@@ -946,58 +946,102 @@ body.tsf-v150-gps #dataTable tbody td.tsf-v150-producto {
 }
 </style>
 
-<style id="tsf-v153-tracking-base-gps-reference">
-/* V15.8: se replica SOLO el bloque de siete identificadores de GPS en Tracking.
-   Las columnas operativas posteriores conservan sus dimensiones y colores. */
-body.tsf-v130-tracking #dataTable colgroup col:nth-child(6){width:110px!important}
-body.tsf-v130-tracking #dataTable colgroup col:nth-child(7){width:105px!important}
-body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(-n+7){
-  height:58px!important;padding:6px 6px!important;line-height:1.18!important;
-  font-size:10px!important;font-weight:700!important;color:#435368!important;
-  background:#e6e9ee!important;border-color:#dfe5ec!important;
+<style id="tsf-v159-mismo-bloque-identificadores">
+/* UN SOLO FORMATO para los siete identificadores de Tracking y GPS.
+   Las columnas posteriores (8+) conservan su aspecto original. */
+body.tsf-v130-tracking #dataTable,
+body.tsf-v150-gps #dataTable {
+  border-collapse:separate!important;
+  border-spacing:0!important;
 }
-body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(-n+7) .thname{
-  font-size:10px!important;font-weight:700!important;line-height:1.18!important;
+/* Anchos iguales para las siete columnas, sin ensanchar sus controles. */
+body.tsf-v130-tracking #dataTable colgroup col:nth-child(1),
+body.tsf-v150-gps #dataTable colgroup col:nth-child(1),
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(1),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(1){width:155px!important;min-width:155px!important;max-width:155px!important;}
+body.tsf-v130-tracking #dataTable colgroup col:nth-child(2),
+body.tsf-v150-gps #dataTable colgroup col:nth-child(2),
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(2),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(2){width:120px!important;min-width:120px!important;max-width:120px!important;}
+body.tsf-v130-tracking #dataTable colgroup col:nth-child(3),
+body.tsf-v150-gps #dataTable colgroup col:nth-child(3),
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(3),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(3){width:174px!important;min-width:174px!important;max-width:174px!important;}
+body.tsf-v130-tracking #dataTable colgroup col:nth-child(4),
+body.tsf-v150-gps #dataTable colgroup col:nth-child(4),
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(4),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(4){width:155px!important;min-width:155px!important;max-width:155px!important;}
+body.tsf-v130-tracking #dataTable colgroup col:nth-child(5),
+body.tsf-v150-gps #dataTable colgroup col:nth-child(5),
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(5),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(5){width:190px!important;min-width:190px!important;max-width:190px!important;}
+body.tsf-v130-tracking #dataTable colgroup col:nth-child(6),
+body.tsf-v150-gps #dataTable colgroup col:nth-child(6),
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(6),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(6){width:126px!important;min-width:126px!important;max-width:126px!important;}
+body.tsf-v130-tracking #dataTable colgroup col:nth-child(7),
+body.tsf-v150-gps #dataTable colgroup col:nth-child(7),
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(7),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(7){width:118px!important;min-width:118px!important;max-width:118px!important;}
+/* Encabezados idénticos: color, altura, grosor y alineación. */
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(-n+7),
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(-n+7){
+  height:55px!important;min-height:55px!important;max-height:55px!important;
+  padding:0!important;font-size:11px!important;font-weight:700!important;
+  line-height:1.17!important;letter-spacing:0!important;
+  background:#e6e9ee!important;color:#435368!important;
+  border-bottom:1px solid #dfe5ec!important;vertical-align:middle!important;
+  box-shadow:none!important;box-sizing:border-box!important;
 }
-body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7){
-  height:43px!important;padding:3px 4px!important;font-size:11px!important;
-  line-height:1.2!important;background:#f0f2f5!important;color:#334155!important;
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(-n+7) .thinner,
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(-n+7) .thinner{
+  height:55px!important;min-height:0!important;max-height:55px!important;
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;padding:0 7px!important;
+  gap:3px!important;background:transparent!important;box-sizing:border-box!important;
+}
+body.tsf-v130-tracking #dataTable thead tr:last-child th:nth-child(-n+7) .thname,
+body.tsf-v150-gps #dataTable thead tr:last-child th:nth-child(-n+7) .thname{
+  font-size:11px!important;font-weight:700!important;
+  line-height:1.17!important;color:#435368!important;
+}
+/* Mismo espaciado, altura y fondo de filas y controles. */
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7),
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7){
+  height:49px!important;padding:5px!important;font-size:12px!important;
+  font-weight:500!important;line-height:1.3!important;
+  color:#334155!important;background:#f0f2f5!important;
+  vertical-align:middle!important;box-sizing:border-box!important;
+  border-bottom:1px solid #e7ebf0!important;
 }
 body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) input:not([type="checkbox"]),
-body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) select{
-  height:33px!important;min-height:33px!important;font-size:11px!important;
-  border-radius:5px!important;box-shadow:none!important;
-  border:1px solid #d1d9e4!important;
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) select,
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) input:not([type="checkbox"]),
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) select{
+  height:36px!important;min-height:36px!important;
+  width:100%!important;max-width:100%!important;
+  border:1px solid #d1d9e4!important;border-radius:5px!important;
+  background:#f0f2f5!important;box-shadow:none!important;
+  font-size:12px!important;line-height:1.3!important;
+  box-sizing:border-box!important;
 }
 body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) .tsf-v130-producto-val{
-  font-size:11px!important;font-weight:500!important;padding:0 2px!important;
+  font-size:12px!important;font-weight:500!important;line-height:1.3!important;padding:0 2px!important;
 }
-/* La cabecera agrupada y la tapa fija siguen grises, sin sombras ni franjas llamativas. */
-body.tsf-v130-tracking #dataTable thead tr.tsf-groups-row th.tsf-grupo-tr-base,
-body.tsf-v130-tracking #dataTable thead tr.tsf-groups-row th.tsf-caf-group-cap{
-  background:#e6e9ee!important;color:#435368!important;box-shadow:none!important;
-  font-size:10px!important;font-weight:700!important;
+/* CAF: una columna fija, estilo idéntico y sin sombra. */
+body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-caf,
+body.tsf-v150-gps #dataTable thead tr:last-child th.tsf-v150-caf{
+  position:sticky!important;left:0!important;top:30px!important;
+  z-index:119!important;background:#e6e9ee!important;box-shadow:none!important;
+  border-left:1px solid #d9e0e8!important;border-right:1px solid #d9e0e8!important;
 }
-body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-caf{
-  text-align:center!important;position:sticky!important;left:0!important;
-  background:#e6e9ee!important;box-shadow:none!important;
-  border-left:1px solid #d6dee7!important;border-right:1px solid #d6dee7!important;
-}
-body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-caf .thinner{
-  justify-content:center!important;
-}
-body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-caf .thname{
-  text-align:center!important;width:100%!important;
-}
-body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf{
-  position:sticky!important;left:0!important;background:#f0f2f5!important;
-  box-shadow:none!important;border-left:1px solid #dce3eb!important;
-  border-right:1px solid #dce3eb!important;
-}
-body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf input{
-  font-size:11px!important;font-weight:500!important;text-align:left!important;
+body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf,
+body.tsf-v150-gps #dataTable tbody td.tsf-v150-caf{
+  position:sticky!important;left:0!important;z-index:70!important;
   background:#f0f2f5!important;box-shadow:none!important;
+  border-left:1px solid #dde3ea!important;border-right:1px solid #dde3ea!important;
 }
+/* No se cambian los campos, los eventos ni las columnas operativas posteriores. */
 </style>
 
 <style id="tsf-v158-consolidated-headers">
@@ -1080,12 +1124,12 @@ body.tsf-v150-gps #dataTable thead tr:last-child th:first-child{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V15.8 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V15.9 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V15.8 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V15.9 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1908,7 +1952,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V15.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V15.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -2514,7 +2558,7 @@ function tsfEncabezadoGruposGPS(cols){
 }
 function tableRender(){
   document.body.classList.toggle('tsf-v150-gps',mIdx===6);
-  // V15.8: el GPS real es mIdx=6; no mutar columnas ni filas de TB3 Bienes.
+  // V15.9: el GPS real es mIdx=6; no mutar columnas ni filas de TB3 Bienes.
  const m=mainMod(),all=visible(),maxPage=Math.max(1,Math.ceil(all.length/pageSize));
  page=Math.max(1,Math.min(page,maxPage));
  const records=all.slice((page-1)*pageSize,page*pageSize);
@@ -5338,7 +5382,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V15.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V15.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -5856,7 +5900,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     tableRender=function(...args){
       const result=tsfV135RenderPrevio.apply(this,args);
       document.body.classList.toggle('tsf-v150-gps',mIdx===6);
-      // V15.8: ejecutar REALMENTE el ordenamiento GPS sobre cada tabla recién creada.
+      // V15.9: ejecutar REALMENTE el ordenamiento GPS sobre cada tabla recién creada.
       // Antes la función estaba declarada pero nunca era llamada.
       // GPS se genera correctamente en mIdx=6 desde tableRender; no reordenar el DOM.
       return result;
