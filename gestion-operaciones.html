@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V12.7 — Diseño uniforme y sincronización maestra CAF</title>
+<title>TSF | Operaciones V12.8 — Seguimientos por CAF</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -398,6 +398,85 @@ body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.field-extracted{
 .data-table tbody td.field-inherited input.cell-input:not([readonly]){
   cursor:text!important;color:#334155!important;font-weight:600;
 }
+
+/* ===============================================================
+   TSF V12.8 - Seguimientos por CAF | exclusivamente consulta
+   No crea registros, no modifica permisos ni cambia mapeos de TB1-TB6.
+   =============================================================== */
+body.tsf-seg-active main.content{gap:0;padding:14px 20px;overflow:auto}
+body.tsf-seg-active main.content > :not(#tsf-seg-view){display:none!important}
+#tsf-seg-view{display:none;min-width:0;color:#20262d}
+body.tsf-seg-active #tsf-seg-view{display:block}
+.tsf-seg-hero{display:flex;gap:15px;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap}
+.tsf-seg-crumb{font-size:10px;letter-spacing:1.4px;font-weight:800;color:#84909f;text-transform:uppercase;margin-bottom:5px}
+.tsf-seg-hero h1{font-size:25px;letter-spacing:-.7px;line-height:1.1;margin:0 0 5px;font-weight:850;color:#171c24}
+.tsf-seg-hero p{font-size:12px;color:#687483;margin:0}
+.tsf-seg-tools{display:flex;gap:8px;align-items:center}
+.tsf-seg-btn{font-size:12px;font-weight:750;border:1px solid #dce2e8;background:#fff;border-radius:9px;padding:11px 14px;color:#26313d;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.tsf-seg-btn:hover{border-color:#f0bd14;background:#fffae9}
+.tsf-seg-readonly{display:inline-flex;align-items:center;gap:5px;border:1px solid #dbe2e8;background:#f2f4f6;color:#5f6b76;border-radius:30px;padding:9px 12px;font-size:11px;font-weight:800}
+.tsf-seg-layout{display:grid;grid-template-columns:minmax(230px,295px) minmax(0,1fr);gap:14px;align-items:start}
+.tsf-seg-panel{border:1px solid #e1e6ec;background:#fff;border-radius:14px;box-shadow:0 3px 16px #222c380a;min-width:0;overflow:hidden}
+.tsf-seg-list-panel{padding:14px}
+.tsf-seg-panel-title{font-weight:830;font-size:15px;margin-bottom:5px;color:#20252c}
+.tsf-seg-micro{font-size:11px;color:#73808d;line-height:1.5}
+.tsf-seg-search{margin-top:13px;background:#f6f7f9;border:1px solid #dce3ea;border-radius:9px;display:flex;align-items:center;padding:0 11px;gap:8px}
+.tsf-seg-search:focus-within{outline:2px solid #ffcb1655;border-color:#edc02d}
+.tsf-seg-search input{border:0;outline:0;width:100%;height:43px;background:transparent;font-size:12px;color:#192533;min-width:0}
+#tsf-seg-caf-list{margin-top:12px;max-height:calc(100vh - 390px);min-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
+.tsf-seg-caf{width:100%;text-align:left;cursor:pointer;display:block;background:#fff;border:1px solid #e4e8ee;border-radius:10px;padding:11px 12px;color:#263341;transition:background .16s,border .16s}
+.tsf-seg-caf:hover{background:#fff9e5;border-color:#e5c04f}
+.tsf-seg-caf.active{background:#fff5d3;border-color:#e2b926;box-shadow:inset 3px 0 0 #ffcb16}
+.tsf-seg-caf strong{display:block;font-size:14px;letter-spacing:.1px}
+.tsf-seg-caf small{display:block;font-size:11px;color:#647487;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tsf-seg-caf em{display:block;font-size:10px;color:#83610b;font-weight:750;font-style:normal;margin-top:7px}
+.tsf-seg-right{min-width:0;padding:16px}
+.tsf-seg-opheading{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.tsf-seg-idline{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.tsf-seg-idline h2{margin:0;font-size:21px;font-weight:850;letter-spacing:-.5px;color:#18212c}
+.tsf-seg-caf-chip{background:#f2f3f6;border:1px solid #e1e4e9;color:#5d6977;padding:6px 9px;border-radius:7px;font-size:11px;font-weight:800}
+.tsf-seg-pill{display:inline-flex;align-items:center;border-radius:7px;font-size:11px;font-weight:820;padding:7px 10px;border:1px solid #e4d6ad;background:#fff5d8;color:#87610c}
+.tsf-seg-pill.proceso{background:#e4f0ff;border-color:#b9d6ff;color:#235da1}
+.tsf-seg-pill.desembolsado{background:#def4e7;border-color:#b8e5cd;color:#146741}
+.tsf-seg-pill.anulado{background:#fee8ea;border-color:#f4c2c6;color:#a1323d}
+.tsf-seg-pill.pendiente{background:#fff5d8;border-color:#f4d987;color:#8c640a}
+.tsf-seg-op-list{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px;padding:11px 0;border-top:1px solid #edf0f3;border-bottom:1px solid #edf0f3}
+.tsf-seg-opbutton{border:1px solid #dfe5ec;color:#536171;background:#f8fafc;min-width:0;cursor:pointer;border-radius:8px;padding:7px 10px;font-size:11px;font-weight:760}
+.tsf-seg-opbutton:hover{background:#fff8e3}
+.tsf-seg-opbutton.active{border-color:#efc327;color:#272e37;background:#fff5cd}
+.tsf-seg-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:14px}
+.tsf-seg-fact{border:1px solid #e5eaf0;background:#f7f9fb;border-radius:9px;padding:12px;min-width:0}
+.tsf-seg-label{color:#74808c;font-size:10px;font-weight:790;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+.tsf-seg-value{color:#1b2733;font-size:12px;font-weight:780;line-height:1.4;overflow-wrap:anywhere}
+.tsf-seg-section{border:1px solid #e5e8ed;border-radius:11px;padding:14px;margin-top:14px;background:#fff}
+.tsf-seg-heading{margin:0 0 14px;font-size:14px;font-weight:850;color:#26323f;display:flex;align-items:center;gap:9px}
+.tsf-seg-heading::before{content:'';height:16px;width:4px;background:#ffcb16;border-radius:5px}
+.tsf-seg-steps{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:5px;overflow-x:auto;padding:5px 0 7px}
+.tsf-seg-step{text-align:center;position:relative;min-width:112px}
+.tsf-seg-step:not(:last-child):after{content:'';position:absolute;left:calc(50% + 18px);right:calc(-50% + 16px);top:17px;height:3px;background:#d7dde4;z-index:0}
+.tsf-seg-step.done:not(:last-child):after{background:#2ba26d}
+.tsf-seg-dot{position:relative;z-index:1;width:35px;height:35px;margin:0 auto 9px;display:grid;place-items:center;border:2px solid #cdd5dd;background:#eef1f4;color:#96a1ad;border-radius:50%;font-size:15px;font-weight:800}
+.tsf-seg-step.done .tsf-seg-dot{background:#2aa36d;border-color:#2aa36d;color:#fff}
+.tsf-seg-step.active .tsf-seg-dot{background:#ffcb16;border-color:#e8b700;color:#2a2e35;box-shadow:0 0 0 4px #fff2c1}
+.tsf-seg-step-title{font-size:11px;font-weight:800;color:#354051;line-height:1.3}
+.tsf-seg-step-date{font-size:10px;color:#718093;margin-top:3px}
+.tsf-seg-tabs{display:flex;overflow-x:auto;gap:18px;border-bottom:1px solid #e1e7ed;padding:0 1px;margin-bottom:14px}
+.tsf-seg-tab{font-size:12px;font-weight:770;background:transparent;border:0;border-bottom:3px solid transparent;color:#697889;padding:11px 0 10px;cursor:pointer;white-space:nowrap}
+.tsf-seg-tab:hover{color:#2b3642}
+.tsf-seg-tab.active{color:#222a33;border-bottom-color:#ffcb16}
+.tsf-seg-data-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.tsf-seg-datum{border:1px solid #edf0f4;background:#f8f9fb;padding:11px;border-radius:9px;min-width:0}
+.tsf-seg-datum .tsf-seg-value{font-size:12px;font-weight:720}
+.tsf-seg-related{margin-bottom:12px;border:1px solid #e7ecf1;border-radius:10px;padding:12px}
+.tsf-seg-related-head{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:12px;font-weight:850;color:#384758;margin-bottom:10px}
+.tsf-seg-related-index{font-size:10px;color:#788694;font-weight:680}
+.tsf-seg-empty{padding:28px 15px;text-align:center;font-size:12px;line-height:1.6;color:#718091}
+.tsf-seg-msg{padding:10px 12px;background:#f4f6f8;border-radius:9px;margin-top:12px;font-size:11px;color:#647484;line-height:1.5}
+.tsf-seg-msg.warn{background:#fff6dc;color:#86600c}
+@media(max-width:1200px){.tsf-seg-layout{grid-template-columns:255px minmax(0,1fr)}.tsf-seg-facts,.tsf-seg-data-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.tsf-seg-layout{grid-template-columns:minmax(0,1fr)}#tsf-seg-caf-list{max-height:270px;min-height:80px}.tsf-seg-right{padding:13px}.tsf-seg-hero h1{font-size:21px}}
+@media(max-width:460px){.tsf-seg-facts,.tsf-seg-data-grid{grid-template-columns:1fr}.tsf-seg-tools{width:100%}.tsf-seg-btn{flex:1}}
+
 </style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
@@ -450,12 +529,12 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.6 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.8 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V12.7 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.8 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1278,7 +1357,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V12.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -4707,7 +4786,7 @@ celdaVAF.className = 'field-workflow tsf-area-tr-oper';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V12.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V12.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -4722,6 +4801,282 @@ celdaVAF.className = 'field-workflow tsf-area-tr-oper';
       }
       return result;
     };
+
+
+    // =============================================================
+    // V12.8: módulo Seguimientos (solo lectura), mismo estado real de
+    // Gestión/TB2 y registros relacionados TB3-TB6 por ID_OPERACION.
+    // =============================================================
+    const TSF_SEG_INDEX=7;
+    const tsfSegDummy={key:'SEGUIMIENTOS',name:'Seguimientos',icon:'activity',description:'Seguimiento ejecutivo por CAF · solo lectura',columns:['CAF'],rows:[]};
+    base.push(clone(tsfSegDummy));
+    modules.push(clone(tsfSegDummy));
+    const tsfSegState={caf:'',id:'',tab:'generales',query:'',loading:false,refreshing:false};
+    const tsfSegTabs=[
+      ['generales','Datos generales'],['tracking','Tracking'],['gps','GPS y Seguros'],
+      ['bienes','Bienes'],['garantias','Garantías'],['reprocesos','Reprocesos'],['modificaciones','Modificaciones']
+    ];
+    const tsfSegHost=document.createElement('section');
+    tsfSegHost.id='tsf-seg-view';
+    tsfSegHost.setAttribute('aria-label','Seguimientos de operaciones por CAF');
+    document.querySelector('main.content').appendChild(tsfSegHost);
+
+    function tsfSegVacio(v){
+      return v==null||String(v).trim()===''||['completar','seleccionar...','—','-'].includes(String(v).trim().toLowerCase());
+    }
+    function tsfSegTexto(v){return tsfSegVacio(v)?'Sin registrar':String(v).trim()}
+    function tsfSegNormal(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase()}
+    function tsfSegFecha(v){
+      if(tsfSegVacio(v))return 'Sin fecha';
+      const s=String(v).trim();
+      const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s);
+      if(m)return m[3]+'/'+m[2]+'/'+m[1];
+      const dm=/^(\d{2}\/\d{2}\/\d{4})/.exec(s);
+      return dm?dm[1]:s;
+    }
+    function tsfSegClaseEstado(v){
+      const s=tsfSegNormal(v);
+      if(s.includes('desembols'))return 'desembolsado';
+      if(s.includes('anulad'))return 'anulado';
+      if(s.includes('proceso'))return 'proceso';
+      return 'pendiente';
+    }
+    function tsfSegSoloReales(){
+      return spPreview.active&&Array.isArray(spPreview.rows)?spPreview.rows:[];
+    }
+    function tsfSegAgrupar(){
+      // No usar registros ficticios precargados en el HTML.
+      const maestros=tsfSegSoloReales();
+      const trackingMap=new Map((trackingSp.active?trackingSp.rows:[]).map(r=>[keyID(r),r]));
+      const todos=new Map();
+      for(const master of maestros){
+        const caf=String(master.CAF??'').trim();
+        const id=String(master.ID_OPERACION??'').trim();
+        if(!caf||!id)continue;
+        const k=tsfSegNormal(caf);
+        if(!todos.has(k))todos.set(k,{caf,operaciones:[]});
+        const track=trackingMap.get(id)||null;
+        const estado=typeof window.tsfEstadoPublico==='function'?
+          window.tsfEstadoPublico(id):String(track?.['ESTADO_OPERACIÓN']??'');
+        const deriva=String(estado||track?.['ESTADO_OPERACIÓN']||'').trim()||
+          (String(master['ANALISTA OPERATIVO']||'').trim()?'EN PROCESO':'PENDIENTE');
+        todos.get(k).operaciones.push({id,caf,master,track,estado:deriva});
+      }
+      return [...todos.values()].sort((a,b)=>a.caf.localeCompare(b.caf,'es',{numeric:true}));
+    }
+    function tsfSegFilasRelacionadas(idx,id){
+      const store=tsfRemoteStores[idx];
+      if(!store?.loaded)return [];
+      return store.rows.filter(r=>String(r.ID_OPERACION??'').trim()===id);
+    }
+    function tsfSegPill(estado){
+      return `<span class="tsf-seg-pill ${tsfSegClaseEstado(estado)}">${esc(estado||'PENDIENTE')}</span>`;
+    }
+    function tsfSegDatos(fields){
+      return '<div class="tsf-seg-data-grid">'+fields.map(([k,v])=>
+        `<div class="tsf-seg-datum"><div class="tsf-seg-label">${esc(k)}</div><div class="tsf-seg-value">${esc(tsfSegTexto(v))}</div></div>`).join('')+'</div>';
+    }
+    function tsfSegCamposDeFila(row,cols,exclude=[]){
+      return cols.filter(c=>!exclude.includes(c)).map(c=>[c,row?.[c]]);
+    }
+    function tsfSegTabDatos(op){
+      const master=op.master,track=op.track||{},id=op.id;
+      if(tsfSegState.tab==='generales'){
+        return tsfSegDatos([
+          ['ID_OPERACION',id],['CAF',op.caf],['CLIENTE',master.CLIENTE],['RUC',master.RUC],
+          ['PRODUCTO',master.PRODUCTO],['EXPEDIENTE',master.EXPEDIENTE],['ANALISTA OPERATIVO',master['ANALISTA OPERATIVO']],
+          ['FFNN',master.FFNN],['FECHA REGISTRO',tsfSegFecha(master.FECHA_DE_REGISTRO)],
+          ['MONEDA',master.MONEDA],['VAF',master.VAF],['COL. NETA ($)',master['COL. NETA ($)']],
+          ['MES DE COLOCACIÓN',master['MES DE COLOCACIÓN']],['GARANTÍA',master.GARANTIA],['TIPO DE BIEN',master['TIPO DE BIEN']],
+          ['SEMIREMOLQUE',master.SEMIREMOLQUE]
+        ]);
+      }
+      if(tsfSegState.tab==='tracking'){
+        if(!op.track)return '<div class="tsf-seg-empty">Esta operación todavía no tiene un registro asociado en TB2 - TRACKING OPERATIVO.</div>';
+        return tsfSegDatos([['ESTADO_OPERACIÓN',op.estado],...tsfSegCamposDeFila(track,modules[1].columns,['ID_OPERACION','RUC','CLIENTE','FFNN','ANALISTA OPERATIVO','CAF','ESTADO_OPERACIÓN'])]);
+      }
+      if(tsfSegState.tab==='gps'){
+        if(!op.track)return '<div class="tsf-seg-empty">Esta operación todavía no tiene datos en TB2 para GPS y Seguros.</div>';
+        return tsfSegDatos(tsfSegCamposDeFila(track,modules[6].columns,
+          ['ID_OPERACION','RUC','CLIENTE','FFNN','ANALISTA OPERATIVO','CAF','ESTADO_OPERACIÓN']));
+      }
+      const idx={bienes:2,garantias:3,reprocesos:4,modificaciones:5}[tsfSegState.tab];
+      const store=tsfRemoteStores[idx];
+      const source=TSF_REMOTE_LISTS[idx]?.lista||'';
+      if(!store?.loaded){
+        return `<div class="tsf-seg-empty">${esc(source)}: ${store?.error?esc(store.error):'consultando SharePoint…'}<br>Los registros aún no están disponibles; no se muestran datos de demostración.</div>`;
+      }
+      const items=tsfSegFilasRelacionadas(idx,id);
+      if(!items.length)return `<div class="tsf-seg-empty">Sin registros relacionados en ${esc(source)}${!store.historyDone?' (histórico todavía en carga)':''}.</div>`;
+      return items.map((r,i)=>`<div class="tsf-seg-related">
+        <div class="tsf-seg-related-head"><span>${esc(source)} · registro ${i+1}</span>
+        <span class="tsf-seg-related-index">ID SharePoint ${esc(r.__spId??'—')}</span></div>
+        ${tsfSegDatos(tsfSegCamposDeFila(r,modules[idx].columns,['ID_OPERACION']))}
+      </div>`).join('');
+    }
+    function tsfSegPasoLinea(op){
+      const t=op.track||{},m=op.master;
+      const etapas=[
+        ['Registro',m.FECHA_DE_REGISTRO||t['FECHA DE INGRESO DE OPERACIONES']],
+        ['Envío a Notaría',t['FECHA DE ENVÍO DE LEGAL A NOTARIA PARA FIRMA CLIENTE']],
+        ['Firma cliente',t['FIRMA CLIENTE']],
+        ['Tesorería',t['FECHA DE ENVÍO A TESORERÍA']],
+        ['Desembolso',t.FECHA_DESEMBOLSO]
+      ];
+      const primeroSinFecha=etapas.findIndex(([,fecha])=>tsfSegVacio(fecha));
+      return `<div class="tsf-seg-steps">${etapas.map(([titulo,fecha],i)=>{
+        const done=!tsfSegVacio(fecha),active=!done&&i===primeroSinFecha&&op.estado!=='ANULADO';
+        return `<div class="tsf-seg-step ${done?'done':active?'active':''}">
+          <div class="tsf-seg-dot">${done?'✓':active?'•':'○'}</div>
+          <div class="tsf-seg-step-title">${esc(titulo)}</div>
+          <div class="tsf-seg-step-date">${esc(tsfSegFecha(fecha))}</div></div>`;
+      }).join('')}</div>`;
+    }
+    function tsfSegListaCAF(grupos){
+      const q=tsfSegNormal(tsfSegState.query);
+      const visibles=grupos.filter(g=>!q||tsfSegNormal(g.caf).includes(q)||g.operaciones.some(op=>
+        tsfSegNormal(op.id).includes(q)||tsfSegNormal(op.master.CLIENTE).includes(q)||tsfSegNormal(op.master.RUC).includes(q)));
+      const html=visibles.map(g=>{
+        const op=g.operaciones[0];
+        return `<button type="button" class="tsf-seg-caf ${tsfSegState.caf===g.caf?'active':''}" data-seg-caf="${esc(g.caf)}">
+          <strong>${esc(g.caf)}</strong><small>${esc(tsfSegTexto(op.master.CLIENTE))}</small>
+          <em>${g.operaciones.length} ${g.operaciones.length===1?'operación relacionada':'operaciones relacionadas'}</em>
+        </button>`;
+      }).join('');
+      const target=document.getElementById('tsf-seg-caf-list');
+      if(target)target.innerHTML=html||'<div class="tsf-seg-empty">Sin coincidencias para esta búsqueda.</div>';
+      const count=document.getElementById('tsf-seg-count');
+      if(count)count.textContent=`${grupos.length} CAF · ${grupos.reduce((n,g)=>n+g.operaciones.length,0)} operaciones`;
+    }
+    function tsfSegRender(){
+      if(mIdx!==TSF_SEG_INDEX)return;
+      const grupos=tsfSegAgrupar();
+      if(!grupos.some(g=>g.caf===tsfSegState.caf))tsfSegState.caf=grupos[0]?.caf||'';
+      const grupo=grupos.find(g=>g.caf===tsfSegState.caf);
+      if(grupo&&!grupo.operaciones.some(op=>op.id===tsfSegState.id))tsfSegState.id=grupo.operaciones[0].id;
+      const op=grupo?.operaciones.find(x=>x.id===tsfSegState.id)||null;
+      const pendientes=[...spEdits.values()].some(mp=>mp.size>0)||trackingSp.edits.size>0;
+      tsfSegHost.innerHTML=`
+        <header class="tsf-seg-hero"><div><div class="tsf-seg-crumb">PORTAL / MEDIANO PLAZO / SEGUIMIENTOS</div>
+          <h1>Seguimientos por CAF</h1><p>Vista consolidada de operaciones, trámites, bienes y garantías.</p></div>
+          <div class="tsf-seg-tools"><span class="tsf-seg-readonly">${ic('lock',13)} SOLO LECTURA</span>
+            <button type="button" id="tsf-seg-refresh" class="tsf-seg-btn">${ic('refresh',14)} Actualizar datos</button></div></header>
+        <div class="tsf-seg-layout"><aside class="tsf-seg-panel tsf-seg-list-panel">
+          <div class="tsf-seg-panel-title">Operaciones por CAF</div><div id="tsf-seg-count" class="tsf-seg-micro"></div>
+          <label class="tsf-seg-search">${ic('search',16)}<input id="tsf-seg-search" type="search" autocomplete="off" aria-label="Buscar por CAF, cliente, RUC o ID de operación" placeholder="Buscar CAF, cliente, RUC…" value="${esc(tsfSegState.query)}"></label>
+          <div id="tsf-seg-caf-list"></div></aside>
+          <div class="tsf-seg-panel tsf-seg-right">${op?`
+            <div class="tsf-seg-opheading"><div class="tsf-seg-idline"><h2>${esc(op.id)}</h2>${tsfSegPill(op.estado)}
+              <span class="tsf-seg-caf-chip">CAF ${esc(op.caf)}</span></div><span class="tsf-seg-readonly">Consulta consolidada</span></div>
+            ${grupo.operaciones.length>1?`<div class="tsf-seg-op-list">${grupo.operaciones.map(x=>
+              `<button type="button" class="tsf-seg-opbutton ${x.id===op.id?'active':''}" data-seg-op="${esc(x.id)}">${esc(x.id)}</button>`).join('')}</div>`:''}
+            <div class="tsf-seg-facts">
+              ${[['Cliente',op.master.CLIENTE],['RUC',op.master.RUC],['CAF',op.caf],['Analista operativo',op.master['ANALISTA OPERATIVO']]].map(([k,v])=>
+                `<div class="tsf-seg-fact"><div class="tsf-seg-label">${esc(k)}</div><div class="tsf-seg-value">${esc(tsfSegTexto(v))}</div></div>`).join('')}
+            </div>
+            <section class="tsf-seg-section"><h3 class="tsf-seg-heading">Flujo de la operación</h3>
+              ${tsfSegPasoLinea(op)}
+              <div class="tsf-seg-micro" style="margin-top:10px">Las etapas se marcan completadas solo cuando existe una fecha registrada en SharePoint.</div></section>
+            <section class="tsf-seg-section"><div class="tsf-seg-tabs" role="tablist" aria-label="Detalle del seguimiento">
+              ${tsfSegTabs.map(([k,n])=>`<button type="button" class="tsf-seg-tab ${tsfSegState.tab===k?'active':''}" role="tab" aria-selected="${tsfSegState.tab===k}" data-seg-tab="${k}">${esc(n)}</button>`).join('')}</div>
+              <div id="tsf-seg-tab-panel" role="tabpanel">${tsfSegTabDatos(op)}</div></section>
+            ${pendientes?'<div class="tsf-seg-msg warn">Hay cambios pendientes de guardar en otros módulos. Esta vista puede mostrarlos temporalmente; comprueba el guardado en SharePoint antes de considerarlos confirmados.</div>':''}
+          `:`<div class="tsf-seg-empty">${spPreview.loading||!spPreview.rows?.length?'Cargando operaciones reales de Gestión…':'No hay operaciones con CAF registrado en Gestión.'}</div>`}
+          </div></div>
+        <div class="tsf-seg-msg">Los datos se consultan a partir de Gestión, TB2 (Tracking/GPS y Seguros) y TB3–TB6. Este módulo no escribe ni modifica registros. Los históricos de TB3–TB6 se completan progresivamente.</div>`;
+      tsfSegListaCAF(grupos);
+    }
+    let tsfSegTimer=0;
+    function tsfSegPintarPronto(){
+      if(mIdx!==TSF_SEG_INDEX)return;
+      clearTimeout(tsfSegTimer);
+      tsfSegTimer=setTimeout(()=>{
+        if(mIdx!==TSF_SEG_INDEX||document.activeElement?.id==='tsf-seg-search')return;
+        tsfSegRender();
+      },140);
+    }
+    // Consulta secuencial para no saturar Power Automate con cuatro peticiones simultáneas.
+    let tsfSegEnsureBusy=false;
+    async function tsfSegCompletarListas(){
+      if(tsfSegEnsureBusy)return;
+      tsfSegEnsureBusy=true;
+      try{
+        for(const i of [2,3,4,5]){
+          if(mIdx!==TSF_SEG_INDEX||document.hidden)break;
+          await tsfCargarListaModulo(i,{prefetch:true});
+          tsfSegPintarPronto();
+        }
+        for(const i of [2,3,4,5]){
+          if(mIdx!==TSF_SEG_INDEX||document.hidden)break;
+          const t=tsfRemoteStores[i];
+          if(t?.loaded&&!t.historyDone){
+            await tsfCargarHistorial(i,{permitirOculto:true});
+            tsfSegPintarPronto();
+          }
+        }
+      }catch(e){console.warn('Seguimientos - lectura adicional:',String(e?.message||e).slice(0,150));}
+      finally{tsfSegEnsureBusy=false;}
+    }
+    async function tsfSegActualizar(){
+      if(tsfSegState.refreshing)return;
+      if(spEdits.size||trackingSp.edits.size){toast('Primero guarda o descarta los cambios pendientes en Gestión y Tracking.');return;}
+      tsfSegState.refreshing=true;
+      const b=document.getElementById('tsf-seg-refresh');if(b)b.disabled=true;
+      try{
+        await Promise.allSettled([loadSpPreview(),loadTrackingSp(true)]);
+        tsfSegPintarPronto();
+        await tsfSegCompletarListas();
+        tsfSegPintarPronto();
+      }finally{tsfSegState.refreshing=false;const btn=document.getElementById('tsf-seg-refresh');if(btn)btn.disabled=false;}
+    }
+    tsfSegHost.addEventListener('click',e=>{
+      const caf=e.target.closest('[data-seg-caf]');
+      if(caf){tsfSegState.caf=caf.dataset.segCaf;tsfSegState.id='';tsfSegRender();return;}
+      const op=e.target.closest('[data-seg-op]');
+      if(op){tsfSegState.id=op.dataset.segOp;tsfSegRender();return;}
+      const tab=e.target.closest('[data-seg-tab]');
+      if(tab){tsfSegState.tab=tab.dataset.segTab;tsfSegRender();return;}
+      if(e.target.closest('#tsf-seg-refresh'))void tsfSegActualizar();
+    });
+    tsfSegHost.addEventListener('input',e=>{
+      if(e.target.id==='tsf-seg-search'){tsfSegState.query=e.target.value;tsfSegListaCAF(tsfSegAgrupar());}
+    });
+    const tsfSegNavAnterior=navRender;
+    navRender=function(...args){
+      const res=tsfSegNavAnterior.apply(this,args);
+      const nav=document.getElementById('sidenav');
+      if(!nav)return res;
+      const btn=document.createElement('button');
+      btn.type='button';btn.dataset.module=String(TSF_SEG_INDEX);
+      btn.className='nav-button'+(mIdx===TSF_SEG_INDEX?' active':'');
+      btn.title='Seguimientos · solo lectura por CAF';
+      btn.innerHTML=ic('activity')+'<span class="navlabel">Seguimientos</span>';
+      btn.addEventListener('click',()=>switchModule(TSF_SEG_INDEX));
+      nav.appendChild(btn);
+      return res;
+    };
+    const tsfSegDrawAnterior=draw;
+    draw=function(...args){
+      if(mIdx===TSF_SEG_INDEX){navRender();tsfSegRender();return;}
+      return tsfSegDrawAnterior.apply(this,args);
+    };
+    const tsfSegSwitchAnterior=switchModule;
+    switchModule=function(idx){
+      if(idx===TSF_SEG_INDEX){
+        mIdx=idx;document.body.classList.add('tsf-seg-active');
+        closeOverlays();navRender();tsfSegRender();
+        void tsfSegCompletarListas();return;
+      }
+      document.body.classList.remove('tsf-seg-active');
+      return tsfSegSwitchAnterior(idx);
+    };
+    const tsfSegPaintAnterior=tsfRemotePaint;
+    tsfRemotePaint=function(i){const res=tsfSegPaintAnterior(i);tsfSegPintarPronto();return res;};
+    const tsfSegSafeAnterior=tsfSafePaint;
+    tsfSafePaint=function(i){if(mIdx===TSF_SEG_INDEX){tsfSegPintarPronto();return;}return tsfSegSafeAnterior(i);};
+    const tsfSegUiAnterior=updateSpPreviewUI;
+    updateSpPreviewUI=function(...args){if(mIdx===TSF_SEG_INDEX)return;return tsfSegUiAnterior.apply(this,args);};
+    // Fin del módulo adicional Seguimientos. No afecta guardados ni permisos.
 
     // Inicializar sin tocar los borradores ni recargar la página.
     tsfActualizarEstadosGestion();
