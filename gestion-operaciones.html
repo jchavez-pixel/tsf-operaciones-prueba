@@ -807,6 +807,30 @@ body.tsf-v135-gps #dataTable tbody td.tsf-v139-caf{position:sticky!important;lef
 body.tsf-v135-gps #dataTable thead tr:last-child th.tsf-v130-producto{left:auto!important;min-width:126px!important}
 body.tsf-v135-gps #dataTable tbody td.tsf-v130-producto{position:relative!important;left:auto!important;min-width:126px!important}
 </style>
+<style id="tsf-v140-caf-producto">
+/* GPS: una sola columna fija horizontal: CAF, sin esconder PRODUCTO. */
+body.tsf-v140-gps #dataTable{table-layout:fixed!important;border-collapse:separate!important;border-spacing:0!important}
+body.tsf-v140-gps #dataTable thead tr:last-child th.tsf-v140-caf{
+ position:sticky!important;left:0!important;top:30px!important;z-index:88!important;
+ width:118px!important;min-width:118px!important;background:#e3e8ee!important;
+ box-shadow:3px 0 6px rgba(72,91,116,.28)!important
+}
+body.tsf-v140-gps #dataTable tbody td.tsf-v140-caf{
+ position:sticky!important;left:0!important;z-index:66!important;
+ width:118px!important;min-width:118px!important;background:#edf1f5!important;
+ box-shadow:3px 0 6px rgba(72,91,116,.21)!important
+}
+body.tsf-v140-gps #dataTable tbody td.tsf-v140-producto{
+ position:relative!important;left:auto!important;z-index:auto!important;
+ background:#f0f2f5!important;width:126px!important;min-width:126px!important;
+ overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important
+}
+body.tsf-v140-gps #dataTable thead tr:last-child th.tsf-v140-producto{
+ position:sticky!important;top:30px!important;left:auto!important;z-index:30!important;
+ width:126px!important;min-width:126px!important;background:#e4e8ed!important
+}
+body.tsf-v140-gps #dataTable thead tr:last-child th.tsf-v140-producto .thname{display:block!important;text-align:left!important}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -5428,6 +5452,75 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       return tsfV131DrawAnterior.apply(this,args);
     };
 
+    // V14.0: una sola transformación GPS, sobre los índices ORIGINALES.
+    // No modifica modules[2].columns, data-col, los listeners ni los datos de SharePoint.
+    function tsfV140GpsColumnas(){
+      document.body.classList.toggle('tsf-v135-gps',mIdx===2);
+      document.body.classList.toggle('tsf-v140-gps',mIdx===2);
+      if(mIdx!==2)return;
+      const tabla=document.getElementById('dataTable');
+      const mod=mainMod();
+      const cols=mod?.columns||[];
+      const group=tabla?.querySelector('colgroup');
+      const head=tabla?.tHead?.rows?.[tabla.tHead.rows.length-1];
+      const tbody=tabla?.tBodies?.[0];
+      if(!group||!head||!tbody)return;
+      const a=cols.indexOf('ANALISTA OPERATIVO'),c=cols.indexOf('CAF'),p=cols.indexOf('PRODUCTO');
+      if(a<0||c<0)return;
+      const originalCols=Array.from(group.children);
+      const originalHead=Array.from(head.cells);
+      if(originalCols.length<cols.length||originalHead.length<cols.length)return;
+      const getProductRow=(tr)=>{
+        const fila=mod.rows.find(r=>keyID(r)===tr.dataset.id);
+        const maestro=fila&&typeof tsfV127ResolverMaestro==='function'?tsfV127ResolverMaestro(fila):null;
+        return String(maestro?.PRODUCTO??fila?.PRODUCTO??'').trim();
+      };
+      let productCol=p>=0?originalCols[p]:document.createElement('col');
+      let productHead=p>=0?originalHead[p]:document.createElement('th');
+      productHead.classList.add('tsf-v140-producto','field-inherited');
+      if(p<0){
+        productHead.innerHTML='<div class="thinner"><span class="thname">PRODUCTO</span></div>';
+        const agrupador=tabla.tHead.querySelector('.tsf-grupo-base,.tsf-grupo-tr-base');
+        if(agrupador)agrupador.colSpan+=1;
+      }
+      const indices=cols.map((_,i)=>i).filter(i=>i!==c&&i!==p);
+      const pos=indices.indexOf(a);
+      const ordered=[...indices.slice(0,pos+1),'PRODUCTO',c,...indices.slice(pos+1)];
+      const widths={'ID OPERACION':155,'ID OPERACIÓN':155,'RUC':120,'CLIENTE':174,'FFNN':155,'ANALISTA OPERATIVO':190,'PRODUCTO':126,'CAF':118};
+      const widthOf=(key,el)=>widths[key]||Math.min(parseFloat(el?.style?.width)||150,155);
+      for(const k of ordered){
+        const isProduct=k==='PRODUCTO';
+        const col=isProduct?productCol:originalCols[k];
+        const th=isProduct?productHead:originalHead[k];
+        const label=isProduct?'PRODUCTO':cols[k];
+        const w=widthOf(label,col);
+        col.style.width=w+'px';th.style.width=w+'px';
+        if(label==='CAF')th.classList.add('tsf-v140-caf');
+        group.appendChild(col);head.appendChild(th);
+      }
+      for(const tr of tbody.rows){
+        const originalCells=Array.from(tr.cells);
+        if(originalCells.length<cols.length)continue;
+        let productCell=p>=0?originalCells[p]:document.createElement('td');
+        productCell.classList.add('field-inherited','tsf-v140-producto');
+        if(p<0){
+          const value=getProductRow(tr);
+          const text=document.createElement('span');text.className='tsf-v130-producto-val';
+          text.textContent=value||'—';productCell.title=value||'Producto pendiente en Gestión';
+          productCell.appendChild(text);
+        }
+        for(const k of ordered){
+          const isProduct=k==='PRODUCTO';
+          const td=isProduct?productCell:originalCells[k];
+          const label=isProduct?'PRODUCTO':cols[k];
+          td.style.width=widthOf(label,isProduct?productCol:originalCols[k])+'px';
+          if(label==='CAF')td.classList.add('tsf-v140-caf');
+          tr.appendChild(td);
+        }
+      }
+      tabla.style.width=Array.from(group.children).reduce((n,col)=>n+(parseFloat(col.style.width)||110),0)+'px';
+    }
+
     // V13.5: GPS replica las siete columnas de identificación de Tracking.
     // Se reordena solo el DOM; data-col conserva los índices originales de SharePoint.
     function tsfV135GpsColumnas(){
@@ -5488,11 +5581,11 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       tabla.style.width=Array.from(grupo.children).reduce((a,col)=>a+(parseFloat(col.style.width)||110),0)+'px';
     }
     const tsfV135RenderPrevio=tableRender;
-    tableRender=function(...args){const result=tsfV135RenderPrevio.apply(this,args);tsfV135GpsColumnas();return result;};
+    tableRender=function(...args){const result=tsfV135RenderPrevio.apply(this,args);tsfV140GpsColumnas();return result;};
 
 
     // V13.9: normalización visual de identificadores GPS sin alterar índices de SharePoint.
-    function tsfV139GpsFix(){
+    function tsfV139GpsFix(){return;
       if(mIdx!==2)return;
       const tabla=document.getElementById('dataTable');
       const cab=tabla?.tHead?.rows?.[tabla.tHead.rows.length-1];
