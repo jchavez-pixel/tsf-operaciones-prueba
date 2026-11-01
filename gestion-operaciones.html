@@ -141,6 +141,26 @@
 .data-table select.tsf-state-select.status-green,.tsf-drawer-select.status-green{background:#ddf3e5;color:#166f4b;border-color:#b9e6c8}
 .data-table select.tsf-state-select.status-red,.tsf-drawer-select.status-red{background:#ffe2e3;color:#aa333a;border-color:#f6b9bd}
 .data-table select.tsf-state-select.status-empty,.tsf-drawer-select.status-empty{background:#fff;color:#6b7788;border-color:#d8e0e9}
+/* Estado de operación homologado: solo el campo de estado, sin colorear filas completas. */
+.data-table select.tsf-state-select.status-pending,.tsf-drawer-select.status-pending,
+.data-table select.tsf-estado-gestion.status-pending{background:#fff4d4!important;color:#916400!important;border-color:#f5dc8c!important}
+.data-table select.tsf-estado-gestion.status-blue{background:#e3f0ff!important;color:#1f5f9f!important;border-color:#bbd7f7!important}
+.data-table select.tsf-estado-gestion.status-green{background:#dff4e8!important;color:#146b43!important;border-color:#bce4cd!important}
+.data-table select.tsf-estado-gestion.status-red{background:#ffe6e7!important;color:#a32e39!important;border-color:#f5bdc1!important}
+.tsf-state-readonly{display:inline-flex;align-items:center;padding:7px 11px;border:1px solid #dde2e7;border-radius:8px;font-weight:700;white-space:nowrap}
+.tsf-state-readonly.status-pending{background:#fff4d4;color:#916400;border-color:#f5dc8c}
+.tsf-state-readonly.status-blue{background:#e3f0ff;color:#1f5f9f;border-color:#bbd7f7}
+.tsf-state-readonly.status-green{background:#dff4e8;color:#146b43;border-color:#bce4cd}
+.tsf-state-readonly.status-red{background:#ffe6e7;color:#a32e39;border-color:#f5bdc1}
+/* La categoría del estado prevalece aunque el usuario aún no haya pulsado Guardar. */
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-pending,
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-pending.changed{background:#fff4d4!important;color:#916400!important;border-color:#f5dc8c!important}
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-blue,
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-blue.changed{background:#e3f0ff!important;color:#1f5f9f!important;border-color:#bbd7f7!important}
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-green,
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-green.changed{background:#dff4e8!important;color:#146b43!important;border-color:#bce4cd!important}
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-red,
+body.tsf-gestion-sp .data-table select.tsf-state-select.status-red.changed{background:#ffe6e7!important;color:#a32e39!important;border-color:#f5bdc1!important}
 .form-item select.tsf-drawer-select{height:36px;width:100%;min-width:0;flex:1;font-size:11px;font-weight:680}
 .form-item select.tsf-analyst-select{background:#fff5d5;color:#705400;border-color:#ecd283}
 /* campos documentales bloqueados no deben parecer editables */
@@ -264,7 +284,24 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
 </style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
-html.tsf-auth-pending body { visibility:hidden !important; }
+html.tsf-auth-pending { background:#191a1d; }
+html.tsf-auth-pending #app,
+html.tsf-auth-pending #overlays,
+html.tsf-auth-pending #toastHolder,
+html.tsf-auth-pending #tsfWaitLayer { visibility:hidden !important; }
+#tsf-entry-splash{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;
+ background:linear-gradient(140deg,#141518 0%,#2b2c30 66%,#17181b 100%);
+ color:#fff;opacity:1;transition:opacity .28s ease;pointer-events:auto;}
+html:not(.tsf-auth-pending) #tsf-entry-splash{opacity:0;pointer-events:none;}
+.tsf-entry-body{display:flex;flex-direction:column;align-items:center;gap:15px;text-align:center;padding:20px;}
+.tsf-entry-brand{font-size:clamp(45px,6vw,74px);font-weight:950;letter-spacing:-3px;line-height:1}
+.tsf-entry-brand b{color:#ffcb16}
+.tsf-entry-label{font-size:clamp(13px,1.5vw,17px);font-weight:600;color:#e7e9ec}
+.tsf-entry-track{width:min(320px,70vw);height:4px;background:#404247;border-radius:99px;overflow:hidden;margin-top:10px;}
+.tsf-entry-track i{display:block;width:34%;height:100%;border-radius:99px;background:#ffcb16;animation:tsf-entry-move 1.3s ease-in-out infinite alternate}
+.tsf-entry-note{font-size:12px;color:#acafb4}
+@keyframes tsf-entry-move{from{transform:translateX(0)}to{transform:translateX(200%)}}
+@media(prefers-reduced-motion:reduce){.tsf-entry-track i{animation:none}}
 body.tsf-lector #saveBtn,
 body.tsf-lector #newRecord,
 body.tsf-lector #downloadCsv,
@@ -281,6 +318,14 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
 <script>document.documentElement.classList.add('tsf-auth-pending');</script>
 </head>
 <body>
+<div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
+ <div class="tsf-entry-body">
+  <div class="tsf-entry-brand">TOTAL<b>!</b></div>
+  <div class="tsf-entry-label">Portal de Operaciones Mediano Plazo</div>
+  <div class="tsf-entry-track" aria-hidden="true"><i></i></div>
+  <div class="tsf-entry-note">Preparando tu espacio de trabajo…</div>
+ </div>
+</div>
 <div class="app" id="app">
 <aside class="sidebar">
  <div class="brand"><div class="mark" role="img" aria-label="Logotipo TSF"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7H19M12 7V18" stroke="white" stroke-width="3.3" stroke-linecap="square" fill="none"/></svg></div><div><div class="brandline">TOTAL<span>!</span></div><div class="brandsub">servicios financieros<br/>OPERACIONES / MEDIANO PLAZO</div></div></div>
@@ -288,12 +333,12 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.2 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.3 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V12.2 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.3 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1105,7 +1150,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V12.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.3 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -1124,6 +1169,16 @@ function monthOptions(value=''){const current=String(value||'').trim().toUpperCa
 function isMonthField(idx,col,row){return col==='MES DE COLOCACIÓN'&&isEditableColumn(idx,col,row)}
 // V11.7 — Catálogos de LISTAS(1).xlsx. Mantener valores históricos.
 const TSF_CATALOGOS = {
+ "0|GARANTIA": [
+  "CD - Pre constituida Mobiliaria",
+  "GARANTIA",
+  "Garantía Sábana constituida",
+  "Inmobiliaria",
+  "Mobiliaria",
+  "Pre constituida Inmobiliaria",
+  "Pre constituida Mobiliaria",
+  "Sin garantía adicional"
+ ],
  "0|PRODUCTO": [
   "CAPITAL DE TRABAJO - AL VENCIMIENTO",
   "CAPITAL DE TRABAJO - AMORTIZADA",
@@ -1277,7 +1332,7 @@ function tsfOpcionesCatalogo(indice,columna,valor=''){
  return `<option value="" ${actual===''?'selected':''}>Seleccionar...</option>`+
   opciones.map(x=>`<option value="${esc(x)}" ${x===actual?'selected':''}>${esc(x)}</option>`).join('');
 }
-const TRACKING_STATES=['EN PROCESO','DESEMBOLSADO','ANULADO'];
+const TRACKING_STATES=['PENDIENTE','EN PROCESO','DESEMBOLSADO','ANULADO'];
 const addedAnalysts=new Set();
 function analystNames(selected=''){
  // Recoger los analistas de la fuente maestra real + listas existentes.
@@ -1301,7 +1356,7 @@ function trackingStateOptions(value=''){
 }
 function isTrackingStateField(idx,col){return (idx===1||idx===6) && col==='ESTADO_OPERACIÓN'}
 function isAnalystField(idx,col,row){return col==='ANALISTA OPERATIVO'&&isEditableColumn(idx,col,row)}
-function stateTone(value){const normalized=String(value||'').trim().toUpperCase();return normalized==='DESEMBOLSADO'?'status-green':normalized==='ANULADO'?'status-red':normalized==='EN PROCESO'?'status-blue':'status-empty'}
+function stateTone(value){const normalized=String(value||'').trim().toUpperCase();return normalized==='DESEMBOLSADO'?'status-green':normalized==='ANULADO'?'status-red':normalized==='EN PROCESO'?'status-blue':normalized==='PENDIENTE'?'status-pending':'status-empty'}
 function chooseNewAnalyst(select,previous){
  const name=prompt('Nombre y apellido del nuevo analista operativo:', '');
  if(!name||!name.trim()){
@@ -1583,7 +1638,8 @@ function tableRender(){
   const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${esc(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
  }).join('')+'<th style="width:73px;text-align:center">DETALLE</th></tr></thead>';
  let body=records.map(row=>`<tr data-id="${esc(keyID(row))}">${m.columns.map((col,i)=>{
-  const val=String(row[col]??''),hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
+   const val=(col==='ESTADO_OPERACIÓN'&&[1,6].includes(mIdx)&&trackingSp.active&&typeof window.tsfEstadoPublico==='function')?window.tsfEstadoPublico(keyID(row)):String(row[col]??'');
+   const hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
   let style='width:'+widths[i]+'px;';
    
 const selectType =
@@ -1618,7 +1674,9 @@ const specialSelect =
    const spDifference=isSpPreview()&&spPreview.mode==='merge'&&row.__spDifferences?.[col];
    const cellHint=spDifference?`${col} · MOSTRANDO SHAREPOINT: ${val} · Valor local anterior: ${spDifference.local} · No guardado`:`${col}: ${val||'Sin información'} · ${descriptions[role]}`;
    return `<td class="field-${role} ${tsfClaseZonaGPS(m.columns,col)}" style="${style}" title="${esc(cellHint)}">${specialSelect||(
-    hl&&!editable&&(['ESTADO','ESTADO_OPERACIÓN','ESTADO DEL SEGURO'].includes(col))?
+    col==='ESTADO_OPERACIÓN'&&!editable?
+    `<span class="tsf-state-readonly ${stateTone(val)}">${esc(val||'PENDIENTE')}</span>`:
+    hl&&!editable&&(['ESTADO','ESTADO DEL SEGURO'].includes(col))?
     `<span class="value-badge ${hl}">${esc(val)}</span>`:
     `<div class="${dateField?'tsf-date-cell':'tsf-text-cell'}">${dateField&&editable&&mIdx!==0?`<input type="checkbox" class="tsf-date-now" data-id="${esc(keyID(row))}" data-col="${i}" title="Colocar fecha y hora actual (hora de Lima); luego puedes editarla" aria-label="Poner fecha y hora actual en ${esc(col)}"/>`:''}<input aria-label="${esc(col)}" aria-readonly="${!editable}" class="cell-input ${!editable?'readonly':''} ${(isTrackingSp()?trackingSp.edits.get(keyID(row))?.has(col):isSpPreview()?spEdits.get(keyID(row))?.has(col):dirty.has(m.key+'|'+keyID(row)+'|'+col))?'changed':''}" data-id="${esc(keyID(row))}" data-col="${i}" ${!editable?'readonly tabindex="-1"':''} value="${esc(dateField?minuteDisplay(val):val)}" placeholder="${editable?'Completar':'—'}"/></div>`)}</td>`;
  }).join('')}<td style="text-align:center"><button class="openrow" data-detail="${esc(keyID(row))}">${ic('eye',13)} Ver</button></td></tr>`).join('');
@@ -3905,12 +3963,45 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     const TSF_ESTADO_COLUMNA='ESTADO_OPERACIÓN';
     const tsfEstadoEditadoEnGestion=new Set();
     const tsfEstadoPorId=id=>trackingSp.rows.find(r=>keyID(r)===id);
+    const tsfEstadoValidos = new Set(TRACKING_STATES);
+    function tsfEstadoEfectivo(id, registro=tsfEstadoPorId(id)){
+      const real=String(registro?.[TSF_ESTADO_COLUMNA]??'').trim().toUpperCase();
+      // Los estados registrados son prevalentes: no reescribir desembolsados o anulados.
+      const gestion=spPreview.rows.find(r=>keyID(r)===id);
+      const analista=String(gestion?.['ANALISTA OPERATIVO'] ?? registro?.['ANALISTA OPERATIVO'] ?? '').trim();
+      if(real==='PENDIENTE'&&analista)return 'EN PROCESO';
+      if(real)return real;
+      return analista?'EN PROCESO':'PENDIENTE';
+    }
+    window.tsfEstadoPublico = tsfEstadoEfectivo;
+    function tsfEncolarEstadoPorAnalista(id, analistaNuevo){
+      if(window.TSF_SESSION_ROLE!=='EDICION')return;
+      const registro=tsfEstadoPorId(id);
+      if(!registro || !trackingEditable(TSF_ESTADO_COLUMNA))return;
+      const actual=String(registro[TSF_ESTADO_COLUMNA]??'').trim().toUpperCase();
+      if(['DESEMBOLSADO','ANULADO'].includes(actual))return;
+      const nuevo=String(analistaNuevo??'').trim()?'EN PROCESO':'PENDIENTE';
+      if(actual===nuevo)return;
+      tsfCambiarEstadoGestion(id,nuevo); // Solo preparar edición, nunca escritura silenciosa.
+    }
+    // La asignación de analista en Gestión activa el estado en TB2 cuando existe la fila.
+    const tsfSpChangeAntesEstado=spChange;
+    spChange=function(id,col,valor){
+      const ok=tsfSpChangeAntesEstado(id,col,valor);
+      if(ok&&col==='ANALISTA OPERATIVO'){
+        tsfEncolarEstadoPorAnalista(id,valor);
+        tsfActualizarEstadosGestion();
+        if(mIdx===0){drawKpis();drawSelectors();tableRender();updateDirtyLabel();}
+      }
+      return ok;
+    };
     // Para el tablero Gestión, no utilizar los estados ficticios embebidos.
     const tsfStatusOfAnterior=statusOf;
     statusOf=function(row,mod=mainMod()){
       if(mIdx===0&&spPreview.active){
-        return String(tsfEstadoPorId(keyID(row))?.[TSF_ESTADO_COLUMNA]??'');
+        return tsfEstadoEfectivo(keyID(row));
       }
+      if([1,6].includes(mIdx)&&trackingSp.active)return tsfEstadoEfectivo(keyID(row));
       return tsfStatusOfAnterior(row,mod);
     };
 
@@ -3918,7 +4009,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       let cambia=false;
       for(const fila of spPreview.rows){
         const registro=tsfEstadoPorId(keyID(fila));
-        const nuevo=String(registro?.[TSF_ESTADO_COLUMNA]??'');
+        const nuevo=tsfEstadoEfectivo(keyID(fila),registro);
         if(fila[TSF_ESTADO_COLUMNA]!==nuevo){
           fila[TSF_ESTADO_COLUMNA]=nuevo;
           cambia=true;
@@ -4083,7 +4174,9 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
           !!registro&&trackingEditable(TSF_ESTADO_COLUMNA);
         if(!registro){
           const aviso=document.createElement('span');
-          aviso.style.color='#8993a0';aviso.textContent=trackingSp.loading||trackingSp.historyLoading?'Cargando Tracking…':'Sin registro en Tracking';
+          aviso.className='tsf-state-readonly '+stateTone(tsfEstadoEfectivo(id));
+          aviso.textContent=trackingSp.loading||trackingSp.historyLoading?'Validando Tracking…':tsfEstadoEfectivo(id);
+          aviso.title='Estado visual por asignación. Para persistirlo debe existir la operación en TB2.';
           td.append(aviso);
           continue;
         }
@@ -4093,17 +4186,18 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         selector.dataset.col=String(posicion);
         selector.setAttribute('aria-label','Estado de operación de '+id);
         selector.disabled=!editable;
-        selector.innerHTML=trackingStateOptions(String(registro[TSF_ESTADO_COLUMNA]??''));
-        selector.value=String(registro[TSF_ESTADO_COLUMNA]??'');
-        selector.style.cssText='background:#fff !important;border:1px solid #d8e0e9 !important;color:#334155;box-shadow:none !important';
+        selector.innerHTML=trackingStateOptions(tsfEstadoEfectivo(id,registro));
+        selector.value=tsfEstadoEfectivo(id,registro);
+        selector.classList.add('tsf-state-select',stateTone(selector.value));
         if(trackingSp.edits.get(id)?.has(TSF_ESTADO_COLUMNA)){
           selector.style.borderColor='#64748b';
           td.title='Estado pendiente de guardar en Tracking';
         }
         selector.onchange=()=>{
           if(!tsfCambiarEstadoGestion(id,selector.value)){
-            selector.value=String(registro[TSF_ESTADO_COLUMNA]??'');
+            selector.value=tsfEstadoEfectivo(id,registro);
           }
+          selector.className='tsf-cell-select tsf-estado-gestion tsf-state-select '+stateTone(selector.value);
           td.title=trackingSp.edits.get(id)?.has(TSF_ESTADO_COLUMNA)?'Pendiente de guardar en Tracking':'';
           updateDirtyLabel();
           drawKpis();
@@ -4133,8 +4227,10 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       select.className='tsf-boolean-drawer tsf-estado-drawer';
       select.dataset.drawerCol=TSF_ESTADO_COLUMNA;
       select.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!registro||!trackingEditable(TSF_ESTADO_COLUMNA);
-      select.innerHTML=trackingStateOptions(String(registro?.[TSF_ESTADO_COLUMNA]??''));
-      select.value=String(registro?.[TSF_ESTADO_COLUMNA]??'');
+      select.innerHTML=trackingStateOptions(tsfEstadoEfectivo(id,registro));
+      select.value=tsfEstadoEfectivo(id,registro);
+      select.classList.add('tsf-state-select',stateTone(select.value));
+      select.addEventListener('change',()=>{select.className='tsf-boolean-drawer tsf-estado-drawer tsf-state-select '+stateTone(select.value)});
       field.replaceWith(select);
       const btn=document.getElementById('drawerApply');
       if(btn && window.TSF_SESSION_ROLE==='EDICION'){
@@ -4241,6 +4337,8 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     }
     document.body.classList.toggle('tsf-lector',session.rol==='LECTURA');
     document.documentElement.classList.remove('tsf-auth-pending');
+    const tsfSplash=document.getElementById('tsf-entry-splash');
+    if(tsfSplash)window.setTimeout(()=>tsfSplash.remove(),380);
   } catch (error) {
     // Fail closed: nunca liberar la vista cuando no pudo verificarse la sesión.
     salir();
