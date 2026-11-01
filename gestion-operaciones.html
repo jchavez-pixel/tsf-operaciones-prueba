@@ -334,6 +334,26 @@ body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.tsf-area-tr-funding 
   background:#f6f8fa!important;
 }
 .data-table tbody td.tsf-area-tr-funding.tsf-grupo-inicio {border-left:2px solid #d9e0e8}
+/* V12.6 — COMENTARIO de Tracking: el mismo campo TB2 usado en GPS/Seguros. */
+.data-table .tsf-tracking-groups .tsf-grupo-tr-comment {
+  background:#eef1f5;color:#526377;border-left:2px solid #d2dae5;
+}
+.data-table thead .tsf-columnas-gps th.tsf-area-tr-comment {
+  background:#f2f5f8!important;color:#536477!important;
+}
+.data-table thead .tsf-columnas-gps th.tsf-area-tr-comment.tsf-grupo-inicio {
+  border-left:2px solid #d2dae5;
+}
+body.tsf-gestion-sp .data-table tbody td.tsf-area-tr-comment,
+body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.tsf-area-tr-comment {
+  background:#f8fafc!important;
+}
+.data-table tbody td.tsf-area-tr-comment.tsf-grupo-inicio {border-left:2px solid #d9e0e8}
+/* Mantener la cabecera completa de TIPO_COFIDE y COMENTARIO visible. */
+.data-table thead .tsf-columnas-gps th.tsf-area-tr-funding .thname,
+.data-table thead .tsf-columnas-gps th.tsf-area-tr-comment .thname {
+  overflow-wrap:anywhere;white-space:normal;line-height:1.3;
+}
 /* La fecha automática de ingreso también usa el amarillo de su bloque. */
 .data-table thead .tsf-columnas-gps th.tsf-area-tr-oper {background:#fff3d5!important;color:#735925!important}
 /* La ciudad de firma y el contrato conservan el azul claro uniforme. */
@@ -392,12 +412,12 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.4 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.6 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V12.5 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.6 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -436,10 +456,17 @@ function configureOwnerLink(){
 }
 configureOwnerLink();
 const base=JSON.parse(document.getElementById('workbookData').textContent);
-// V12.5: COMENTARIOS permanece en SharePoint y en GPS/Seguros, pero no
-// se duplica en la vista Tracking, donde DETALLE ya reúne la información.
+// V12.6: mostrar COMENTARIOS al lado de TIPO_COFIDE en Tracking.
+// Es exactamente el mismo campo de TB2 utilizado por GPS y Seguros:
+// field_28. Ambos módulos comparten la misma fila, edición y ETag.
+// La restauración de la columna es visual: NO crea campos ni datos en SharePoint.
 const TSF_TRACKING_ALL_COLUMNS=[...base[1].columns];
-base[1].columns=base[1].columns.filter(c=>c!=='COMENTARIOS');
+const tsfIndiceCofide=base[1].columns.indexOf('TIPO_COFIDE');
+const tsfIndiceComentarios=base[1].columns.indexOf('COMENTARIOS');
+if(tsfIndiceCofide>=0 && tsfIndiceComentarios>=0 && tsfIndiceComentarios!==tsfIndiceCofide+1){
+  base[1].columns.splice(tsfIndiceComentarios,1);
+  base[1].columns.splice(base[1].columns.indexOf('TIPO_COFIDE')+1,0,'COMENTARIOS');
+}
 const localKey='tsf_public_demo_v117_synthetic_1';
 const modNames=base.map(m=>m.name);
 const iconPaths={grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',activity:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',truck:'<path d="M2 5h12v12H2zM14 9h4l4 4v4h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/>',shield:'<path d="m12 22 0 0C6 19 4 16 4 11V5l8-3 8 3v6c0 5-2 8-8 11z"/><path d="m9 12 2 2 4-4"/>',repeat:'<path d="M20 11a8 8 0 0 0-14-5L4 8m0-4v4h4M4 13a8 8 0 0 0 14 5l2-2m0 4v-4h-4"/>',file:'<path d="M6 2h8l4 4v16H6zM14 2v5h5M9 12h7M9 16h7"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',refresh:'<path d="M20 6v5h-5M4 18v-5h5"/><path d="M6 8A7 7 0 0 1 18 6l2 5M18 16A7 7 0 0 1 6 18l-2-5"/>',save:'<path d="M4 3h14l3 3v15H3V3zM7 3v7h10V3M7 21v-8h10v8"/>',download:'<path d="M12 3v13m-5-5 5 5 5-5M4 18v3h16v-3"/>',plus:'<path d="M12 5v14M5 12h14"/>',filter:'<path d="M4 5h16l-6 7v6l-4 3v-9z"/>',alert:'<path d="m12 2 10 19H2L12 2zM12 9v5m0 4v.2"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',chevron:'<path d="m15 18-6-6 6-6"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',chart:'<path d="M3 20V4M3 20h18M7 18v-6M12 18V8M17 18V5"/>',check:'<path d="m5 12 4 4L19 6"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v6M16 2v6"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>',flag:'<path d="M5 22V3m0 1c5-2 9 2 14 0v10c-5 2-9-2-14 0"/>',test:'<path d="M9 2h6M10 2v7L4 20h16L14 9V2"/>',box:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 11h16M10 5v15"/>',sort:'<path d="m8 7 4-4 4 4m-8 10 4 4 4-4"/>'};
@@ -1091,7 +1118,7 @@ function openTrackingMapping(){
    const meta=trackingListArray(raw).filter(f=>trackingFieldName(f)&&!f.Hidden);
    const byName=new Map();for(const f of meta){const k=normTracking(trackingFieldTitle(f));if(k&&!byName.has(k))byName.set(k,f);}
    const mapping={},missing=[];
-for(const col of [...modules[1].columns,'COMENTARIOS']){
+for(const col of new Set([...modules[1].columns,'COMENTARIOS'])){
      const found=col==='ID_OPERACION'?meta.find(f=>trackingFieldName(f)==='Title'):byName.get(normTracking(col));
     if(found)mapping[col]=found;else missing.push(col);
    }
@@ -1213,7 +1240,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V12.5 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.6 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -1616,6 +1643,13 @@ function getColumnWidth(column,mod,index){
   if(k==='COL._NETA_($)'||k.includes('COL._NETA'))return 116;
   if(k==='MES_DE_COLOCACION')return 126;
   if(k==='VAF')return 106;
+  // V12.6: anchos homogéneos y legibles al final de Tracking.
+  // Se conserva el scroll horizontal, sin reducir el texto de los títulos.
+  if(mod.key==='TRACKING OPERATIVO'){
+    if(k==='ORIGEN_DE_FONDOS_CI_Y/O_SE')return 205;
+    if(k==='TIPO_COFIDE')return 185;
+    if(k==='COMENTARIOS')return 268;
+  }
   if(k==='RUC'||k==='DNI'||k==='NRO_DOCUMENTO')return 106;
   if(k==='PRODUCTO')return 110;
   if(k==='MONEDA')return 79;
@@ -1648,7 +1682,7 @@ function getColumnWidth(column,mod,index){
   const estimated= Math.max(82,Math.min(157,Math.round(typical*5.5+25)));
   return estimated;
 }
-function columnLabel(column){if(column==='FECHA_DE_REGISTRO')return 'FECHA REGISTRO';if(column==='COL. NETA ($)')return 'COL. NETA ($)';return column}
+function columnLabel(column){if(column==='FECHA_DE_REGISTRO')return 'FECHA REGISTRO';if(column==='COL. NETA ($)')return 'COL. NETA ($)';if(mIdx===1&&column==='COMENTARIOS')return 'COMENTARIO';return column}
 // Grupos de columnas; todos los valores y ETags siguen perteneciendo a TB2.
 const TSF_GPS_ZONA_AZUL = new Set([
  'TIPO_GPS','PROVEEDOR_GPS','SOLICITUD_INSTALACION','CONFIRMACION_INSTALACIÓN'
@@ -1677,7 +1711,9 @@ function tsfZonaTracking(col){
   if(n<=13)return 'tsf-area-tr-oper';
   if(n<=21)return 'tsf-area-tr-contract';
   if(n<=25)return 'tsf-area-tr-admin'; // finaliza en APLICACION_SERVICIOS DE ESTRUCTURACIÓN
-  return 'tsf-area-tr-funding';        // ORIGEN DE FONDOS y TIPO_COFIDE
+  if(n<=27)return 'tsf-area-tr-funding'; // ORIGEN DE FONDOS y TIPO_COFIDE
+  if(col==='COMENTARIOS')return 'tsf-area-tr-comment'; // mismo campo que GPS y Seguros
+  return '';
  }
 function tsfClaseZonaGPS(cols,col){
  if(mIdx===1){
@@ -1700,7 +1736,8 @@ function tsfEncabezadoGruposGPS(cols){
     ['tsf-grupo-tr-oper','Tracking operativo',6,13],
     ['tsf-grupo-tr-contract','Seguimiento de contrato',14,21],
     ['tsf-grupo-tr-admin','Seguimiento administrativo',22,25],
-    ['tsf-grupo-tr-funding','Origen y tipo de fondos',26,27]
+    ['tsf-grupo-tr-funding','Origen y tipo de fondos',26,27],
+     ['tsf-grupo-tr-comment','Comentarios',28,28]
    ];
   const partes=ranges.map(([clase,titulo,inicio,fin])=>{
    const n=cols.slice(inicio,fin+1).length;
@@ -2922,13 +2959,14 @@ th.className = 'field-workflow tsf-area-tr-oper';
       ultimoEncabezado.textContent =
         'DETALLE / REPROCESO';
 
-      ultimoEncabezado.style.width = '151px';
+      ultimoEncabezado.style.width = '175px';
 
+      // VAF añade 115 px y DETALLE pasa de 73 a 175 px (+102).
       tabla.style.width =
-        (parseFloat(tabla.style.width) + 193) + 'px';
+        (parseFloat(tabla.style.width) + 217) + 'px';
 
       if (grupo?.lastElementChild) {
-        grupo.lastElementChild.style.width = '151px';
+        grupo.lastElementChild.style.width = '175px';
       }
 
       // PROCESAR CADA REGISTRO
