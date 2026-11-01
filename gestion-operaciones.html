@@ -749,6 +749,34 @@ body.tsf-v135-gps #dataTable td.tsf-v130-producto .tsf-v130-producto-val{display
 #dataTable .tsf-repro-check{appearance:auto!important;-webkit-appearance:checkbox!important;display:inline-block!important;width:16px!important;height:16px!important;min-width:16px!important;max-width:16px!important;margin:0 auto!important;padding:0!important;vertical-align:middle!important;accent-color:#d9a900;cursor:pointer}
 #dataTable .tsf-repro-check:disabled{cursor:default;opacity:.65}
 </style>
+
+<style id="tsf-v137-gestion-header-fix">
+/* V13.7: Gestión tiene UNA única fila de títulos; no tiene la fila de agrupación de Tracking/GPS.
+   El top:30px heredado causaba el hueco y dejaba ver registros por encima del encabezado. */
+body.tsf-v137-gestion #dataTable thead tr:last-child th,
+body.tsf-v137-gestion #dataTable thead tr:first-child th {
+  position:sticky!important;
+  top:0!important;
+  z-index:40!important;
+  background-clip:padding-box!important;
+  box-shadow:0 1px 0 #dce3eb!important;
+}
+/* Fijar la primera columna horizontal únicamente en Gestión, respetando su diseño original. */
+body.tsf-v137-gestion #dataTable thead tr:last-child th:first-child{
+  left:0!important;
+  z-index:45!important;
+  background:#edf0f4!important;
+}
+/* Encabezado opaco para que ninguna celda desplazada se vea a través. */
+body.tsf-v137-gestion #dataTable thead tr:last-child th.field-manual,
+body.tsf-v137-gestion #dataTable thead tr:last-child th.field-workflow{
+  background:#fff0ba!important;
+}
+body.tsf-v137-gestion #dataTable thead tr:last-child th.field-inherited,
+body.tsf-v137-gestion #dataTable thead tr:last-child th.field-extracted{
+  background:#e7eaee!important;
+}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -2354,7 +2382,7 @@ function reflectFinancialEdit(fromIndex,id,col,value){
  if(initial&&String(initial[col]??'')===value)dirty.delete(k);else dirty.set(k,true);
 }
 function updateDirtyLabel(){let n=isTsfRemoteIndex()?0:isSpPreview()?spEditCount():isTrackingSp()?trackingEditsCount():dirty.size;const el=document.getElementById('dirtyCount');if(el)el.textContent=n?'· '+n:'';const save=document.getElementById('saveBtn');if(save&&isSpPreview())save.disabled=spSaving||!n;if(save&&isTrackingSp())save.disabled=trackingSp.loading||trackingSp.saving||!trackingSp.ready||!n}
-function draw(){document.body.classList.toggle('tsf-gestion-sp',isRemoteView());synchronizeDerivedFields();navRender();drawFieldLegend();const m=mainMod();updateSpPreviewUI();document.getElementById('newRecord').innerHTML=ic('plus',14)+(mIdx===4?' Nuevo reproceso':' Nueva operación');document.getElementById('pageTitle').textContent=m.name;document.getElementById('pageDesc').textContent=m.description;document.getElementById('breadcrumbs').textContent='PORTAL / MEDIANO PLAZO / '+m.name.toUpperCase();document.getElementById('tableTitle').textContent='Bandeja · '+m.name;document.getElementById('q').value=query;drawKpis();drawSelectors();tableRender();updateDirtyLabel()}
+function draw(){document.body.classList.toggle('tsf-v137-gestion',mIdx===0);document.body.classList.toggle('tsf-gestion-sp',isRemoteView());synchronizeDerivedFields();navRender();drawFieldLegend();const m=mainMod();updateSpPreviewUI();document.getElementById('newRecord').innerHTML=ic('plus',14)+(mIdx===4?' Nuevo reproceso':' Nueva operación');document.getElementById('pageTitle').textContent=m.name;document.getElementById('pageDesc').textContent=m.description;document.getElementById('breadcrumbs').textContent='PORTAL / MEDIANO PLAZO / '+m.name.toUpperCase();document.getElementById('tableTitle').textContent='Bandeja · '+m.name;document.getElementById('q').value=query;drawKpis();drawSelectors();tableRender();updateDirtyLabel()}
 function toast(s){const h=document.getElementById('toastHolder');h.innerHTML='<div class="toast">'+esc(s)+'</div>';clearTimeout(window._to);window._to=setTimeout(()=>{h.innerHTML=''},7500)}
 function showFilter(col,anchor){currentFilter=col;const box=anchor.getBoundingClientRect();let left=Math.min(window.innerWidth-288,Math.max(12,box.left-112)),top=Math.min(window.innerHeight-215,box.bottom+8);
  document.querySelector('.filter-panel')?.remove();let f=document.createElement('div');f.className='filter-panel';f.style.left=left+'px';f.style.top=top+'px';f.innerHTML=`<h4>Filtrar: ${esc(col)}</h4><input type="text" id="colFilterValue" placeholder="Contiene..." value="${esc(colFilters[col]||'')}"/><div class="row"><button class="button" id="colAsc">${ic('sort',12)} A → Z</button><button class="button" id="colDesc">Z → A</button></div><div class="row"><button class="button" id="colClear">Limpiar</button><button class="button primary" id="colApply">Aplicar</button></div>`;document.body.appendChild(f);
