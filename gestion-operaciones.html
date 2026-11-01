@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V12.2 — carga progresiva TB2 a TB6</title>
+<title>TSF | Operaciones V12.7 — Diseño uniforme y sincronización maestra CAF</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -360,6 +360,44 @@ body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.tsf-area-tr-comment 
 .data-table thead .tsf-columnas-gps th.tsf-area-tr-contract {background:#eaf4ff!important;color:#3f6381!important}
 /* Marcar edición de estado sin cambiar el color semántico del estado. */
 .data-table .tsf-estado-gestion.tsf-sin-fila-tb2 {border-style:dashed!important}
+
+/* V12.7: única paleta para los datos heredados de Gestión en TODOS los módulos */
+.data-table thead .tsf-columnas-gps th.field-inherited,
+.data-table thead .tsf-columnas-gps th.field-extracted,
+.data-table th.field-inherited,
+.data-table th.field-extracted,
+.data-table thead .tsf-columnas-gps th.tsf-area-tr-base,
+.data-table .tsf-groups-row th.tsf-grupo-base,
+.data-table .tsf-v127-remote-groups th.tsf-grupo-base{
+  background:#e7eaee!important;color:#485565!important;
+}
+body.tsf-gestion-sp .data-table tbody td.field-inherited,
+body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.field-inherited,
+body.tsf-gestion-sp .data-table tbody td.tsf-area-tr-base,
+body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.tsf-area-tr-base,
+body.tsf-gestion-sp .data-table tbody td.field-extracted,
+body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.field-extracted{
+  background:#f1f3f6!important;
+}
+/* Títulos completos en una sola línea. El desplazamiento horizontal es intencional. */
+.data-table thead th .thname,
+.data-table thead .tsf-columnas-gps th .thname{
+  display:block!important;overflow:visible!important;
+  text-overflow:clip!important;white-space:nowrap!important;
+  overflow-wrap:normal!important;word-break:normal!important;
+  -webkit-line-clamp:unset!important;line-clamp:unset!important;
+}
+.data-table thead .tsf-columnas-gps th{height:44px!important;white-space:nowrap!important}
+.data-table .tsf-v127-remote-groups .tsf-grupo-modulo{
+  background:#f3f4f6;color:#596779;border-left:2px solid #dbe0e7;
+}
+.data-table tbody td.tsf-v127-pendiente-compartido{
+  box-shadow:inset 0 -2px #d6a73b!important;
+}
+/* Todos los formularios siguen editables cuando el perfil/CAF está autorizado. */
+.data-table tbody td.field-inherited input.cell-input:not([readonly]){
+  cursor:text!important;color:#334155!important;font-weight:600;
+}
 </style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
@@ -417,7 +455,7 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V12.6 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.7 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -542,7 +580,7 @@ const SP_FIELD_TO_INTERNAL={
 };
 function spEditCount(){let n=0;for(const fields of spEdits.values())n+=fields.size;return n;}
 function spChange(id,col,val){
- if(!isSpPreview()||spPreview.loading||spSaving||SP_LOCKED_COLUMNS.has(col)||!(col in SP_FIELD_TO_INTERNAL))return false;
+ if(!spPreview.active||window.TSF_SESSION_ROLE!=='EDICION'||spPreview.loading||spSaving||SP_LOCKED_COLUMNS.has(col)||!(col in SP_FIELD_TO_INTERNAL))return false;
  const row=spPreview.rows.find(r=>keyID(r)===id);
  if(!row)return false;
  const next=String(val??'').trim();
@@ -1240,7 +1278,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V12.6 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -1682,6 +1720,19 @@ function getColumnWidth(column,mod,index){
   const estimated= Math.max(82,Math.min(157,Math.round(typical*5.5+25)));
   return estimated;
 }
+// V12.7: columnas con ancho estimado por el título completo; scroll horizontal sin recortes.
+const tsfAnchoBaseOriginal = getColumnWidth;
+getColumnWidth = function(column,mod,index){
+ const anterior=tsfAnchoBaseOriginal(column,mod,index);
+ const etiqueta=String(columnLabel(column));
+ // Se aplica una reserva para los botones de filtro y el espaciado del encabezado.
+ const canvas=document.createElement('canvas');
+ const medidor=canvas.getContext('2d');
+ if(medidor)medidor.font='750 10px Segoe UI, Arial, sans-serif';
+ const anchoTitulo=Math.ceil((medidor?medidor.measureText(etiqueta).width:etiqueta.length*6.8)+48);
+ const anchoControles=/ESTADO_OPERACI[ÓO]N/i.test(etiqueta)?185:0;
+ return Math.max(anterior,anchoTitulo,anchoControles);
+};
 function columnLabel(column){if(column==='FECHA_DE_REGISTRO')return 'FECHA REGISTRO';if(column==='COL. NETA ($)')return 'COL. NETA ($)';if(mIdx===1&&column==='COMENTARIOS')return 'COMENTARIO';return column}
 // Grupos de columnas; todos los valores y ETags siguen perteneciendo a TB2.
 const TSF_GPS_ZONA_AZUL = new Set([
@@ -1746,6 +1797,15 @@ function tsfEncabezadoGruposGPS(cols){
   return '<tr class="tsf-groups-row tsf-tracking-groups">'+partes+
    '<th class="tsf-grupo-detalle" scope="colgroup" aria-label="Detalle"></th></tr>';
  }
+ if([2,3,4,5].includes(mIdx)){
+   const propias=cols.filter(col=>!['ID_OPERACION','CAF','RUC','CLIENTE','PRODUCTO','FFNN','FUNCIONARIO','ANALISTA OPERATIVO'].includes(col));
+   const compartidas=cols.length-propias.length;
+   // Las columnas heredadas se encuentran al inicio de las listas reales TB3–TB6.
+   return '<tr class="tsf-groups-row tsf-v127-remote-groups">'+
+     (compartidas?`<th class="tsf-grupo-base" colspan="${compartidas}" scope="colgroup">Datos de operación</th>`:'')+
+     (propias.length?`<th class="tsf-grupo-modulo" colspan="${propias.length}" scope="colgroup">${esc(mainMod().name)}</th>`:'')+
+     '<th class="tsf-grupo-detalle" aria-label="Detalle"></th></tr>';
+ }
  if(mIdx!==6)return '';
  const count=filter=>cols.filter(filter).length;
  const nBase=count(col=>!tsfZonaGPS(col));
@@ -1769,7 +1829,7 @@ function tableRender(){
  const colMarkup='<colgroup>'+widths.map(w=>`<col style="width:${w}px">`).join('')+'<col style="width:73px"></colgroup>';
  document.getElementById('dataTable').style.width=(widths.reduce((a,b)=>a+b,73))+'px';
  const descriptions={extracted:'Dato extraído y protegido; no editable',inherited:'Dato heredado de Gestión de Operaciones; no editable',auto:'Fecha y hora automática de asignación; no editable',manual:'Dato manual resaltado; editable',workflow:isTsfRemoteIndex()?'Dato real de SharePoint · solo lectura':'Editable en este módulo'};
- let head=colMarkup+'<thead>'+tsfEncabezadoGruposGPS(m.columns)+'<tr'+([1,6].includes(mIdx)?' class="tsf-columnas-gps"':'')+'>'+m.columns.map((column,i)=>{
+ let head=colMarkup+'<thead>'+tsfEncabezadoGruposGPS(m.columns)+'<tr'+([1,2,3,4,5,6].includes(mIdx)?' class="tsf-columnas-gps"':'')+'>'+m.columns.map((column,i)=>{
   const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${esc(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
  }).join('')+'<th style="width:73px;text-align:center">DETALLE</th></tr></thead>';
  let body=records.map(row=>`<tr data-id="${esc(keyID(row))}">${m.columns.map((col,i)=>{
@@ -3618,7 +3678,7 @@ celdaVAF.className = 'field-workflow tsf-area-tr-oper';
     }
 
     async function tsfGuardarGestionConConflictos() {
-      if (!isSpPreview() || spSaving) return;
+      if (!spPreview.active || spSaving) return;
 
       if (window.TSF_SESSION_ROLE !== 'EDICION') {
         toast('Perfil sin permiso de edición.');
@@ -4497,6 +4557,170 @@ celdaVAF.className = 'field-workflow tsf-area-tr-oper';
         draw(); return;
       }
       return tsfSafePaintAntesGPS(index);
+    };
+
+    // ================================================================
+    // TSF V12.7 — FUENTE MAESTRA POR CAF, CAMPOS COMPARTIDOS Y COLORES
+    // ================================================================
+    // SOLO los campos compartidos se pueden editar fuera de Gestión.
+    // Su escritura se encamina exclusivamente al registro maestro de Gestión,
+    // con el control de conflictos y el ETag ya instalado. TB3-TB6 siguen
+    // de solo lectura para sus campos propios hasta configurar el segundo flujo.
+    const TSF_V127_MAESTROS = new Map([
+      ['RUC','RUC'],['CLIENTE','CLIENTE'],['PRODUCTO','PRODUCTO'],
+      ['FFNN','FFNN'],['FUNCIONARIO','FFNN'],
+      ['ANALISTA OPERATIVO','ANALISTA OPERATIVO']
+    ]);
+    const TSF_V127_HEREDADOS = new Set([
+      ...TSF_V127_MAESTROS.keys(), 'CAF','ID_OPERACION'
+    ]);
+    const tsfV127CAF = valor => String(valor??'').trim().toUpperCase().replace(/\s+/g,' ');
+
+    function tsfV127ResolverMaestro(fila){
+      if(!spPreview.active || !fila)return null;
+      const disponibles=spPreview.rows;
+      const caf=tsfV127CAF(fila.CAF);
+      const id=String(fila.ID_OPERACION??'').trim();
+      const exactas=caf?disponibles.filter(r=>tsfV127CAF(r.CAF)===caf):[];
+      // El ID de operación puede desambiguar varios registros con el mismo CAF.
+      if(exactas.length===1)return exactas[0];
+      if(exactas.length>1){
+        const idExactos=exactas.filter(r=>String(r.ID_OPERACION??'').trim()===id);
+        return idExactos.length===1?idExactos[0]:null;
+      }
+      // Si CAF aparece, pero no coincide, no enlazar con otro CAF por accidente.
+      if(caf)return null;
+      const porId=disponibles.filter(r=>String(r.ID_OPERACION??'').trim()===id);
+      return porId.length===1?porId[0]:null;
+    }
+    function tsfV127PermitidoOtroModulo(indice,col,fila){
+      return indice!==0 && window.TSF_SESSION_ROLE==='EDICION' &&
+        TSF_V127_MAESTROS.has(col) && !!tsfV127ResolverMaestro(fila) &&
+        !spSaving && !spPreview.loading;
+    }
+    function tsfV127Reflejar(){
+      if(!spPreview.active)return;
+      const listas=[trackingSp.active?trackingSp.rows:[],
+        ...[2,3,4,5].map(i=>tsfRemoteStores[i]?.active?tsfRemoteStores[i].rows:[])];
+      for(const rows of listas){
+        for(const fila of rows){
+          const maestra=tsfV127ResolverMaestro(fila);
+          if(!maestra)continue;
+          for(const [col,fuente] of TSF_V127_MAESTROS){
+            if(Object.prototype.hasOwnProperty.call(fila,col)){
+              // Tracking no permite modificar estos campos heredados directamente.
+              fila[col]=String(maestra[fuente]??'');
+            }
+          }
+        }
+      }
+    }
+
+    const tsfV127RolCampo=fieldRole;
+    fieldRole=function(indice,col,fila=null){
+      // Mismo color plomo claro en todas las columnas de operación heredadas.
+      if(indice!==0&&TSF_V127_HEREDADOS.has(col))return col==='ID_OPERACION'?'extracted':'inherited';
+      return tsfV127RolCampo(indice,col,fila);
+    };
+
+    const tsfV127EditableAnterior=isEditableColumn;
+    isEditableColumn=function(indice,col,fila=null){
+      if(indice!==0&&TSF_V127_MAESTROS.has(col)){
+        return tsfV127PermitidoOtroModulo(indice,col,fila);
+      }
+      return tsfV127EditableAnterior(indice,col,fila);
+    };
+
+    const tsfV127CambioAnterior=updateCell;
+    updateCell=function(id,col,valor,opts={}){
+      if(mIdx!==0&&TSF_V127_MAESTROS.has(col)){
+        const fila=mainMod().rows.find(r=>keyID(r)===id);
+        const maestra=tsfV127ResolverMaestro(fila);
+        if(!maestra){
+          toast('No se puede vincular '+col+': comprueba un CAF único en Gestión. No se guardó el cambio.');
+          return false;
+        }
+        if(!tsfV127PermitidoOtroModulo(mIdx,col,fila))return false;
+        const fuente=TSF_V127_MAESTROS.get(col);
+        const nuevo=String(valor??'').trim();
+        if(nuevo===String(maestra[fuente]??'').trim())return true;
+        const ok=spChange(keyID(maestra),fuente,nuevo);
+        if(!ok)return false;
+        tsfV127Reflejar();
+        updateDirtyLabel();
+        if(!opts.silent)toast(col+' actualizado en pantalla por CAF. Pulsa Guardar cambios para registrarlo en Gestión; TB3–TB6 siguen pendientes de sincronización física.');
+        return true;
+      }
+      const ok=tsfV127CambioAnterior(id,col,valor,opts);
+      if(ok&&mIdx===0&&TSF_V127_MAESTROS.has(col))tsfV127Reflejar();
+      return ok;
+    };
+
+    // Cuando se abren módulos o llegan lotes, reflejar la versión vigente del
+    // maestro; nunca marcar escrituras en otras listas como confirmadas.
+    const tsfV127PintarAnterior=tableRender;
+    tableRender=function(...args){
+      tsfV127Reflejar();
+      const result=tsfV127PintarAnterior.apply(this,args);
+      // Resaltar discretamente una edición maestra pendiente sin alterar el
+      // color plomo del bloque ni modificar celdas que se estén editando.
+      if(mIdx!==0){
+        const modulo=mainMod();
+        const tabla=document.getElementById('dataTable');
+        for(const tr of (tabla?.tBodies?.[0]?.rows||[])){
+          const fila=modulo.rows.find(r=>keyID(r)===tr.dataset.id);
+          const maestra=tsfV127ResolverMaestro(fila);
+          if(!maestra)continue;
+          modulo.columns.forEach((col,i)=>{
+            const fuente=TSF_V127_MAESTROS.get(col);
+            if(fuente&&spEdits.get(keyID(maestra))?.has(fuente)){
+              tr.cells[i]?.classList.add('tsf-v127-pendiente-compartido');
+            }
+          });
+        }
+      }
+      return result;
+    };
+
+    // Guardar desde cualquier pantalla los campos compartidos en Gestión;
+    // si hay cambios en Tracking/GPS, guardar cada lista de manera independiente.
+    // No se anuncia éxito de TB3-TB6: sus escrituras aún no están habilitadas.
+    async function tsfV127GuardarDesdeVista(){
+      if(window.TSF_SESSION_ROLE!=='EDICION')return toast('Perfil solo consulta.');
+      if(mIdx===0)return tsfGuardarAmbosGestion();
+      if(spEdits.size)await tsfGuardarGestionConConflictos();
+      if([1,6].includes(mIdx)&&trackingSp.edits.size)await tsfGuardarTrackingConConflictos(false);
+      if(spEdits.size)toast('Siguen pendientes cambios en Gestión. Revisa los avisos de guardado y conflictos.');
+      else if(!([1,6].includes(mIdx)&&trackingSp.edits.size))toast('Los cambios compartidos de Gestión quedaron procesados; verifica SharePoint.');
+      tsfV127Reflejar();
+      updateDirtyLabel();
+      if(!document.activeElement?.matches?.('.cell-input:not([readonly]),.tsf-cell-select'))tableRender();
+    }
+    const tsfV127SaveBtn=document.getElementById('saveBtn');
+    if(tsfV127SaveBtn)tsfV127SaveBtn.onclick=tsfV127GuardarDesdeVista;
+
+    const tsfV127UIAnterior=updateSpPreviewUI;
+    updateSpPreviewUI=function(...args){
+      const r=tsfV127UIAnterior.apply(this,args);
+      const b=document.getElementById('saveBtn');
+      if(b&&mIdx!==0&&spEdits.size&&window.TSF_SESSION_ROLE==='EDICION'){
+        b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
+      }
+      const pie=document.querySelector('.sidefoot-text');
+      if(pie)pie.innerHTML='<b>V12.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      return r;
+    };
+    const tsfV127DirtyAnterior=updateDirtyLabel;
+    updateDirtyLabel=function(...args){
+      const result=tsfV127DirtyAnterior.apply(this,args);
+      if(mIdx!==0&&window.TSF_SESSION_ROLE==='EDICION'){
+        const total=spEditCount()+([1,6].includes(mIdx)?trackingEditsCount():0);
+        const lbl=document.getElementById('dirtyCount');
+        if(lbl)lbl.textContent=total?'· '+total:'';
+        const b=document.getElementById('saveBtn');
+        if(b)b.disabled=(spSaving||trackingSp.saving||total===0);
+      }
+      return result;
     };
 
     // Inicializar sin tocar los borradores ni recargar la página.
