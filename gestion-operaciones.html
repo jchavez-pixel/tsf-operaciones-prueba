@@ -718,23 +718,36 @@ body.tsf-dashboard-active .tsf-dashboard-panels{display:grid!important;grid-temp
  body.tsf-seg-active .tsf-seg-right>.tsf-seg-section:last-child .tsf-seg-data-grid:not(:has(> :nth-child(13))){grid-auto-rows:minmax(47px,1fr)!important}
 }
 </style>
-<style id="tsf-v135-sticky-header">
-/* Encabezados de ambos niveles anclados al contenedor que realmente se desplaza. */
-#tableWrap{overflow:auto!important;position:relative!important;isolation:isolate}
+<style id="tsf-v136-sticky-fix">
+/* No fijar THEAD completo: hacerlo además de TH producía filas duplicadas, cortes y desalineación. */
+#tableWrap{overflow:auto!important;position:relative!important;isolation:auto!important;scrollbar-gutter:stable}
 #dataTable{border-collapse:separate!important;border-spacing:0!important}
-#dataTable thead{position:sticky!important;top:0!important;z-index:32!important}
-#dataTable thead tr:first-child th{position:sticky!important;top:0!important;z-index:35!important;height:29px!important;min-height:29px!important;background-clip:padding-box!important}
-#dataTable thead tr:last-child th{position:sticky!important;top:29px!important;z-index:34!important;background-clip:padding-box!important}
-#dataTable thead tr:last-child th:first-child{position:sticky!important;top:29px!important;z-index:34!important}
+#dataTable thead{position:static!important;transform:none!important;z-index:auto!important}
+#dataTable thead tr{position:static!important;transform:none!important}
+#dataTable thead tr.tsf-groups-row th{position:sticky!important;top:0!important;z-index:31!important;height:30px!important;min-height:30px!important;box-sizing:border-box!important;background-clip:border-box!important}
+#dataTable thead tr:last-child th{position:sticky!important;top:30px!important;z-index:30!important;background-clip:border-box!important}
 #dataTable tbody td{z-index:auto}
+/* Forzar que ni la primera columna ni PRODUCTO se fijen horizontalmente. */
+body.tsf-v130-tracking #dataTable thead tr:last-child th:first-child,
+body.tsf-v130-tracking #dataTable tbody td:first-child,
+body.tsf-v135-gps #dataTable thead tr:last-child th:first-child,
+body.tsf-v135-gps #dataTable tbody td:first-child {position:relative!important;left:auto!important;box-shadow:none!important;z-index:auto!important}
+body.tsf-v130-tracking #dataTable thead tr:last-child th:first-child,
+body.tsf-v135-gps #dataTable thead tr:last-child th:first-child{position:sticky!important;top:30px!important;z-index:30!important}
+body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-producto,
+body.tsf-v135-gps #dataTable thead tr:last-child th.tsf-v130-producto{position:sticky!important;top:30px!important;left:auto!important;z-index:30!important}
+/* CAF: la única celda inmóvil en desplazamiento horizontal. */
 body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-caf,
-body.tsf-v135-gps #dataTable thead tr:last-child th.tsf-v130-caf{position:sticky!important;left:0!important;top:29px!important;z-index:38!important;background:#e4e8ed!important;box-shadow:2px 0 5px #b9c3d1!important}
+body.tsf-v135-gps #dataTable thead tr:last-child th.tsf-v130-caf{position:sticky!important;left:0!important;top:30px!important;z-index:42!important;background:#e4e8ed!important;box-shadow:2px 0 5px #b9c3d1!important}
 body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf,
-body.tsf-v135-gps #dataTable tbody td.tsf-v130-caf{position:sticky!important;left:0!important;z-index:22!important;background:#edf0f4!important;box-shadow:2px 0 5px #cdd5df!important}
+body.tsf-v135-gps #dataTable tbody td.tsf-v130-caf{position:sticky!important;left:0!important;z-index:20!important;background:#edf0f4!important;box-shadow:2px 0 5px #cdd5df!important}
 body.tsf-v135-gps #dataTable td.tsf-v130-producto{background:#f0f2f5!important;color:#475568!important}
 body.tsf-v135-gps #dataTable th.tsf-v130-producto{background:#e4e8ed!important;color:#405267!important}
 body.tsf-v135-gps #dataTable td.tsf-v130-producto .tsf-v130-producto-val{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:650;padding:0 5px}
-body.tsf-v135-gps #dataTable td.tsf-v130-caf input{background:#edf0f4!important;color:#344457!important;font-weight:750!important}
+/* Reproceso pequeño y alineado, independientemente de reglas genéricas de inputs. */
+#dataTable td.tsf-repro-cell{text-align:center!important;vertical-align:middle!important}
+#dataTable .tsf-repro-check{appearance:auto!important;-webkit-appearance:checkbox!important;display:inline-block!important;width:16px!important;height:16px!important;min-width:16px!important;max-width:16px!important;margin:0 auto!important;padding:0!important;vertical-align:middle!important;accent-color:#d9a900;cursor:pointer}
+#dataTable .tsf-repro-check:disabled{cursor:default;opacity:.65}
 </style>
 </head>
 <body>
@@ -2217,7 +2230,7 @@ const specialSelect =
     hl&&!editable&&(['ESTADO','ESTADO DEL SEGURO'].includes(col))?
     `<span class="value-badge ${hl}">${esc(val)}</span>`:
     `<div class="${dateField?'tsf-date-cell':'tsf-text-cell'}">${dateField&&editable&&mIdx!==0?`<input type="checkbox" class="tsf-date-now" data-id="${esc(keyID(row))}" data-col="${i}" title="Colocar fecha y hora actual (hora de Lima); luego puedes editarla" aria-label="Poner fecha y hora actual en ${esc(col)}"/>`:''}<input aria-label="${esc(col)}" aria-readonly="${!editable}" class="cell-input ${!editable?'readonly':''} ${(isTrackingSp()?trackingSp.edits.get(keyID(row))?.has(col):isSpPreview()?spEdits.get(keyID(row))?.has(col):dirty.has(m.key+'|'+keyID(row)+'|'+col))?'changed':''}" data-id="${esc(keyID(row))}" data-col="${i}" ${!editable?'readonly tabindex="-1"':''} value="${esc(dateField?minuteDisplay(val):val)}" placeholder="${editable?'Completar':'—'}"/></div>`)}</td>`;
- }).join('')}<td style="text-align:center"><button class="openrow" data-detail="${esc(keyID(row))}">${ic('eye',13)} Ver</button></td>${mIdx===1?`<td class="tsf-repro-cell" style="width:104px;text-align:center"><button type="button" class="tsf-repro-action" data-repro-reg="${esc(keyID(row))}" aria-label="Registrar reproceso para ${esc(keyID(row))}">Reproceso</button></td>`:''}</tr>`).join('');
+ }).join('')}<td style="text-align:center"><button class="openrow" data-detail="${esc(keyID(row))}">${ic('eye',13)} Ver</button></td>${mIdx===1?`<td class="tsf-repro-cell" style="width:104px;text-align:center"><input type="checkbox" class="tsf-repro-check" data-repro-reg="${esc(keyID(row))}" aria-label="Registrar reproceso para ${esc(keyID(row))}" title="Marcar para registrar un reproceso en TB5" ${tsfRemoteStores[4]?.rows.some(rr=>keyID(rr)===keyID(row)&&String(rr.CAF??'').trim()===String(row.CAF??'').trim())?'checked disabled':''}/></td>`:''}</tr>`).join('');
  document.getElementById('dataTable').innerHTML=head+'<tbody>'+body+'</tbody>';
  const empty=document.getElementById('emptyState');
   empty.style.display=all.length?'none':'block';
@@ -3476,8 +3489,10 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     // Si el Worker/flujo aún no dispone de la acción, NO se crea una fila ficticia.
     const tsfReproPending=new Set();
     document.getElementById('dataTable').addEventListener('click', async ev=>{
-      const boton=ev.target.closest('[data-repro-reg]');
+      const boton=ev.target.closest('input.tsf-repro-check[data-repro-reg]');
       if(!boton||mIdx!==1)return;
+      ev.preventDefault(); // no confirmar check antes de que SharePoint confirme ambas escrituras
+      boton.checked=false;
       const id=boton.dataset.reproReg;
       if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Solo el perfil EDICIÓN puede registrar un reproceso.');return}
       if(tsfReproPending.has(id))return;
@@ -3491,7 +3506,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       const already=tsfRemoteStores[4]?.rows.some(r=>r.ID_OPERACION===id&&String(r.CAF??'').trim()===caf);
       if(already){toast('Este CAF y operación ya aparecen en TB5. Revisa Reprocesos.');return}
       if(!confirm('¿Registrar un reproceso para '+id+' (CAF '+caf+') en TB5 y marcar Sí en TB2?'))return;
-      tsfReproPending.add(id);boton.disabled=true;boton.textContent='Procesando…';
+      tsfReproPending.add(id);boton.disabled=true;boton.title='Registrando en SharePoint…';
       try{
         const result=await trackingApi({
           accion:'REPROCESO_REGISTRAR',id_operacion:id,caf,
@@ -3500,11 +3515,11 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         // No aceptar ok ambiguo ni afirmar éxito de escrituras parciales.
         if(result?.ok!==true||!Number.isSafeInteger(Number(result?.tb5_item_id))||result?.tb2_marcado!==true)
           throw new Error('No se confirmó la creación en TB5 Y la marca en TB2. Comprueba el historial del flujo.');
-        boton.classList.add('is-checked');boton.textContent='Registrado';
+        boton.checked=true;boton.disabled=true;boton.title='Reproceso registrado en SharePoint';
         toast('Reproceso registrado en TB5 y marcado en TB2.');
         await Promise.allSettled([loadTrackingSp(true),Promise.resolve()]);
       }catch(err){
-        boton.disabled=false;boton.textContent='Reproceso';
+        boton.checked=false;boton.disabled=false;boton.title='No se registró el reproceso; reintenta';
         toast('No se registró el reproceso: '+String(err?.message||err).slice(0,135));
       }finally{tsfReproPending.delete(id)}
     });
