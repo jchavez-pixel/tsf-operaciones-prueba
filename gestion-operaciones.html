@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V15.9 — GPS CAF fijo y PRODUCTO</title>
+<title>TSF | Operaciones V16.0 — GPS CAF fijo y PRODUCTO</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -861,7 +861,7 @@ body.tsf-v150-gps #dataTable thead tr.tsf-groups-row th {top:0!important;}
 </style>
 
 <style id="tsf-v151-caf-fine">
-/* V15.9: la franja superior de CAF forma parte del encabezado fijo, sin desplazar columnas. */
+/* V16.0: la franja superior de CAF forma parte del encabezado fijo, sin desplazar columnas. */
 body.tsf-v130-tracking #dataTable thead tr.tsf-groups-row th.tsf-caf-group-cap,
 body.tsf-v150-gps #dataTable thead tr.tsf-groups-row th.tsf-caf-group-cap {
   position:sticky!important;left:0!important;top:0!important;
@@ -892,7 +892,7 @@ body.tsf-v150-gps #dataTable tbody td.tsf-v150-caf input {
 </style>
 
 <style id="tsf-v152-identificadores-unificados">
-/* V15.9: misma tipografia, dimensiones y densidad para identificadores de Tracking y GPS. */
+/* V16.0: misma tipografia, dimensiones y densidad para identificadores de Tracking y GPS. */
 body.tsf-v130-tracking #dataTable,
 body.tsf-v150-gps #dataTable { border-collapse:separate!important; border-spacing:0!important; }
 body.tsf-v130-tracking #dataTable thead tr:last-child th,
@@ -1107,6 +1107,27 @@ body.tsf-v150-gps #dataTable thead tr:last-child th:first-child{
  position:sticky!important;top:30px!important;left:auto!important;z-index:39!important;
 }
 </style>
+
+<style id="tsf-v160-identificadores-compactos-readonly">
+/* Tracking y GPS: 8 filas visibles, sin ampliar ni cambiar anchos. */
+body.tsf-v130-tracking #dataTable tbody tr,
+body.tsf-v150-gps #dataTable tbody tr{height:43px!important;min-height:43px!important;}
+body.tsf-v130-tracking #dataTable tbody td,
+body.tsf-v150-gps #dataTable tbody td{height:43px!important;min-height:43px!important;padding-top:3px!important;padding-bottom:3px!important;box-sizing:border-box!important;}
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7),
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7){height:43px!important;min-height:43px!important;padding:3px 5px!important;}
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) input:not([type=checkbox]),
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) select,
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) input:not([type=checkbox]),
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) select{height:31px!important;min-height:31px!important;max-height:31px!important;}
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) .tsf-v130-producto-val,
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) .tsf-v130-producto-val{line-height:31px!important;}
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7) .cell-input.readonly,
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) .cell-input.readonly{cursor:default!important;color:#334155!important;font-weight:600!important;}
+/* Tipografía y fondo homogéneos en todo el grupo de siete identificadores. */
+body.tsf-v130-tracking #dataTable tbody td:nth-child(-n+7),
+body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7){font-size:11px!important;background:#f0f2f5!important;}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -1124,12 +1145,12 @@ body.tsf-v150-gps #dataTable thead tr:last-child th:first-child{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V15.9 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V16.0 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V15.9 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V16.0 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1638,6 +1659,7 @@ function trackingEditable(col){
   ['Text','Note','Choice','Number','Currency','Integer','DateTime'].includes(trackingFieldType(fld));
 }
 function trackingChange(id,col,value){
+ if([1,6].includes(mIdx)&&TSF_IDENTIFICADORES_SOLO_LECTURA.has(col))return false;
  if(!isTrackingSp()||trackingSp.saving||!trackingEditable(col))return false;
  const row=trackingSp.rows.find(r=>keyID(r)===id);if(!row)return false;
  const next=String(value??'').trim(),fld=trackingSp.fields[col],typ=trackingFieldType(fld);
@@ -1952,7 +1974,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V15.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V16.0 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -2196,7 +2218,8 @@ function fieldRole(moduleIndex,col,row=null){
  if(moduleIndex===1&&FINANCIAL_SHARED.has(col))return 'workflow';
  return inheritedFrom(col)?'inherited':'workflow';
 }
-function isEditableColumn(moduleIndex,col,row=null){if(moduleIndex===6&&col==='PRODUCTO')return false;if(isTsfRemoteIndex(moduleIndex))return false;if(window.TSF_SESSION_ROLE!=='EDICION')return false;if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if([1,6].includes(moduleIndex)&&trackingSp.active){
+const TSF_IDENTIFICADORES_SOLO_LECTURA = new Set(['ID_OPERACION','ID OPERACION','ID OPERACIÓN','RUC','CLIENTE','FFNN','ANALISTA OPERATIVO','PRODUCTO','CAF']);
+function isEditableColumn(moduleIndex,col,row=null){if([1,6].includes(moduleIndex)&&TSF_IDENTIFICADORES_SOLO_LECTURA.has(col))return false;if(moduleIndex===6&&col==='PRODUCTO')return false;if(isTsfRemoteIndex(moduleIndex))return false;if(window.TSF_SESSION_ROLE!=='EDICION')return false;if(moduleIndex===0&&isSpPreview())return !SP_LOCKED_COLUMNS.has(col);if([1,6].includes(moduleIndex)&&trackingSp.active){
   if(moduleIndex===6 && !tsfGPSMappingValidado) return false;
   return trackingEditable(col);
  }return ['manual','workflow'].includes(fieldRole(moduleIndex,col,row))}
@@ -2558,7 +2581,7 @@ function tsfEncabezadoGruposGPS(cols){
 }
 function tableRender(){
   document.body.classList.toggle('tsf-v150-gps',mIdx===6);
-  // V15.9: el GPS real es mIdx=6; no mutar columnas ni filas de TB3 Bienes.
+  // V16.0: el GPS real es mIdx=6; no mutar columnas ni filas de TB3 Bienes.
  const m=mainMod(),all=visible(),maxPage=Math.max(1,Math.ceil(all.length/pageSize));
  page=Math.max(1,Math.min(page,maxPage));
  const records=all.slice((page-1)*pageSize,page*pageSize);
@@ -5382,7 +5405,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V15.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V16.0 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -5900,7 +5923,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     tableRender=function(...args){
       const result=tsfV135RenderPrevio.apply(this,args);
       document.body.classList.toggle('tsf-v150-gps',mIdx===6);
-      // V15.9: ejecutar REALMENTE el ordenamiento GPS sobre cada tabla recién creada.
+      // V16.0: ejecutar REALMENTE el ordenamiento GPS sobre cada tabla recién creada.
       // Antes la función estaba declarada pero nunca era llamada.
       // GPS se genera correctamente en mIdx=6 desde tableRender; no reordenar el DOM.
       return result;
