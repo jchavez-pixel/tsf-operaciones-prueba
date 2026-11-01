@@ -777,6 +777,29 @@ body.tsf-v137-gestion #dataTable thead tr:last-child th.field-extracted{
   background:#e7eaee!important;
 }
 </style>
+
+<style id="tsf-v138-identifiers-fix">
+/* V13.8: Gestión fija encabezado y datos de ID OPERACIÓN, no sólo el TH. */
+body.tsf-v137-gestion #dataTable thead tr:last-child th:first-child{
+ position:sticky!important;top:0!important;left:0!important;z-index:65!important;
+ background:#e7eaee!important;box-shadow:2px 0 4px rgba(41,54,74,.14)!important;
+}
+body.tsf-v137-gestion #dataTable tbody tr>td:first-child{
+ position:sticky!important;left:0!important;z-index:28!important;
+ background:#eef1f5!important;box-shadow:2px 0 4px rgba(41,54,74,.10)!important;
+}
+/* GPS: CAF como ÚNICA columna fija horizontal, sin dejar fijas columnas anteriores. */
+body.tsf-v135-gps #dataTable thead tr:last-child th.tsf-v130-caf{
+ position:sticky!important;left:0!important;top:30px!important;z-index:65!important;
+ background:#e4e8ed!important;box-shadow:3px 0 5px rgba(47,62,82,.2)!important;
+}
+body.tsf-v135-gps #dataTable tbody tr>td.tsf-v130-caf{
+ position:sticky!important;left:0!important;z-index:28!important;
+ background:#edf0f4!important;box-shadow:3px 0 5px rgba(47,62,82,.15)!important;
+}
+/* El encabezado agrupado debe seguir su desplazamiento vertical, sin fijarse horizontalmente. */
+body.tsf-v135-gps #dataTable thead tr.tsf-groups-row th{left:auto!important;top:0!important}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
