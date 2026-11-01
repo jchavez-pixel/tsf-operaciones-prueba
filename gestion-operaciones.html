@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V12.9 — Optimización y Reprocesos</title>
+<title>TSF | Operaciones V13.1 — CAF único fijo + Dashboard</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -477,58 +477,38 @@ body.tsf-seg-active #tsf-seg-view{display:block}
 @media(max-width:850px){.tsf-seg-layout{grid-template-columns:minmax(0,1fr)}#tsf-seg-caf-list{max-height:270px;min-height:80px}.tsf-seg-right{padding:13px}.tsf-seg-hero h1{font-size:21px}}
 @media(max-width:460px){.tsf-seg-facts,.tsf-seg-data-grid{grid-template-columns:1fr}.tsf-seg-tools{width:100%}.tsf-seg-btn{flex:1}}
 
-/* ================================================================
-   TSF V13.0 — TRACKING: CAF y PRODUCTO visibles al desplazar.
-   PRODUCTO procede de Gestión: consulta, no nuevo campo en TB2.
-   Las demás tablas mantienen su comportamiento actual.
-   ================================================================ */
-body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf,
-body.tsf-v130-tracking #dataTable tbody td.tsf-v130-producto{
-  position:sticky!important;
-  background:#eef1f5!important;
-  color:#354357!important;
-  z-index:12!important;
-  box-shadow:1px 0 0 #cbd5e1;
-  vertical-align:middle;
-}
-body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf{left:0!important;font-weight:800}
-body.tsf-v130-tracking #dataTable tbody td.tsf-v130-producto{
-  left:132px!important;border-right:2px solid #cbd5e1!important;
-  text-align:left;
-}
-body.tsf-v130-tracking #dataTable thead tr.tsf-columnas-gps th.tsf-v130-caf,
-body.tsf-v130-tracking #dataTable thead tr.tsf-columnas-gps th.tsf-v130-producto{
-  position:sticky!important;
-  top:29px!important;
-  z-index:19!important;
-  background:#e4e8ed!important;
-  color:#405267!important;
-  box-shadow:1px 0 0 #cbd5e1;
-}
-body.tsf-v130-tracking #dataTable thead tr.tsf-columnas-gps th.tsf-v130-caf{left:0!important}
-body.tsf-v130-tracking #dataTable thead tr.tsf-columnas-gps th.tsf-v130-producto{
-  left:132px!important;border-right:2px solid #cbd5e1!important;
-}
-body.tsf-v130-tracking #dataTable td.tsf-v130-producto .tsf-v130-producto-val{
-  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  padding:0 5px;font-size:11px;font-weight:650;
-}
-body.tsf-v130-tracking #dataTable td.tsf-v130-caf .cell-input{
-  font-weight:800!important;text-align:left!important;
-  background:transparent!important;
-}
-/* Desactivar fijación horizontal del ID_OPERACION, que ahora ocupa el 3er lugar. */
-body.tsf-v130-tracking #dataTable thead tr.tsf-columnas-gps th:not(.tsf-v130-caf):not(.tsf-v130-producto),
-body.tsf-v130-tracking #dataTable tbody td:not(.tsf-v130-caf):not(.tsf-v130-producto){
-  left:auto;
-}
-/* VAF permanece heredado, bloqueado si corresponde y centrado vertical y horizontalmente. */
-body.tsf-v130-tracking #dataTable td:has(.tsf-vaf-input){
-  text-align:center!important;vertical-align:middle!important;
-}
-body.tsf-v130-tracking #dataTable td .tsf-vaf-input{
-  text-align:center!important;display:block!important;margin:auto!important;
-}
+/* V13.1: únicamente CAF se mantiene fijo horizontalmente. */
+body.tsf-v130-tracking #dataTable thead tr:last-child th,
+body.tsf-v130-tracking #dataTable tbody td {left:auto!important}
+body.tsf-v130-tracking #dataTable thead tr:last-child th:first-child,
+body.tsf-v130-tracking #dataTable tbody td:first-child {position:relative!important;left:auto!important;z-index:auto!important;box-shadow:none!important}
+body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-caf {position:sticky!important;left:0!important;top:29px!important;z-index:21!important;background:#e4e8ed!important;color:#3b4b60!important;box-shadow:2px 0 5px #b9c3d1}
+body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf {position:sticky!important;left:0!important;z-index:15!important;background:#edf0f4!important;color:#344457!important;box-shadow:2px 0 5px #cdd5df}
+body.tsf-v130-tracking #dataTable td.tsf-v130-producto {position:static!important;left:auto!important;background:#f0f2f5!important;color:#475568!important}
+body.tsf-v130-tracking #dataTable th.tsf-v130-producto {position:sticky!important;top:29px!important;left:auto!important;background:#e4e8ed!important;color:#405267!important}
+body.tsf-v130-tracking #dataTable td.tsf-v130-producto .tsf-v130-producto-val {display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:650;padding:0 5px}
+body.tsf-v130-tracking #dataTable td.tsf-v130-caf input {background:#edf0f4!important;color:#344457!important;font-weight:750!important}
+body.tsf-v130-tracking #dataTable td:has(.tsf-vaf-input) {text-align:center!important;vertical-align:middle!important}
+body.tsf-v130-tracking #dataTable td .tsf-vaf-input {text-align:center!important;margin:auto!important}
+/* Dashboard operativo independiente de módulos de edición. */
+.tsf-dashboard{display:none; flex:1;min-height:0;overflow:auto;padding:20px 24px 36px;background:#f4f6f9}
+body.tsf-dashboard-active .content{display:none!important}
+body.tsf-dashboard-active .tsf-dashboard{display:block}
+.tsf-dashboard-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+.tsf-dashboard h2{font-size:24px;margin:3px 0 6px}.tsf-dashboard h3{font-size:14px;margin:0 0 15px}
+.tsf-dashboard p{color:#687486;margin:0 0 8px}
+.tsf-dash-button{padding:9px 13px;background:#fff;border:1px solid #d8dee7;border-radius:8px;color:#273447;font-weight:700;cursor:pointer}
+.tsf-dashboard-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.tsf-dashboard-card,.tsf-dashboard-panel{background:#fff;border:1px solid #e1e6ed;border-radius:12px;padding:17px;box-shadow:0 2px 12px #15213308}
+.tsf-dashboard-card small{font-weight:650;color:#69778a;font-size:11px}.tsf-dashboard-card strong{display:block;font-size:27px;margin-top:6px;color:#243246}
+.tsf-dashboard-card span{font-size:10px;color:#8190a2}
+.tsf-dashboard-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tsf-dash-line{display:grid;grid-template-columns:minmax(110px,1fr) minmax(90px,2fr) 35px;align-items:center;gap:8px;margin:12px 0;font-size:11px;color:#445269}
+.tsf-dash-line .tsf-dash-label{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tsf-dash-track{height:10px;border-radius:9px;background:#eef1f5;overflow:hidden}.tsf-dash-fill{height:100%;background:#f3bc17;border-radius:9px}
+.tsf-dash-count{text-align:right;font-weight:800}.tsf-dash-note{font-size:11px;color:#738197;line-height:1.5}
+@media(max-width:1100px){.tsf-dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tsf-dashboard-panels{grid-template-columns:1fr}}
+@media(max-width:650px){.tsf-dashboard-grid{grid-template-columns:1fr}.tsf-dashboard{padding:13px}}
 </style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
@@ -631,7 +611,7 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V13.0 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V13.1 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -5134,90 +5114,159 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     updateSpPreviewUI=function(...args){if(mIdx===TSF_SEG_INDEX)return;return tsfSegUiAnterior.apply(this,args);};
     // Fin del módulo adicional Seguimientos. No afecta guardados ni permisos.
 
-    // ===============================================================
-    // V13.0: TRACKING — CAF + PRODUCTO como identificadores fijos.
-    // Se reorganiza exclusivamente la presentación DOM, no el modelo,
-    // índices de edición, campos internos de TB2 ni ETags.
-    // Los listeners ya están instalados cuando movemos las celdas.
-    // ===============================================================
-    const TSF_V130_CAF_ANCHO=132;
-    const TSF_V130_PRODUCTO_ANCHO=180;
-    function tsfV130TrackingCongelar(){
+    // V13.1: conserva indices de columnas y campos de SharePoint.
+    const TSF_V131_PRODUCTO_ANCHO=165;
+    const TSF_V131_CAF_ANCHO=132;
+    function tsfV131TrackingColumnas(){
       document.body.classList.toggle('tsf-v130-tracking',mIdx===1);
       if(mIdx!==1||!trackingSp.active)return;
       const tabla=document.getElementById('dataTable');
       const colgroup=tabla?.querySelector('colgroup');
       const encabezado=tabla?.tHead?.rows?.[tabla.tHead.rows.length-1];
       const cuerpo=tabla?.tBodies?.[0];
-      const idx=modules[1].columns.indexOf('CAF');
-      if(!tabla||!colgroup||!encabezado||!cuerpo||idx<0||!encabezado.cells[idx])return;
-      // Mover el CAF existente, sin duplicarlo ni cambiar su data-col.
-      const colCAF=colgroup.children[idx];
-      const thCAF=encabezado.cells[idx];
-      const anchoPrevio=parseFloat(colCAF?.style.width)||getColumnWidth('CAF',modules[1],idx);
-      colgroup.insertBefore(colCAF,colgroup.firstElementChild);
-      colCAF.style.width=TSF_V130_CAF_ANCHO+'px';
-      encabezado.insertBefore(thCAF,encabezado.firstElementChild);
+      const idxCAF=modules[1].columns.indexOf('CAF');
+      const idxAnalista=modules[1].columns.indexOf('ANALISTA OPERATIVO');
+      if(!tabla||!colgroup||!encabezado||!cuerpo||idxCAF<0||idxAnalista<0)return;
+      // Se presenta el orden original de la imagen 2 y se agrega Producto.
+      // NO cambiamos modules[1].columns: data-col sigue apuntando al campo real.
+      const colCAF=colgroup.children[idxCAF];
+      const thCAF=encabezado.cells[idxCAF];
+      const colAnalista=colgroup.children[idxAnalista];
+      const thAnalista=encabezado.cells[idxAnalista];
+      if(!colCAF||!thCAF||!colAnalista||!thAnalista)return;
+      const anchoCAF=parseFloat(colCAF.style.width)||getColumnWidth('CAF',modules[1],idxCAF);
+      colCAF.style.width=TSF_V131_CAF_ANCHO+'px';
+      thCAF.style.width=TSF_V131_CAF_ANCHO+'px';
       thCAF.classList.add('tsf-v130-caf');
-      thCAF.style.width=TSF_V130_CAF_ANCHO+'px';
-      thCAF.setAttribute('title','CAF · Identificador de la operación (Gestion)');
-      // PRODUCTO es un campo derivado, exclusivamente de lectura.
+      thCAF.title='CAF · identificador fijo de operación';
       const colProducto=document.createElement('col');
-      colProducto.style.width=TSF_V130_PRODUCTO_ANCHO+'px';
-      colgroup.insertBefore(colProducto,colCAF.nextElementSibling);
+      colProducto.style.width=TSF_V131_PRODUCTO_ANCHO+'px';
       const thProducto=document.createElement('th');
       thProducto.className='field-inherited tsf-area-tr-base tsf-v130-producto';
-      thProducto.style.width=TSF_V130_PRODUCTO_ANCHO+'px';
-      thProducto.title='PRODUCTO · Consultado de Gestión de Operaciones';
+      thProducto.style.width=TSF_V131_PRODUCTO_ANCHO+'px';
+      thProducto.title='Producto heredado de Gestión, solo lectura';
       thProducto.innerHTML='<div class="thinner"><span class="thname">PRODUCTO</span></div>';
-      encabezado.insertBefore(thProducto,thCAF.nextElementSibling);
-      // Una nueva columna heredada dentro de Datos de Operación.
+      // Analista -> PRODUCTO -> CAF; las demás columnas permanecen en su orden.
+      colgroup.insertBefore(colProducto,colAnalista.nextSibling);
+      colgroup.insertBefore(colCAF,colProducto.nextSibling);
+      encabezado.insertBefore(thProducto,thAnalista.nextSibling);
+      encabezado.insertBefore(thCAF,thProducto.nextSibling);
       const grupoBase=tabla.tHead.querySelector('.tsf-grupo-tr-base');
       if(grupoBase)grupoBase.colSpan+=1;
-      // Conservar la suma exacta de columnas y evitar desfase de encabezados.
       const totalActual=parseFloat(tabla.style.width)||0;
-      tabla.style.width=(totalActual+TSF_V130_PRODUCTO_ANCHO+TSF_V130_CAF_ANCHO-anchoPrevio)+'px';
-      // Primero mover el CAF original de cada fila; después insertar Producto.
-      // La coincidencia por CAF + ID evita apropiarse de datos de otra operación.
-      const filas=mainMod().rows;
-      const filasPorId=new Map(filas.map(r=>[keyID(r),r]));
+      tabla.style.width=(totalActual+TSF_V131_PRODUCTO_ANCHO+TSF_V131_CAF_ANCHO-anchoCAF)+'px';
+      const filasPorId=new Map(mainMod().rows.map(r=>[keyID(r),r]));
       for(const tr of cuerpo.rows){
-        const tdCAF=tr.cells[idx];
-        if(!tdCAF)continue;
-        tr.insertBefore(tdCAF,tr.firstElementChild);
+        const tdCAF=tr.cells[idxCAF];
+        const tdAnalista=tr.cells[idxAnalista];
+        if(!tdCAF||!tdAnalista)continue;
         tdCAF.classList.add('tsf-v130-caf');
-        tdCAF.style.width=TSF_V130_CAF_ANCHO+'px';
-        const tracking=filasPorId.get(tr.dataset.id);
-        const maestro=typeof tsfV127ResolverMaestro==='function'
-          ? tsfV127ResolverMaestro(tracking):null;
+        tdCAF.style.width=TSF_V131_CAF_ANCHO+'px';
+        const fila=filasPorId.get(tr.dataset.id);
+        const maestro=typeof tsfV127ResolverMaestro==='function'?tsfV127ResolverMaestro(fila):null;
         const producto=maestro?String(maestro.PRODUCTO??'').trim():'';
         const tdProducto=document.createElement('td');
         tdProducto.className='field-inherited tsf-area-tr-base tsf-v130-producto';
-        tdProducto.style.width=TSF_V130_PRODUCTO_ANCHO+'px';
+        tdProducto.style.width=TSF_V131_PRODUCTO_ANCHO+'px';
         tdProducto.title=producto||'Producto pendiente en Gestión de Operaciones';
         const valor=document.createElement('span');
         valor.className='tsf-v130-producto-val';
         valor.textContent=producto||'—';
         tdProducto.appendChild(valor);
-        tr.insertBefore(tdProducto,tdCAF.nextElementSibling);
+        tr.insertBefore(tdProducto,tdAnalista.nextSibling);
+        tr.insertBefore(tdCAF,tdProducto.nextSibling);
       }
-      // Mantener la cabecera y todas las filas con igual número de celdas.
-      if(cuerpo.rows.length&&encabezado.cells.length!==cuerpo.rows[0].cells.length){
-        console.warn('TSF V13.0: desajuste de columnas en Tracking');
-      }
+      if(cuerpo.rows.length&&encabezado.cells.length!==cuerpo.rows[0].cells.length)
+        console.warn('TSF V13.1: la cabecera y el cuerpo no coinciden');
     }
-    const tsfV130TablaAnterior=tableRender;
+    const tsfV131TablaAnterior=tableRender;
     tableRender=function(...args){
-      const resultado=tsfV130TablaAnterior.apply(this,args);
-      tsfV130TrackingCongelar();
-      return resultado;
+      const r=tsfV131TablaAnterior.apply(this,args);
+      tsfV131TrackingColumnas();
+      return r;
     };
-    const tsfV130DrawAnterior=draw;
+    const tsfV131DrawAnterior=draw;
     draw=function(...args){
       document.body.classList.toggle('tsf-v130-tracking',mIdx===1);
-      return tsfV130DrawAnterior.apply(this,args);
+      return tsfV131DrawAnterior.apply(this,args);
     };
 
+    // Dashboard V13.1: consolida Gestión y Tracking ya cargados.
+    // Solo lectura, sin nuevas listas ni llamados al Worker.
+    const TSF_DASH_INDEX=91;
+    const dash=document.createElement('section');
+    dash.className='tsf-dashboard';
+    dash.id='tsf-dashboard';
+    document.querySelector('.workspace').appendChild(dash);
+    const tsfDashOrdenar=arr=>arr.sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'es'));
+    const tsfDashAgrupar=(rows,fn)=>{
+      const mapa=new Map();
+      rows.forEach(r=>{const v=String(fn(r)??'').trim()||'Sin información';mapa.set(v,(mapa.get(v)||0)+1)});
+      return tsfDashOrdenar([...mapa]);
+    };
+    const tsfDashBarras=(items,total,limite=8)=>items.slice(0,limite).map(([nom,n])=>
+      `<div class="tsf-dash-line"><span class="tsf-dash-label" title="${esc(nom)}">${esc(nom)}</span><div class="tsf-dash-track"><div class="tsf-dash-fill" style="width:${total?Math.min(100,n/total*100):0}%"></div></div><span class="tsf-dash-count">${n}</span></div>`
+    ).join('')||'<p>Sin registros disponibles.</p>';
+    function tsfDashRender(){
+      const gestion=spPreview.active?(spPreview.rows||[]):[];
+      const tracking=trackingSp.active?(modules[1].rows||[]):[];
+      const tot=tracking.length;
+      const conEstado=tracking.filter(r=>String(r.ESTADO_OPERACIÓN??'').trim()).length;
+      const desemb=tracking.filter(r=>String(r.ESTADO_OPERACIÓN??'').toUpperCase().includes('DESEMBOLS')).length;
+      const pendientes=tracking.filter(r=>pendingRow(r)).length;
+      const conAnalista=tracking.filter(r=>String(r['ANALISTA OPERATIVO']??'').trim()).length;
+      const conCAF=tracking.filter(r=>String(r.CAF??'').trim()).length;
+      const conMaestro=tracking.filter(r=>typeof tsfV127ResolverMaestro==='function'&&tsfV127ResolverMaestro(r)).length;
+      const productos=tsfDashAgrupar(tracking,r=>tsfV127ResolverMaestro(r)?.PRODUCTO);
+      const analistas=tsfDashAgrupar(tracking,r=>r['ANALISTA OPERATIVO']);
+      const estados=tsfDashAgrupar(tracking,r=>r.ESTADO_OPERACIÓN);
+      const operacionesMaestro=gestion.length;
+      const pct=(v,t)=>t?`${(v/t*100).toFixed(1)}%`:'—';
+      const card=(t,v,sub)=>`<article class="tsf-dashboard-card"><small>${esc(t)}</small><strong>${esc(v)}</strong><span>${esc(sub)}</span></article>`;
+      dash.innerHTML=`<div class="tsf-dashboard-head"><div><div class="overline">PORTAL / MEDIANO PLAZO / INDICADORES</div><h2>Dashboard de Operaciones</h2><p>Control de cartera operativa, distribución de carga y calidad de información.</p></div><button type="button" id="tsf-dash-refresh" class="tsf-dash-button">Actualizar indicadores</button></div>
+        <div class="tsf-dashboard-grid">
+        ${card('Operaciones en Gestión',operacionesMaestro,'TB1 · registros cargados')}
+        ${card('Operaciones en Tracking',tot,'TB2 · registros cargados')}
+        ${card('Desembolsadas',desemb,pct(desemb,tot)+' del Tracking')}
+        ${card('Pendientes de atención',pendientes,pct(pendientes,tot)+' del Tracking')}
+        ${card('Asignadas a analista',conAnalista,pct(conAnalista,tot)+' con analista informado')}
+        ${card('Con CAF registrado',conCAF,pct(conCAF,tot)+' con identificador')}
+        ${card('Vinculadas con Gestión',conMaestro,pct(conMaestro,tot)+' con coincidencia segura')}
+        ${card('Con estado informado',conEstado,pct(conEstado,tot)+' con estado informado')}
+        </div>
+        <div class="tsf-dashboard-panels">
+        <section class="tsf-dashboard-panel"><h3>Distribución por estado de operación</h3>${tsfDashBarras(estados,tot)}<p class="tsf-dash-note">Según los valores efectivos de ESTADO_OPERACIÓN de TB2.</p></section>
+        <section class="tsf-dashboard-panel"><h3>Carga de trabajo por analista</h3>${tsfDashBarras(analistas,tot)}<p class="tsf-dash-note">Volumen de operaciones asignadas, no mide productividad individual.</p></section>
+        <section class="tsf-dashboard-panel"><h3>Operaciones por producto</h3>${tsfDashBarras(productos,tot)}<p class="tsf-dash-note">PRODUCTO se consulta de Gestión mediante CAF e ID de operación.</p></section>
+        <section class="tsf-dashboard-panel"><h3>Calidad y trazabilidad</h3>${tsfDashBarras([['CAF informado',conCAF],['Analista informado',conAnalista],['Estado informado',conEstado],['Vínculo con TB1',conMaestro]],tot)}<p class="tsf-dash-note">Registros sin coincidencia permanecen como datos no vinculados, sin asignación supuesta.</p></section>
+        </div><p class="tsf-dash-note" style="margin-top:16px">Indicadores calculados con la información actualmente cargada. Antes de usar resultados gerenciales, completa las consultas históricas y verifica los criterios de estado.</p>`;
+      dash.querySelector('#tsf-dash-refresh').addEventListener('click',()=>tsfDashRender());
+    }
+    const tsfDashNavAnterior=navRender;
+    navRender=function(...args){
+      const r=tsfDashNavAnterior.apply(this,args);
+      const nav=document.getElementById('sidenav');
+      if(nav){
+        const btn=document.createElement('button');
+        btn.type='button';btn.className='nav-button'+(mIdx===TSF_DASH_INDEX?' active':'');
+        btn.title='Dashboard / Indicadores';
+        btn.innerHTML=ic('grid')+'<span class="navlabel">Dashboard / Indicadores</span>';
+        btn.addEventListener('click',()=>switchModule(TSF_DASH_INDEX));
+        nav.appendChild(btn);
+      }
+      return r;
+    };
+    const tsfDashSwitchAnterior=switchModule;
+    switchModule=function(idx){
+      if(idx===TSF_DASH_INDEX){
+        mIdx=idx;document.body.classList.add('tsf-dashboard-active');
+        document.body.classList.remove('tsf-v130-tracking','tsf-seg-active');
+        closeOverlays();navRender();tsfDashRender();
+        return;
+      }
+      document.body.classList.remove('tsf-dashboard-active');
+      return tsfDashSwitchAnterior(idx);
+    };
     // Inicializar sin tocar los borradores ni recargar la página.
     tsfActualizarEstadosGestion();
     if(mIdx===0)tableRender();
