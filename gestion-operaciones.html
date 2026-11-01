@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V12.8 — Seguimientos por CAF</title>
+<title>TSF | Operaciones V12.9 — Optimización y Reprocesos</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -400,7 +400,7 @@ body.tsf-gestion-sp .data-table tbody tr:nth-child(even) td.field-extracted{
 }
 
 /* ===============================================================
-   TSF V12.8 - Seguimientos por CAF | exclusivamente consulta
+   TSF V12.9 - Seguimientos por CAF | exclusivamente consulta
    No crea registros, no modifica permisos ni cambia mapeos de TB1-TB6.
    =============================================================== */
 body.tsf-seg-active main.content{gap:0;padding:14px 20px;overflow:auto}
@@ -512,6 +512,51 @@ body.tsf-lector #reproManual { display:none !important; }
 body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
 </style>
 <script>document.documentElement.classList.add('tsf-auth-pending');</script>
+
+<style id="tsf-v129-visual">
+/* V12.9: campos heredados de Gestión siempre gris uniforme en otras vistas */
+.data-table thead th.field-inherited,
+.data-table thead th.field-extracted,
+.data-table tbody td.field-inherited,
+.data-table tbody td.field-extracted,
+.data-table thead th.tsf-area-tr-base,
+.data-table tbody td.tsf-area-tr-base,
+.data-table thead th.tsf-grupo-base,
+.data-table tbody tr:nth-child(even) td.field-inherited,
+.data-table tbody tr:nth-child(even) td.field-extracted {background:#f0f2f5!important;color:#475568!important}
+.data-table thead .tsf-groups-row .tsf-grupo-base,
+.data-table thead .tsf-groups-row .tsf-grupo-tr-base {background:#e7eaee!important;color:#485565!important}
+.data-table tbody td.field-inherited select.tsf-cell-select,
+.data-table tbody td.tsf-area-tr-base select.tsf-cell-select,
+.data-table tbody td.field-inherited input,
+.data-table tbody td.tsf-area-tr-base input:not([type=checkbox]){
+  background:#f1f3f6!important;color:#344457!important;border-color:#cfd6df!important
+}
+.data-table tbody td.field-inherited select.tsf-analyst-select,
+.data-table tbody td.tsf-area-tr-base select.tsf-analyst-select{
+  background:#eceff3!important;color:#38485b!important;border-color:#cbd3df!important;box-shadow:none!important
+}
+/* VAF de Gestión (aunque esté integrado visualmente en Tracking) = mismo gris. */
+.data-table tbody td.field-inherited input.tsf-vaf-input,
+.data-table tbody td.field-inherited input.tsf-vaf-input.changed{background:#edf0f4!important;color:#38485b!important;border-color:#cbd3df!important}
+/* Los títulos largos se disponen en máximo dos líneas. */
+.data-table thead tr:last-child th {height:55px!important;vertical-align:middle!important;overflow:visible!important}
+.data-table thead th .thinner {min-height:44px!important;display:flex!important;align-items:center!important;gap:4px!important;justify-content:space-between}
+.data-table thead th .thname,
+.data-table thead .tsf-columnas-gps th .thname{
+  white-space:normal!important;line-height:1.2!important;max-height:none!important;
+  display:block!important;overflow:visible!important;overflow-wrap:normal!important;
+  text-overflow:clip!important;font-size:10px!important;font-weight:750!important;
+}
+.data-table thead th .header-filter{flex:0 0 auto!important}
+.data-table .tsf-repro-head{background:#f2f4f6!important;color:#485565!important}
+.data-table td.tsf-repro-cell{background:#f8f9fb!important;border-left:1px solid #dce1e8!important}
+.tsf-repro-action{border:1px solid #e5c85a;border-radius:7px;background:#fff6da;color:#6a5011;
+  min-width:82px;max-width:100%;height:30px;padding:4px 7px;font-size:10.5px;font-weight:750;cursor:pointer}
+.tsf-repro-action:hover:not(:disabled){background:#ffe8a4}
+.tsf-repro-action:disabled{opacity:.65;cursor:wait}
+.tsf-repro-action.is-checked{background:#e1f2e8;border-color:#a3d7b4;color:#156b43}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -529,12 +574,12 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.8 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V12.9 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V12.8 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V12.9 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1357,7 +1402,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V12.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V12.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -1591,7 +1636,7 @@ function inheritedFrom(col){
  return DERIVED_ALIASES[col]||null;
 }
 function fieldRole(moduleIndex,col,row=null){
- if(isTsfRemoteIndex(moduleIndex))return col==='ID_OPERACION'?'extracted':'workflow';
+ if(isTsfRemoteIndex(moduleIndex))return ['ID_OPERACION','CAF','RUC','CLIENTE','PRODUCTO','FFNN','FUNCIONARIO','ANALISTA OPERATIVO'].includes(col)?'inherited':'workflow';
  // Los reprocesos creados sin coincidencia son autónomos y completamente editables.
  if(moduleIndex===4&&row&&row.__manualReproceso===true)return 'workflow';
  if(moduleIndex===0)return MASTER_LOCKED.has(col)?'extracted':MASTER_EDITABLE.has(col)?'manual':'workflow';
@@ -1801,16 +1846,55 @@ function getColumnWidth(column,mod,index){
 }
 // V12.7: columnas con ancho estimado por el título completo; scroll horizontal sin recortes.
 const tsfAnchoBaseOriginal = getColumnWidth;
+/* V12.9: equilibrar titulares hasta dos renglones sin recortar valores */
+function tsfHeaderParts(label){
+ const normalized=String(label??'').replace(/[_]+/g,' ').replace(/\s+/g,' ').trim();
+ if(!normalized)return [''];
+ let words=normalized.split(' ');
+ if(words.length===1 && words[0].length>21){
+   const word=words[0];const pos=Math.ceil(word.length/2);
+   words=[word.slice(0,pos),word.slice(pos)];
+ }
+ if(normalized.length<=20 && words.length<4)return [normalized];
+ let best=0,score=Infinity;
+ const measure=txt=>{
+   if(!tsfHeaderParts.ctx){const canvas=document.createElement('canvas');tsfHeaderParts.ctx=canvas.getContext('2d')}
+   const c=tsfHeaderParts.ctx;if(c)c.font='700 10.5px Segoe UI, Arial, sans-serif';
+   return c?c.measureText(txt).width:txt.length*6.4;
+ };
+ for(let i=1;i<words.length;i++){
+   const left=words.slice(0,i).join(' '),right=words.slice(i).join(' ');
+   const max=Math.max(measure(left),measure(right));
+   const cost=max+Math.abs(measure(left)-measure(right))*.12;
+   if(cost<score){score=cost;best=i}
+ }
+ return best?[words.slice(0,best).join(' '),words.slice(best).join(' ')]:[normalized];
+}
+function tsfHeaderDisplay(label){return tsfHeaderParts(label).map(t=>esc(t)).join('<br>')}
 getColumnWidth = function(column,mod,index){
- const anterior=tsfAnchoBaseOriginal(column,mod,index);
- const etiqueta=String(columnLabel(column));
- // Se aplica una reserva para los botones de filtro y el espaciado del encabezado.
- const canvas=document.createElement('canvas');
- const medidor=canvas.getContext('2d');
- if(medidor)medidor.font='750 10px Segoe UI, Arial, sans-serif';
- const anchoTitulo=Math.ceil((medidor?medidor.measureText(etiqueta).width:etiqueta.length*6.8)+48);
- const anchoControles=/ESTADO_OPERACI[ÓO]N/i.test(etiqueta)?185:0;
- return Math.max(anterior,anchoTitulo,anchoControles);
+ const key=String(column).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+ const parts=tsfHeaderParts(columnLabel(column));
+ const ctx=tsfHeaderParts.ctx;
+ if(ctx)ctx.font='700 10.5px Segoe UI, Arial, sans-serif';
+ const textWide=Math.ceil(Math.max(...parts.map(t=>ctx?ctx.measureText(t).width:t.length*6.4))+37);
+ const base=tsfAnchoBaseOriginal(column,mod,index);
+ let valueWidth=98;
+ if(index===0||key==='ID_OPERACION')valueWidth=142;
+ else if(/ESTADO.*OPERACION/.test(key))valueWidth=179;
+ else if(/ANALISTA|RESPONSABLE|GESTOR/.test(key))valueWidth=176;
+ else if(/COMENTARI|OBSERVAC|DESCRIPCI|DETALLE/.test(key))valueWidth=197;
+ else if(/CLIENTE|RAZON/.test(key))valueWidth=154;
+ else if(/CAF|RUC|MONEDA|VAF|PLACA|COFIDE/.test(key))valueWidth=112;
+ else if(/FECHA|ENVIO|RECEPC|APLICACION|CONFIRMA|SOLICITUD|VCTO|FIRMA/.test(key))valueWidth=146;
+ else if(/TIPO|ORIGEN|ESTADO|PRODUCTO|GARANTIA/.test(key))valueWidth=144;
+ else if(/COL. NETA|PRIMA|MONTO|CUOTA|IMPORTE/.test(key))valueWidth=128;
+ // Capacidad real del control (no asignar 250px a fechas sólo por la leyenda).
+ if(key.includes('ORIGEN DE FONDOS'))valueWidth=192;
+ const typical=mod.rows.slice(0,50).map(row=>String(row[column]??'').length).filter(Boolean).sort((a,b)=>a-b);
+ if(typical.length&&!(/FECHA|ENVIO|RECEPC|APLICACION|CONFIRMA|SOLICITUD|VCTO/.test(key)))
+  valueWidth=Math.max(valueWidth,Math.min(220,typical[Math.floor((typical.length-1)*.65)]*5.4+18));
+ const upper=/COMENTARI|DETALLE/.test(key)?280:308;
+ return Math.round(Math.min(upper,Math.max(94,textWide,valueWidth)));
 };
 function columnLabel(column){if(column==='FECHA_DE_REGISTRO')return 'FECHA REGISTRO';if(column==='COL. NETA ($)')return 'COL. NETA ($)';if(mIdx===1&&column==='COMENTARIOS')return 'COMENTARIO';return column}
 // Grupos de columnas; todos los valores y ETags siguen perteneciendo a TB2.
@@ -1874,7 +1958,7 @@ function tsfEncabezadoGruposGPS(cols){
    return n?`<th class="${clase}" colspan="${n}" scope="colgroup">${titulo}</th>`:'';
   }).join('');
   return '<tr class="tsf-groups-row tsf-tracking-groups">'+partes+
-   '<th class="tsf-grupo-detalle" scope="colgroup" aria-label="Detalle"></th></tr>';
+   '<th class="tsf-grupo-detalle" scope="colgroup" aria-label="Detalle"></th>' + '<th class="tsf-grupo-detalle" scope="colgroup" aria-label="Reproceso"></th></tr>';
  }
  if([2,3,4,5].includes(mIdx)){
    const propias=cols.filter(col=>!['ID_OPERACION','CAF','RUC','CLIENTE','PRODUCTO','FFNN','FUNCIONARIO','ANALISTA OPERATIVO'].includes(col));
@@ -1905,12 +1989,13 @@ function tableRender(){
  page=Math.max(1,Math.min(page,maxPage));
  const records=all.slice((page-1)*pageSize,page*pageSize);
  const widths=m.columns.map((column,i)=>getColumnWidth(column,m,i));
- const colMarkup='<colgroup>'+widths.map(w=>`<col style="width:${w}px">`).join('')+'<col style="width:73px"></colgroup>';
- document.getElementById('dataTable').style.width=(widths.reduce((a,b)=>a+b,73))+'px';
+ const extraWidth=mIdx===1?184:82; // DETALLE 80 + REPROCESO 104
+ const colMarkup='<colgroup>'+widths.map(w=>`<col style="width:${w}px">`).join('')+'<col style="width:80px">'+(mIdx===1?'<col style="width:104px">':'')+'</colgroup>';
+ document.getElementById('dataTable').style.width=(widths.reduce((a,b)=>a+b,extraWidth))+'px';
  const descriptions={extracted:'Dato extraído y protegido; no editable',inherited:'Dato heredado de Gestión de Operaciones; no editable',auto:'Fecha y hora automática de asignación; no editable',manual:'Dato manual resaltado; editable',workflow:isTsfRemoteIndex()?'Dato real de SharePoint · solo lectura':'Editable en este módulo'};
  let head=colMarkup+'<thead>'+tsfEncabezadoGruposGPS(m.columns)+'<tr'+([1,2,3,4,5,6].includes(mIdx)?' class="tsf-columnas-gps"':'')+'>'+m.columns.map((column,i)=>{
-  const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${esc(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
- }).join('')+'<th style="width:73px;text-align:center">DETALLE</th></tr></thead>';
+  const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${tsfHeaderDisplay(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
+ }).join('')+'<th style="width:80px;text-align:center">DETALLE</th>'+(mIdx===1?'<th class="tsf-repro-head" style="width:104px;text-align:center">REPROCESO</th>':'')+'</tr></thead>';
  let body=records.map(row=>`<tr data-id="${esc(keyID(row))}">${m.columns.map((col,i)=>{
    const val=(col==='ESTADO_OPERACIÓN'&&[1,6].includes(mIdx)&&trackingSp.active&&typeof window.tsfEstadoPublico==='function')?window.tsfEstadoPublico(keyID(row)):String(row[col]??'');
    const hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
@@ -1953,7 +2038,7 @@ const specialSelect =
     hl&&!editable&&(['ESTADO','ESTADO DEL SEGURO'].includes(col))?
     `<span class="value-badge ${hl}">${esc(val)}</span>`:
     `<div class="${dateField?'tsf-date-cell':'tsf-text-cell'}">${dateField&&editable&&mIdx!==0?`<input type="checkbox" class="tsf-date-now" data-id="${esc(keyID(row))}" data-col="${i}" title="Colocar fecha y hora actual (hora de Lima); luego puedes editarla" aria-label="Poner fecha y hora actual en ${esc(col)}"/>`:''}<input aria-label="${esc(col)}" aria-readonly="${!editable}" class="cell-input ${!editable?'readonly':''} ${(isTrackingSp()?trackingSp.edits.get(keyID(row))?.has(col):isSpPreview()?spEdits.get(keyID(row))?.has(col):dirty.has(m.key+'|'+keyID(row)+'|'+col))?'changed':''}" data-id="${esc(keyID(row))}" data-col="${i}" ${!editable?'readonly tabindex="-1"':''} value="${esc(dateField?minuteDisplay(val):val)}" placeholder="${editable?'Completar':'—'}"/></div>`)}</td>`;
- }).join('')}<td style="text-align:center"><button class="openrow" data-detail="${esc(keyID(row))}">${ic('eye',13)} Ver</button></td></tr>`).join('');
+ }).join('')}<td style="text-align:center"><button class="openrow" data-detail="${esc(keyID(row))}">${ic('eye',13)} Ver</button></td>${mIdx===1?`<td class="tsf-repro-cell" style="width:104px;text-align:center"><button type="button" class="tsf-repro-action" data-repro-reg="${esc(keyID(row))}" aria-label="Registrar reproceso para ${esc(keyID(row))}">Reproceso</button></td>`:''}</tr>`).join('');
  document.getElementById('dataTable').innerHTML=head+'<tbody>'+body+'</tbody>';
  const empty=document.getElementById('emptyState');
   empty.style.display=all.length?'none':'block';
@@ -3068,7 +3153,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       if (bandaOperativa) bandaOperativa.colSpan += 1;
       const th = document.createElement('th');
       th.textContent = 'VAF';
-th.className = 'field-workflow tsf-area-tr-oper';
+th.className = 'field-inherited tsf-area-tr-base';
       th.style.width = '115px';
 
       th.title =
@@ -3091,22 +3176,8 @@ th.className = 'field-workflow tsf-area-tr-oper';
         );
       }
 
-      // Cambiar título de última columna
-      const ultimoEncabezado =
-        cabecera.lastElementChild;
-
-      ultimoEncabezado.textContent =
-        'DETALLE / REPROCESO';
-
-      ultimoEncabezado.style.width = '175px';
-
-      // VAF añade 115 px y DETALLE pasa de 73 a 175 px (+102).
-      tabla.style.width =
-        (parseFloat(tabla.style.width) + 217) + 'px';
-
-      if (grupo?.lastElementChild) {
-        grupo.lastElementChild.style.width = '175px';
-      }
+      // VAF sólo agrega una columna operativa; DETALLE y REPROCESO permanecen independientes.
+      tabla.style.width=(parseFloat(tabla.style.width)+115)+'px';
 
       // PROCESAR CADA REGISTRO
       for (const fila of cuerpo.rows) {
@@ -3130,7 +3201,7 @@ th.className = 'field-workflow tsf-area-tr-oper';
 
         // CELDA VAF
         const celdaVAF = document.createElement('td');
-celdaVAF.className = 'field-workflow tsf-area-tr-oper';
+celdaVAF.className = 'field-inherited tsf-area-tr-base';
         celdaVAF.style.width = '115px';
 
         const entrada = document.createElement('input');
@@ -3214,117 +3285,50 @@ celdaVAF.className = 'field-workflow tsf-area-tr-oper';
           });
         }
 
-        // BOTÓN CHECK DE REPROCESOS
-        const detalle = fila.lastElementChild;
+        // REPROCESO ya está en su columna independiente, creada por tableRender.
 
-        detalle.style.width = '151px';
-        detalle.style.whiteSpace = 'nowrap';
-
-        const reprocesos = modules[4];
-
-        const yaMarcado = reprocesos.rows.some(
-          r => keyID(r) === id &&
-          r.__manualReproceso === true
-        );
-
-        const boton = document.createElement('button');
-
-        boton.type = 'button';
-
-        boton.className =
-          'tsf-repro-check' +
-          (yaMarcado ? ' is-checked' : '');
-
-        boton.textContent =
-          yaMarcado ? '☑' : '☐';
-
-        boton.title = yaMarcado
-          ? 'Agregado a Reprocesos'
-          : 'Agregar a Reprocesos';
-
-        // TB5 todavía es solo lectura. Evitar que el check aparente una alta real.
-        boton.disabled = true;
-        boton.title = 'Pendiente: crear el reproceso en TB5 - REPROCESOS';
-
-        detalle.appendChild(boton);
-
-        boton.onclick = () => {
-
-          if (
-            window.TSF_SESSION_ROLE !== 'EDICION'
-          ) return;
-
-          const existente = reprocesos.rows.find(
-            r => keyID(r) === id &&
-            r.__manualReproceso === true
-          );
-
-          if (existente) {
-            toast(
-              'Esta operación ya fue agregada a Reprocesos.'
-            );
-            return;
-          }
-
-          const origen =
-            spPreview.rows.find(r => keyID(r) === id) ||
-            trackingSp.rows.find(r => keyID(r) === id);
-
-          if (!origen) {
-            toast('No se encontró la operación.');
-            return;
-          }
-
-          // Si ya existe una fila local con ese ID,
-          // reutilizarla para evitar duplicados.
-          let nuevoReproceso = reprocesos.rows.find(
-            r => keyID(r) === id
-          );
-
-          if (!nuevoReproceso) {
-
-            nuevoReproceso = Object.fromEntries(
-              reprocesos.columns.map(c => [c, ''])
-            );
-
-            nuevoReproceso.ID_OPERACION = id;
-
-            reprocesos.rows.unshift(nuevoReproceso);
-          }
-
-          // Copiar datos disponibles desde la operación
-          for (const columna of reprocesos.columns) {
-
-            if (
-              columna !== 'ID_OPERACION' &&
-              origen[columna] !== undefined
-            ) {
-              nuevoReproceso[columna] =
-                String(origen[columna] ?? '');
-            }
-          }
-
-          nuevoReproceso.__manualReproceso = true;
-          nuevoReproceso.__tsfPendienteDePersistir = true;
-
-          dirty.set(
-            'NEW|REPROCESOS|' + id,
-            true
-          );
-
-          boton.textContent = '☑';
-          boton.classList.add('is-checked');
-          boton.disabled = true;
-
-          toast(
-            'Operación ' + id +
-            ' agregada al módulo Reprocesos.'
-          );
-        };
       }
 
       return resultado;
     };
+
+    // Alta de Reproceso: exigir confirmación real de backend antes de marcar el registro.
+    // La acción REPROCESO_REGISTRAR debe crear TB5 y actualizar BOTÓN_REPROCESO en TB2.
+    // Si el Worker/flujo aún no dispone de la acción, NO se crea una fila ficticia.
+    const tsfReproPending=new Set();
+    document.getElementById('dataTable').addEventListener('click', async ev=>{
+      const boton=ev.target.closest('[data-repro-reg]');
+      if(!boton||mIdx!==1)return;
+      const id=boton.dataset.reproReg;
+      if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Solo el perfil EDICIÓN puede registrar un reproceso.');return}
+      if(tsfReproPending.has(id))return;
+      const tracking=trackingSp.rows.find(r=>keyID(r)===id);
+      const gestion=spPreview.rows.find(r=>keyID(r)===id);
+      const caf=String(gestion?.CAF??tracking?.CAF??'').trim();
+      if(!tracking?.__spId||!tracking?.__spEtag||!caf){
+        toast('Faltan el CAF o los identificadores de SharePoint de esta operación.');return;
+      }
+      if(trackingSp.edits.has(id)){toast('Primero guarda los cambios pendientes de esta operación en Tracking.');return}
+      const already=tsfRemoteStores[4]?.rows.some(r=>r.ID_OPERACION===id&&String(r.CAF??'').trim()===caf);
+      if(already){toast('Este CAF y operación ya aparecen en TB5. Revisa Reprocesos.');return}
+      if(!confirm('¿Registrar un reproceso para '+id+' (CAF '+caf+') en TB5 y marcar Sí en TB2?'))return;
+      tsfReproPending.add(id);boton.disabled=true;boton.textContent='Procesando…';
+      try{
+        const result=await trackingApi({
+          accion:'REPROCESO_REGISTRAR',id_operacion:id,caf,
+          item_id:Number(tracking.__spId),etag:String(tracking.__spEtag)
+        });
+        // No aceptar ok ambiguo ni afirmar éxito de escrituras parciales.
+        if(result?.ok!==true||!Number.isSafeInteger(Number(result?.tb5_item_id))||result?.tb2_marcado!==true)
+          throw new Error('No se confirmó la creación en TB5 Y la marca en TB2. Comprueba el historial del flujo.');
+        boton.classList.add('is-checked');boton.textContent='Registrado';
+        toast('Reproceso registrado en TB5 y marcado en TB2.');
+        await Promise.allSettled([loadTrackingSp(true),Promise.resolve()]);
+      }catch(err){
+        boton.disabled=false;boton.textContent='Reproceso';
+        toast('No se registró el reproceso: '+String(err?.message||err).slice(0,135));
+      }finally{tsfReproPending.delete(id)}
+    });
 
     // Redibujar si Tracking está abierto
     if (mIdx === 1) {
@@ -4786,7 +4790,7 @@ celdaVAF.className = 'field-workflow tsf-area-tr-oper';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V12.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V12.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -4804,7 +4808,7 @@ celdaVAF.className = 'field-workflow tsf-area-tr-oper';
 
 
     // =============================================================
-    // V12.8: módulo Seguimientos (solo lectura), mismo estado real de
+    // V12.9: módulo Seguimientos (solo lectura), mismo estado real de
     // Gestión/TB2 y registros relacionados TB3-TB6 por ID_OPERACION.
     // =============================================================
     const TSF_SEG_INDEX=7;
