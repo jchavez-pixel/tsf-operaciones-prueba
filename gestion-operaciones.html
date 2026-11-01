@@ -589,6 +589,37 @@ body.tsf-gestion-sp .tsf-cell-select:disabled{opacity:1}
 .tsf-repro-action:disabled{opacity:.65;cursor:wait}
 .tsf-repro-action.is-checked{background:#e1f2e8;border-color:#a3d7b4;color:#156b43}
 </style>
+
+<style id="tsf-v132-correcciones">
+/* V13.2. Tablas compactas y un único anclaje horizontal CAF. */
+body.tsf-v130-tracking #dataTable{table-layout:fixed!important;border-collapse:separate;border-spacing:0}
+body.tsf-v130-tracking #dataTable th,
+body.tsf-v130-tracking #dataTable td{box-sizing:border-box!important;min-width:0!important;max-width:none!important;overflow:hidden;text-overflow:ellipsis}
+body.tsf-v130-tracking #dataTable th .thinner{padding:0 5px!important;gap:3px!important;min-width:0!important}
+body.tsf-v130-tracking #dataTable th .thname{white-space:normal!important;overflow-wrap:normal;line-height:1.18!important;font-size:10px!important}
+body.tsf-v130-tracking #dataTable td{padding-left:4px!important;padding-right:4px!important}
+body.tsf-v130-tracking #dataTable td input,
+body.tsf-v130-tracking #dataTable td select{width:100%!important;max-width:100%!important;min-width:0!important;padding-left:5px!important;padding-right:5px!important}
+body.tsf-v130-tracking #dataTable thead tr:last-child th:first-child,
+body.tsf-v130-tracking #dataTable tbody td:first-child{position:static!important;left:auto!important;min-width:0!important;max-width:none!important;box-shadow:none!important}
+body.tsf-v130-tracking #dataTable thead tr:last-child th.tsf-v130-caf{position:sticky!important;left:0!important;z-index:22!important;top:29px!important;background:#e4e8ed!important;box-shadow:2px 0 5px #b9c3d1!important}
+body.tsf-v130-tracking #dataTable tbody td.tsf-v130-caf{position:sticky!important;left:0!important;z-index:15!important;background:#edf0f4!important;box-shadow:2px 0 5px #cdd5df!important}
+body.tsf-v130-tracking #dataTable th.tsf-v130-producto,
+body.tsf-v130-tracking #dataTable td.tsf-v130-producto{position:static!important;left:auto!important;z-index:auto!important;min-width:0!important;max-width:none!important;box-shadow:none!important}
+body.tsf-v130-tracking #dataTable thead tr.tsf-groups-row th:first-child{left:auto!important;position:sticky!important;top:0!important;box-shadow:none!important}
+body.tsf-v130-tracking #dataTable th.tsf-vaf-heading{text-align:center!important}
+body.tsf-v130-tracking #dataTable th.tsf-vaf-heading .thinner{justify-content:center!important}
+body.tsf-v130-tracking #dataTable th.tsf-vaf-heading .thname{width:100%;text-align:center!important}
+body.tsf-v130-tracking #dataTable td:has(.tsf-vaf-input){text-align:center!important}
+body.tsf-v130-tracking #dataTable td .tsf-vaf-input{text-align:center!important}
+/* Dashboard dibujado como capa de trabajo; nunca debajo de tablas ocultas. */
+.workspace{position:relative}
+body.tsf-dashboard-active .workspace>.tsf-dashboard{display:block!important;position:absolute!important;inset:var(--header-height) 0 0 0!important;z-index:18!important;overflow:auto!important;min-height:0!important;background:#f4f6f9!important}
+body.tsf-dashboard-active .workspace>.content{visibility:hidden!important;pointer-events:none!important}
+body.tsf-dashboard-active .tsf-dashboard-grid{grid-template-columns:repeat(4,minmax(145px,1fr))}
+@media(max-width:1100px){body.tsf-dashboard-active .tsf-dashboard-grid{grid-template-columns:repeat(2,minmax(145px,1fr))}}
+@media(max-width:700px){body.tsf-dashboard-active .tsf-dashboard-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -5115,8 +5146,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     // Fin del módulo adicional Seguimientos. No afecta guardados ni permisos.
 
     // V13.1: conserva indices de columnas y campos de SharePoint.
-    const TSF_V131_PRODUCTO_ANCHO=165;
-    const TSF_V131_CAF_ANCHO=132;
+    const TSF_V131_PRODUCTO_ANCHO=126;
+    const TSF_V131_CAF_ANCHO=112;
     function tsfV131TrackingColumnas(){
       document.body.classList.toggle('tsf-v130-tracking',mIdx===1);
       if(mIdx!==1||!trackingSp.active)return;
@@ -5127,6 +5158,20 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       const idxCAF=modules[1].columns.indexOf('CAF');
       const idxAnalista=modules[1].columns.indexOf('ANALISTA OPERATIVO');
       if(!tabla||!colgroup||!encabezado||!cuerpo||idxCAF<0||idxAnalista<0)return;
+      // Ajustar el colgroup real antes de mover columnas, respetando los índices de edición.
+      const compactar={
+        'ID OPERACION':155,'ID OPERACIÓN':155,'RUC':120,'CLIENTE':174,
+        'FFNN':155,'ANALISTA OPERATIVO':190,'CAF':112,
+        'FECHA DE INGRESO DE OPERACIONES':157,'FECHA DE ELABORACIÓN':142,
+        'ESTADO_OPERACIÓN':172,'ESTADO OPERACIÓN':172,'VAF':112,
+        'COL. NETA ($)':132,'MES DE COLOCACIÓN':137
+      };
+      modules[1].columns.forEach((campo,i)=>{
+        const el=colgroup.children[i];
+        if(!el)return;
+        const w=compactar[campo]||Math.min(parseFloat(el.style.width)||155,155);
+        el.style.width=w+'px';
+      });
       // Se presenta el orden original de la imagen 2 y se agrega Producto.
       // NO cambiamos modules[1].columns: data-col sigue apuntando al campo real.
       const colCAF=colgroup.children[idxCAF];
@@ -5153,8 +5198,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       encabezado.insertBefore(thCAF,thProducto.nextSibling);
       const grupoBase=tabla.tHead.querySelector('.tsf-grupo-tr-base');
       if(grupoBase)grupoBase.colSpan+=1;
-      const totalActual=parseFloat(tabla.style.width)||0;
-      tabla.style.width=(totalActual+TSF_V131_PRODUCTO_ANCHO+TSF_V131_CAF_ANCHO-anchoCAF)+'px';
+      // El ancho total resulta de la suma exacta de columnas: sin espacios artificiales.
+      tabla.style.width=Array.from(colgroup.children).reduce((a,c)=>a+(parseFloat(c.style.width)||110),0)+'px';
       const filasPorId=new Map(mainMod().rows.map(r=>[keyID(r),r]));
       for(const tr of cuerpo.rows){
         const tdCAF=tr.cells[idxCAF];
@@ -5176,6 +5221,9 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         tr.insertBefore(tdProducto,tdAnalista.nextSibling);
         tr.insertBefore(tdCAF,tdProducto.nextSibling);
       }
+      // El encabezado VAF y su celda se centran sin alterar el guardado.
+      const thVAF=Array.from(encabezado.cells).find(th=>th.dataset.col==='VAF'||th.textContent.trim().toUpperCase()==='VAF');
+      if(thVAF)thVAF.classList.add('tsf-vaf-heading');
       if(cuerpo.rows.length&&encabezado.cells.length!==cuerpo.rows[0].cells.length)
         console.warn('TSF V13.1: la cabecera y el cuerpo no coinciden');
     }
@@ -5197,7 +5245,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     const dash=document.createElement('section');
     dash.className='tsf-dashboard';
     dash.id='tsf-dashboard';
-    document.querySelector('.workspace').appendChild(dash);
+    const zonaDashboard=document.querySelector('.workspace');
+    zonaDashboard.appendChild(dash);
     const tsfDashOrdenar=arr=>arr.sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'es'));
     const tsfDashAgrupar=(rows,fn)=>{
       const mapa=new Map();
@@ -5217,7 +5266,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       const conAnalista=tracking.filter(r=>String(r['ANALISTA OPERATIVO']??'').trim()).length;
       const conCAF=tracking.filter(r=>String(r.CAF??'').trim()).length;
       const conMaestro=tracking.filter(r=>typeof tsfV127ResolverMaestro==='function'&&tsfV127ResolverMaestro(r)).length;
-      const productos=tsfDashAgrupar(tracking,r=>tsfV127ResolverMaestro(r)?.PRODUCTO);
+      const productos=tsfDashAgrupar(tracking,r=>(typeof tsfV127ResolverMaestro==='function'?tsfV127ResolverMaestro(r):null)?.PRODUCTO);
       const analistas=tsfDashAgrupar(tracking,r=>r['ANALISTA OPERATIVO']);
       const estados=tsfDashAgrupar(tracking,r=>r.ESTADO_OPERACIÓN);
       const operacionesMaestro=gestion.length;
@@ -5261,7 +5310,9 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       if(idx===TSF_DASH_INDEX){
         mIdx=idx;document.body.classList.add('tsf-dashboard-active');
         document.body.classList.remove('tsf-v130-tracking','tsf-seg-active');
-        closeOverlays();navRender();tsfDashRender();
+        closeOverlays();
+        // Renderizar antes del menú evita una vista vacía si otro módulo falla al cambiar.
+        tsfDashRender();navRender();
         return;
       }
       document.body.classList.remove('tsf-dashboard-active');
