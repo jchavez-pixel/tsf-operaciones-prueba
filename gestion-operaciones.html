@@ -800,6 +800,13 @@ body.tsf-v135-gps #dataTable tbody tr>td.tsf-v130-caf{
 /* El encabezado agrupado debe seguir su desplazamiento vertical, sin fijarse horizontalmente. */
 body.tsf-v135-gps #dataTable thead tr.tsf-groups-row th{left:auto!important;top:0!important}
 </style>
+<style id="tsf-v139-gps-caf">
+/* El encabezado y cada dato CAF son una sola columna fija, sin fijar PRODUCTO o Analista. */
+body.tsf-v135-gps #dataTable thead tr:last-child th.tsf-v139-caf{position:sticky!important;left:0!important;top:30px!important;z-index:75!important;background:#e3e8ee!important;box-shadow:3px 0 7px #b7c2cf!important;min-width:118px!important;width:118px!important}
+body.tsf-v135-gps #dataTable tbody td.tsf-v139-caf{position:sticky!important;left:0!important;z-index:45!important;background:#edf1f5!important;box-shadow:3px 0 7px #c1cbd6!important;min-width:118px!important;width:118px!important}
+body.tsf-v135-gps #dataTable thead tr:last-child th.tsf-v130-producto{left:auto!important;min-width:126px!important}
+body.tsf-v135-gps #dataTable tbody td.tsf-v130-producto{position:relative!important;left:auto!important;min-width:126px!important}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -5482,6 +5489,78 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     }
     const tsfV135RenderPrevio=tableRender;
     tableRender=function(...args){const result=tsfV135RenderPrevio.apply(this,args);tsfV135GpsColumnas();return result;};
+
+
+    // V13.9: normalización visual de identificadores GPS sin alterar índices de SharePoint.
+    function tsfV139GpsFix(){
+      if(mIdx!==2)return;
+      const tabla=document.getElementById('dataTable');
+      const cab=tabla?.tHead?.rows?.[tabla.tHead.rows.length-1];
+      const grupo=tabla?.querySelector('colgroup');
+      const cuerpo=tabla?.tBodies?.[0];
+      if(!tabla||!cab||!grupo||!cuerpo)return;
+      const nombre=th=>(th.querySelector('.thname')?.textContent||th.textContent||'').trim().toUpperCase();
+      const headers=Array.from(cab.cells);
+      const indice=(n)=>headers.findIndex(th=>nombre(th)===n);
+      const a=indice('ANALISTA OPERATIVO'), c=indice('CAF'), p=indice('PRODUCTO');
+      if(a<0||c<0)return;
+      const filas=Array.from(cuerpo.rows);
+      const originalCAF=headers[c],originalAnalista=headers[a];
+      const originales=filas.map(tr=>({tr,analista:tr.cells[a],caf:tr.cells[c],producto:p>=0?tr.cells[p]:null}));
+      const oldCols=Array.from(grupo.children);
+      let thProducto=p>=0?headers[p]:null;
+      let colProducto=p>=0?oldCols[p]:null;
+      if(!thProducto){
+        thProducto=document.createElement('th');
+        thProducto.className='field-inherited tsf-area-tr-base tsf-v130-producto';
+        thProducto.innerHTML='<div class="thinner"><span class="thname">PRODUCTO</span></div>';
+        colProducto=document.createElement('col');
+        const grupoBase=tabla.tHead.querySelector('.tsf-grupo-tr-base,.tsf-grupo-base');
+        if(grupoBase)grupoBase.colSpan+=1;
+      }
+      colProducto.style.width='126px'; thProducto.style.width='126px';
+      oldCols[c].style.width='118px';originalCAF.style.width='118px';
+      grupo.insertBefore(colProducto,oldCols[a].nextSibling);
+      grupo.insertBefore(oldCols[c],colProducto.nextSibling);
+      cab.insertBefore(thProducto,originalAnalista.nextSibling);
+      cab.insertBefore(originalCAF,thProducto.nextSibling);
+      originalCAF.classList.add('tsf-v139-caf');
+      thProducto.classList.add('tsf-v130-producto');
+      const byId=new Map(mainMod().rows.map(r=>[keyID(r),r]));
+      for(const x of originales){
+        if(!x.analista||!x.caf)continue;
+        let tdProducto=x.producto;
+        if(!tdProducto){
+          tdProducto=document.createElement('td');
+          tdProducto.className='field-inherited tsf-area-tr-base tsf-v130-producto';
+          const fila=byId.get(x.tr.dataset.id);
+          const maestro=typeof tsfV127ResolverMaestro==='function' ? tsfV127ResolverMaestro(fila):null;
+          const producto=String(maestro?.PRODUCTO??fila?.PRODUCTO??'').trim();
+          const label=document.createElement('span');label.className='tsf-v130-producto-val';
+          label.textContent=producto||'—';tdProducto.title=producto;tdProducto.appendChild(label);
+        }
+        tdProducto.style.width='126px';x.caf.style.width='118px';
+        x.tr.insertBefore(tdProducto,x.analista.nextSibling);
+        x.tr.insertBefore(x.caf,tdProducto.nextSibling);
+        x.caf.classList.add('tsf-v139-caf');
+      }
+      tabla.style.width=Array.from(grupo.children).reduce((sum,col)=>sum+(parseFloat(col.style.width)||110),0)+'px';
+    }
+    const tsfV139PrevRender=tableRender;
+    tableRender=function(...args){const result=tsfV139PrevRender.apply(this,args);tsfV139GpsFix();return result;};
+    // Reaplica tras las sustituciones completas del DOM realizadas por otras vistas.
+    const tsfV139Table=document.getElementById('dataTable');
+    if(tsfV139Table){
+      let tsfV139Busy=false;
+      const obs=new MutationObserver(()=>{
+        if(tsfV139Busy||mIdx!==2)return;
+        const head=tsfV139Table.tHead?.rows?.[tsfV139Table.tHead.rows.length-1];
+        if(!head||head.querySelector('.tsf-v139-caf'))return;
+        tsfV139Busy=true;
+        try{tsfV139GpsFix();}finally{tsfV139Busy=false;}
+      });
+      obs.observe(tsfV139Table,{childList:true});
+    }
 
     // Dashboard V13.1: consolida Gestión y Tracking ya cargados.
     // Solo lectura, sin nuevas listas ni llamados al Worker.
