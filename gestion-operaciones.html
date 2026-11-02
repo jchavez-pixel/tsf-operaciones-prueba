@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V17.6 — Revisión de guardado y CAF fijo</title>
+<title>TSF | Operaciones V17.7 — Alta automática de Tracking</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -1454,12 +1454,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V17.6 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V17.7 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V17.6 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V17.7 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2283,7 +2283,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V17.6 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V17.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===4||isTsfRemoteIndex());
@@ -5505,39 +5505,32 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     // ================================================================
      const TSF_ESTADO_COLUMNA='ESTADO_OPERACIÓN';
      const tsfEstadoEditadoEnGestion=new Set();
-     // Si Gestión tiene una operación que aún no figura en TB2, permitir elegir
-     // su estado sin simular una escritura SharePoint. Se conservará en memoria
-     // hasta que exista la fila de TB2 y pueda prepararse con su ETag real.
+     // Compatibilidad con borradores de versiones anteriores. La V17.7 ya no
+     // crea estados sin fila TB2: el alta se solicita con TRACKING_CREAR.
      const tsfEstadoSinTB2=new Map();
     const tsfEstadoPorId=id=>trackingSp.rows.find(r=>keyID(r)===id);
     const tsfEstadoValidos = new Set(TRACKING_STATES);
      function tsfEstadoEfectivo(id, registro=tsfEstadoPorId(id)){
-       if(tsfEstadoSinTB2.has(id))return tsfEstadoSinTB2.get(id);
+       // Sin una fila real en TB2 no existe un estado que pueda guardarse.
+       // La operación permanece PENDIENTE hasta que TRACKING_CREAR confirme el alta.
+       if(!registro)return 'PENDIENTE';
        const real=String(registro?.[TSF_ESTADO_COLUMNA]??'').trim().toUpperCase();
-      // La elección manual (incluido PENDIENTE) siempre prevalece.
-      // La asignación de un analista dispara el cambio automático solamente
-      // en tsfEncolarEstadoPorAnalista, no durante cada renderizado.
-      if(real)return real;
-      const gestion=spPreview.rows.find(r=>keyID(r)===id);
-      const analista=String(gestion?.['ANALISTA OPERATIVO'] ?? registro?.['ANALISTA OPERATIVO'] ?? '').trim();
-      return analista?'EN PROCESO':'PENDIENTE';
+       if(real)return real;
+       const analista=String(registro?.['ANALISTA OPERATIVO']??'').trim();
+       return analista?'EN PROCESO':'PENDIENTE';
     }
     window.tsfEstadoPublico = tsfEstadoEfectivo;
     function tsfEncolarEstadoPorAnalista(id, analistaNuevo){
       if(window.TSF_SESSION_ROLE!=='EDICION')return;
-       const registro=tsfEstadoPorId(id);
-       // También aplicar la regla PENDIENTE -> EN PROCESO a filas sin TB2;
-       // ese valor quedará como borrador local hasta vincular la operación.
-       const actual=tsfEstadoEfectivo(id,registro);
-       if(!registro || !trackingEditable(TSF_ESTADO_COLUMNA)){
-         if(!['DESEMBOLSADO','ANULADO'].includes(actual))
-           tsfCambiarEstadoGestion(id,String(analistaNuevo??'').trim()?'EN PROCESO':'PENDIENTE');
-         return;
-       }
+      const registro=tsfEstadoPorId(id);
+      // Sin fila en TB2 no se encola un estado ficticio.
+      // La fila se creará al guardar EXPEDIENTE, CAF y ANALISTA OPERATIVO.
+      if(!registro||!trackingEditable(TSF_ESTADO_COLUMNA))return;
+      const actual=tsfEstadoEfectivo(id,registro);
       if(['DESEMBOLSADO','ANULADO'].includes(actual))return;
       const nuevo=String(analistaNuevo??'').trim()?'EN PROCESO':'PENDIENTE';
       if(actual===nuevo)return;
-      tsfCambiarEstadoGestion(id,nuevo); // Solo preparar edición, nunca escritura silenciosa.
+      tsfCambiarEstadoGestion(id,nuevo);
     }
     // La asignación de analista en Gestión activa el estado en TB2 cuando existe la fila.
     const tsfSpChangeAntesEstado=spChange;
@@ -5605,13 +5598,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
        }
        const registro=tsfEstadoPorId(id);
        if(!registro||!trackingEditable(TSF_ESTADO_COLUMNA)){
-         // Es editable en pantalla, aunque no es posible guardar sin un ítem TB2
-         // y un campo autorizado. Nunca se descarta silenciosamente.
-         tsfEstadoSinTB2.set(id,nuevo);
-         tsfActualizarEstadosGestion();
-         updateDirtyLabel();
-         toast('Estado preparado. Pendiente de vincular este ID_OPERACION con TB2 para guardarlo en SharePoint.');
-         return true;
+         toast('El estado se habilitará cuando la operación tenga una fila real en Tracking. Completa EXPEDIENTE, CAF y ANALISTA OPERATIVO y guarda Gestión.');
+         return false;
        }
        tsfEstadoSinTB2.delete(id);
       const anterior=String(registro.__spBaseline?.[TSF_ESTADO_COLUMNA]??'');
@@ -5750,12 +5738,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     // La vista de Gestión presenta el estado de TB2 y no inventa una columna SP.
     const tsfRenderAntesEstado=tableRender;
     tableRender=function(...args){
-       if(mIdx===0){
-         for(const [id,valor] of [...tsfEstadoSinTB2]){
-           if(tsfEstadoPorId(id)&&trackingEditable(TSF_ESTADO_COLUMNA))tsfCambiarEstadoGestion(id,valor);
-         }
-         tsfActualizarEstadosGestion();
-       }
+       if(mIdx===0)tsfActualizarEstadosGestion();
        const resultado=tsfRenderAntesEstado.apply(this,args);
       if(mIdx!==0)return resultado;
       const tabla=document.getElementById('dataTable');
@@ -5771,11 +5754,11 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
          const vinculado=!!registro&&trackingEditable(TSF_ESTADO_COLUMNA);
          const selector=document.createElement('select');
          selector.className='tsf-cell-select tsf-estado-gestion'+(!vinculado?' tsf-sin-fila-tb2':'');
-         selector.title=vinculado?'Estado conectado a TB2 - Tracking Operativo':'Editable como borrador; para guardar en SharePoint primero debe existir la fila correspondiente en TB2';
+         selector.title=vinculado?'Estado conectado a TB2 - Tracking Operativo':'Pendiente: el estado se habilita cuando se cree la fila de Tracking al completar EXPEDIENTE, CAF y ANALISTA OPERATIVO';
          selector.dataset.id=id;
         selector.dataset.col=String(posicion);
         selector.setAttribute('aria-label','Estado de operación de '+id);
-        selector.disabled=!editable;
+        selector.disabled=!editable||!vinculado;
         selector.innerHTML=trackingStateOptions(tsfEstadoEfectivo(id,registro),spPreview.rows.find(r=>keyID(r)===id)||registro);
         selector.value=tsfEstadoEfectivo(id,registro);
         selector.classList.add('tsf-state-select',stateTone(selector.value));
@@ -5816,8 +5799,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       const select=document.createElement('select');
       select.className='tsf-boolean-drawer tsf-estado-drawer';
       select.dataset.drawerCol=TSF_ESTADO_COLUMNA;
-       select.disabled=window.TSF_SESSION_ROLE!=='EDICION';
-       if(!registro||!trackingEditable(TSF_ESTADO_COLUMNA))select.title='Borrador: falta la fila de Tracking para persistir el estado';
+       select.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!registro||!trackingEditable(TSF_ESTADO_COLUMNA);
+       if(!registro||!trackingEditable(TSF_ESTADO_COLUMNA))select.title='El estado se habilitará cuando se cree la fila real de Tracking';
       select.innerHTML=trackingStateOptions(tsfEstadoEfectivo(id,registro));
       select.value=tsfEstadoEfectivo(id,registro);
       select.classList.add('tsf-state-select',stateTone(select.value));
@@ -5849,15 +5832,114 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       return resultado;
     };
 
+
+    // Crear TB2 automáticamente después de confirmar el guardado de TB1.
+    // Power Automate vuelve a validar los datos en Gestión y la unicidad por ID_OPERACION.
+    const TSF_TRACKING_REQUIRED_FIELDS=['EXPEDIENTE','CAF','ANALISTA OPERATIVO'];
+    const TSF_TRACKING_EMPTY_VALUES=new Set([
+      '','completar','seleccionar','seleccionar...','seleccionar analista',
+      'sin asignar','-','—','pendiente','null','none'
+    ]);
+    function tsfTrackingValorCompleto(value){
+      return !TSF_TRACKING_EMPTY_VALUES.has(String(value??'').trim().toLocaleLowerCase('es'));
+    }
+    async function tsfCrearTrackingAutomatico(ids){
+      const candidatos=[...new Set((ids||[]).map(x=>String(x??'').trim()).filter(Boolean))];
+      if(!candidatos.length)return {creados:[],existentes:[],pendientes:[],errores:[]};
+      const creados=[],existentes=[],pendientes=[],errores=[];
+      const waitKey='tsf-tracking-auto-create';
+      tsfWaitBegin(waitKey,'Vinculando operaciones con Tracking','Verificando EXPEDIENTE, CAF y ANALISTA OPERATIVO en Gestión…');
+      try{
+        for(const id of candidatos){
+          const maestro=spPreview.rows.find(r=>keyID(r)===id);
+          if(!maestro)continue;
+          const cambiosAunPendientes=spEdits.get(id);
+          if(cambiosAunPendientes?.size){
+            pendientes.push({id,campos:[...cambiosAunPendientes.keys()].map(col=>col+' (guardar primero)')});
+            continue;
+          }
+          const faltan=[];
+          for(const col of TSF_TRACKING_REQUIRED_FIELDS){
+            const valor=String(maestro[col]??'').trim();
+            const baseline=String(maestro.__spBaseline?.[col]??'').trim();
+            const siguePendiente=!!spEdits.get(id)?.has(col)||valor!==baseline;
+            if(!tsfTrackingValorCompleto(valor))faltan.push(col);
+            else if(siguePendiente)faltan.push(col+' (guardar primero)');
+          }
+          if(faltan.length){
+            pendientes.push({id,campos:faltan});
+            continue;
+          }
+          try{
+            tsfWaitStep(waitKey,'Creando o verificando Tracking',id+' · comprobando la fila en TB2…');
+            const respuesta=await trackingApi({
+              accion:'TRACKING_CREAR',
+              id_operacion:id
+            });
+            if(respuesta?.ok!==true||typeof respuesta.creado!=='boolean'){
+              throw new Error(String(respuesta?.error||respuesta?.mensaje||'Power Automate no confirmó creado=true/false para TRACKING_CREAR.'));
+            }
+
+            // Leer la fila real y su ETag; no fabricar datos ni versiones locales.
+            const actualizadas=await tsfLeerFilasTracking([id]);
+            const filaReal=actualizadas.get(id);
+            if(!filaReal)throw new Error('TRACKING_CREAR respondió, pero no se encontró la fila real en TB2 al volver a consultar.');
+
+            const posicion=trackingSp.rows.findIndex(r=>keyID(r)===id);
+            if(posicion>=0){
+              const anterior=trackingSp.rows[posicion];
+              const combinada={...anterior,...filaReal};
+              const cambiosPendientes=trackingSp.edits.get(id);
+              if(cambiosPendientes instanceof Map){
+                for(const [col,valor] of cambiosPendientes)combinada[col]=valor;
+              }
+              trackingSp.rows[posicion]=combinada;
+            }else{
+              trackingSp.rows.unshift(filaReal);
+            }
+            trackingSp.lastSync=new Date();
+            if(respuesta.creado)creados.push(id);
+            else existentes.push(id);
+          }catch(error){
+            errores.push(id+': '+String(error?.message||error).slice(0,210));
+          }
+        }
+      }finally{
+        tsfWaitEnd(waitKey);
+      }
+
+      tsfActualizarEstadosGestion();
+      updateDirtyLabel();
+      if(mIdx===0){
+        drawKpis();
+        drawSelectors();
+        tableRender();
+      }
+
+      const mensajes=[];
+      if(creados.length)mensajes.push(`${creados.length} fila(s) creada(s) en Tracking con estado EN PROCESO`);
+      if(existentes.length)mensajes.push(`${existentes.length} operación(es) ya tenían fila en Tracking`);
+      if(pendientes.length){
+        const detalle=pendientes.slice(0,4).map(x=>x.id+': '+x.campos.join(', ')).join(' | ');
+        mensajes.push('No se creó Tracking hasta completar y guardar los campos obligatorios: '+detalle);
+      }
+      if(mensajes.length)toast(mensajes.join(' · '));
+      if(errores.length)await tsfSaveReviewShowFailures('Creación automática de Tracking · TB2',errores);
+      return {creados,existentes,pendientes,errores};
+    }
+
     // Guardado conjunto: gestión en su lista y estados en Tracking.
      async function tsfGuardarAmbosGestion(){
        if(mIdx!==0)return;
-       // Las dos escrituras se comprueban por separado y conservan sus borradores.
+       // Guardar primero TB1. Solo después se solicita el alta idempotente en TB2.
+       const operacionesEditadas=[...spEdits.keys()];
        if(spEdits.size)await tsfGuardarGestionConConflictos();
+       if(operacionesEditadas.length)await tsfCrearTrackingAutomatico(operacionesEditadas);
+       // Si la fila TB2 ya existía, el cambio de analista puede haber preparado
+       // un estado EN PROCESO. Ese cambio se guarda después de verificar el ETag.
        if(tsfPendientesEstadoGestion().length)await tsfGuardarTrackingConConflictos(true);
-       if(tsfEstadoSinTB2.size){
-         toast(tsfEstadoSinTB2.size+' estado(s) editados no se guardaron: sus operaciones aún no tienen fila o campo editable en TB2 - Tracking. Se conservan como borradores en esta página.');
-       }
+       // No conservar estados ficticios de operaciones sin fila TB2.
+       tsfEstadoSinTB2.clear();
      }
 
     // El contador refleja también estados editados desde Gestión.
@@ -5865,7 +5947,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     updateDirtyLabel=function(){
       tsfUpdateDirtyAntesEstado();
       if(mIdx===0){
-         const total=spEditCount()+tsfPendientesEstadoGestion().length+tsfEstadoSinTB2.size;
+         const total=spEditCount()+tsfPendientesEstadoGestion().length;
         const contador=document.getElementById('dirtyCount');
         if(contador)contador.textContent=total?'· '+total:'';
         const boton=document.getElementById('saveBtn');
@@ -5889,9 +5971,6 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
      const tsfSafePaintAntesEstado=tsfSafePaint;
      tsfSafePaint=function(index){
        if(index===1&&mIdx===0){
-         for(const [id,valor] of [...tsfEstadoSinTB2]){
-           if(tsfEstadoPorId(id)&&trackingEditable(TSF_ESTADO_COLUMNA))tsfCambiarEstadoGestion(id,valor);
-         }
          if(tsfActualizarEstadosGestion()&& !tsfSyncBloqueado()){
           const area=document.getElementById('tableWrap'),x=area?.scrollLeft||0,y=area?.scrollTop||0;
           drawKpis();drawSelectors();tableRender();
@@ -6067,7 +6146,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V17.6 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V17.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -7127,7 +7206,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     };
 
     // =============================================================
-    // V17.6 — CRUD REAL Y EDICIÓN DIRECTA EN TB3, TB4, TB5 Y TB6
+    // V17.7 — CRUD REAL Y EDICIÓN DIRECTA EN TB3, TB4, TB5 Y TB6
     // ID_OPERACION se muestra primero y permanece de solo lectura.
     // CAF se muestra segundo y es la única columna fija horizontalmente.
     // Los cuatro datos heredados (CAF/PRODUCTO/RUC/CLIENTE) no se editan.
@@ -7578,8 +7657,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
 
 
     // ================================================================
-    // V17.6 — CENTRO DE REVISIÓN ANTES DE GUARDAR
-    // Revisa campos pendientes en Gestión, Tracking/GPS y TB3–TB6.
+    // V17.7 — CENTRO DE REVISIÓN + ALTA AUTOMÁTICA TB1 → TB2
+    // Revisa campos pendientes y crea Tracking cuando los tres datos obligatorios estén guardados.
     // Las observaciones nunca eliminan borradores automáticamente.
     // ================================================================
     const tsfSaveReviewCss=document.createElement('style');
@@ -7659,7 +7738,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         try{tsfV174ValorSharePoint(col,value,meta);}catch(error){return String(error?.message||error);}
         return '';
       }
-      if(kind==='state-unlinked')return 'No existe una fila vinculada en TB2 para esta operación. El estado queda como borrador y no puede guardarse hasta que exista el registro de Tracking.';
+      if(kind==='state-unlinked')return 'El estado no se guarda sin una fila real en TB2. Completa EXPEDIENTE, CAF y ANALISTA OPERATIVO; al guardar Gestión se creará Tracking automáticamente.';
       return 'No se pudo validar el cambio.';
     }
     function tsfSaveReviewMake(kind,mapRef,mapKey,id,row,col,value,module,index){
@@ -7714,7 +7793,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       const reason=String(item.issue||'');
       if(/ETag/i.test(reason))return 'Alternativa: retira este cambio, actualiza la lista para obtener la versión vigente y vuelve a editar la celda.';
       if(/no se encontró|ya no está disponible|no se encontró la fila/i.test(reason))return 'Alternativa: verifica que el registro siga existiendo en SharePoint y vuelve a cargar el módulo.';
-      if(/TB2|Tracking/i.test(reason))return 'Alternativa: crea o vincula primero la fila de Tracking; si no corresponde, retira este cambio de estado.';
+      if(/TB2|Tracking/i.test(reason))return 'Alternativa: completa y guarda EXPEDIENTE, CAF y ANALISTA OPERATIVO. El portal creará la fila de Tracking automáticamente.';
       if(/número|numérico|importe/i.test(reason))return 'Alternativa: introduce solo un número válido, usando punto o coma decimal.';
       if(/fecha/i.test(reason))return 'Alternativa: corrige la fecha al formato DD/MM/AAAA o DD/MM/AAAA HH:MM.';
       if(/mapeo|esquema|autorizado|bloqueado/i.test(reason))return 'Alternativa: verifica el nombre y tipo de columna en SharePoint; no se enviará un campo sin mapeo válido.';
@@ -8009,7 +8088,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       return result;
     };
     // ================================================================
-    // FIN V17.6 — CENTRO DE REVISIÓN Y GUARDADO PROTEGIDO
+    // FIN V17.7 — CENTRO DE REVISIÓN Y GUARDADO PROTEGIDO
     // ================================================================
 
     const header = document.querySelector('.headright');
