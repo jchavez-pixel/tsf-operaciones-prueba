@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V16.1 — GPS CAF fijo y PRODUCTO</title>
+<title>TSF | Operaciones V16.2 — GPS CAF fijo y PRODUCTO</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -861,7 +861,7 @@ body.tsf-v150-gps #dataTable thead tr.tsf-groups-row th {top:0!important;}
 </style>
 
 <style id="tsf-v151-caf-fine">
-/* V16.1: la franja superior de CAF forma parte del encabezado fijo, sin desplazar columnas. */
+/* V16.2: la franja superior de CAF forma parte del encabezado fijo, sin desplazar columnas. */
 body.tsf-v130-tracking #dataTable thead tr.tsf-groups-row th.tsf-caf-group-cap,
 body.tsf-v150-gps #dataTable thead tr.tsf-groups-row th.tsf-caf-group-cap {
   position:sticky!important;left:0!important;top:0!important;
@@ -892,7 +892,7 @@ body.tsf-v150-gps #dataTable tbody td.tsf-v150-caf input {
 </style>
 
 <style id="tsf-v152-identificadores-unificados">
-/* V16.1: misma tipografia, dimensiones y densidad para identificadores de Tracking y GPS. */
+/* V16.2: misma tipografia, dimensiones y densidad para identificadores de Tracking y GPS. */
 body.tsf-v130-tracking #dataTable,
 body.tsf-v150-gps #dataTable { border-collapse:separate!important; border-spacing:0!important; }
 body.tsf-v130-tracking #dataTable thead tr:last-child th,
@@ -1163,6 +1163,23 @@ body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) .tsf-v130-producto-val{
   font-weight:500!important;color:#263c59!important;
 }
 </style>
+
+<style id="tsf-v162-filter-icons">
+/* Filtros por columna, compactos, con área de pulsación visible. */
+body.tsf-v130-tracking #dataTable thead .header-filter,
+body.tsf-v150-gps #dataTable thead .header-filter{
+ width:21px!important;height:23px!important;min-width:21px!important;
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ flex:0 0 21px!important;border:1px solid transparent!important;
+ border-radius:5px!important;color:#687b90!important;cursor:pointer!important;
+}
+body.tsf-v130-tracking #dataTable thead .header-filter:hover,
+body.tsf-v150-gps #dataTable thead .header-filter:hover,
+body.tsf-v130-tracking #dataTable thead .header-filter.isactive,
+body.tsf-v150-gps #dataTable thead .header-filter.isactive{
+ background:#fff3c6!important;border-color:#edda93!important;color:#725400!important;
+}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -1180,12 +1197,12 @@ body.tsf-v150-gps #dataTable tbody td:nth-child(-n+7) .tsf-v130-producto-val{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V16.1 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V16.2 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 pendientes</span><button class="button" id="pendingOnly" type="button">Ver pendientes</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V16.1 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V16.2 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2009,7 +2026,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V16.1 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V16.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=isTsfRemoteIndex()||!(mIdx===0||mIdx===4);
@@ -2375,7 +2392,12 @@ function visible(){let rows=mainMod().rows.filter(r=>{
   if(analyst&&analystOf(r)!==analyst)return false;
   if(state){const actual=String(statusOf(r)||'').trim().toUpperCase();const normal=actual||'PENDIENTE';if(normal!==state.toUpperCase())return false;}
   if(pendingOnly&&!pendingRow(r))return false;
-  for(const [column,value] of Object.entries(colFilters)){if(value&&!String(r[column]??'').toLowerCase().includes(value.toLowerCase()))return false}
+  for(const [column,value] of Object.entries(colFilters)){
+    const current=mIdx===6&&column==='PRODUCTO'
+      ? ((typeof tsfV127ResolverMaestro==='function'?tsfV127ResolverMaestro(r):null)?.PRODUCTO??r.PRODUCTO??'')
+      : (r[column]??'');
+    if(value&&!String(current).toLowerCase().includes(value.toLowerCase()))return false;
+  }
   return true;
  });
  if(sorting.col){const k=sorting.col,d=sorting.dir;rows.sort((a,b)=>String(a[k]??'').localeCompare(String(b[k]??''),'es',{numeric:true,sensitivity:'base'})*d)}
@@ -2616,7 +2638,7 @@ function tsfEncabezadoGruposGPS(cols){
 }
 function tableRender(){
   document.body.classList.toggle('tsf-v150-gps',mIdx===6);
-  // V16.1: el GPS real es mIdx=6; no mutar columnas ni filas de TB3 Bienes.
+  // V16.2: el GPS real es mIdx=6; no mutar columnas ni filas de TB3 Bienes.
  const m=mainMod(),all=visible(),maxPage=Math.max(1,Math.ceil(all.length/pageSize));
  page=Math.max(1,Math.min(page,maxPage));
  const records=all.slice((page-1)*pageSize,page*pageSize);
@@ -2626,7 +2648,7 @@ function tableRender(){
  document.getElementById('dataTable').style.width=(widths.reduce((a,b)=>a+b,extraWidth))+'px';
  const descriptions={extracted:'Dato extraído y protegido; no editable',inherited:'Dato heredado de Gestión de Operaciones; no editable',auto:'Fecha y hora automática de asignación; no editable',manual:'Dato manual resaltado; editable',workflow:isTsfRemoteIndex()?'Dato real de SharePoint · solo lectura':'Editable en este módulo'};
  let head=colMarkup+'<thead>'+tsfEncabezadoGruposGPS(m.columns)+'<tr'+([1,2,3,4,5,6].includes(mIdx)?' class="tsf-columnas-gps"':'')+'>'+m.columns.map((column,i)=>{
-  const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)} ${mIdx===6&&column==='CAF'?'tsf-v150-caf':''} ${mIdx===6&&column==='PRODUCTO'?'tsf-v150-producto':''}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${tsfHeaderDisplay(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('sort',12)}</button></div></th>`;
+  const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)} ${mIdx===6&&column==='CAF'?'tsf-v150-caf':''} ${mIdx===6&&column==='PRODUCTO'?'tsf-v150-producto':''}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${tsfHeaderDisplay(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('filter',12)}</button></div></th>`;
  }).join('')+'<th style="width:80px;text-align:center">DETALLE</th>'+(mIdx===1?'<th class="tsf-repro-head" style="width:104px;text-align:center">REPROCESO</th>':'')+'</tr></thead>';
  let body=records.map(row=>`<tr data-id="${esc(keyID(row))}">${m.columns.map((col,i)=>{
    const val=(mIdx===6&&col==='PRODUCTO')?String((typeof tsfV127ResolverMaestro==='function'?tsfV127ResolverMaestro(row):null)?.PRODUCTO??row.PRODUCTO??''):((col==='ESTADO_OPERACIÓN'&&[1,6].includes(mIdx)&&trackingSp.active&&typeof window.tsfEstadoPublico==='function')?window.tsfEstadoPublico(keyID(row)):String(row[col]??''));
@@ -2803,10 +2825,15 @@ function showFilter(col,anchor){
  const top=Math.min(window.innerHeight-245,box.bottom+8);
  document.querySelector('.filter-panel')?.remove();
  const f=document.createElement('div');f.className='filter-panel';f.style.left=left+'px';f.style.top=top+'px';
- const options=[...new Set(mainMod().rows.map(r=>String(r[col]??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
- const canSelect=tsfTieneCatalogo(mIdx,col)||col==='ANALISTA OPERATIVO'||col==='ESTADO_OPERACIÓN'||col==='PRODUCTO';
- const values=col==='ANALISTA OPERATIVO'?[...new Set([...analystNames(),...options])]:options;
- const select=canSelect?`<select id="colFilterValue"><option value="">Todos los valores</option>${values.map(v=>`<option value="${esc(v)}" ${colFilters[col]===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`:`<input type="text" id="colFilterValue" placeholder="Contiene..." value="${esc(colFilters[col]||'')}"/>`;
+ // Opciones basadas en TODA la tabla (no solo la página visible).
+ // Para PRODUCTO de GPS, resolver contra Gestión de Operaciones.
+ const readFilterValue=r=>String(mIdx===6&&col==='PRODUCTO'
+    ? ((typeof tsfV127ResolverMaestro==='function'?tsfV127ResolverMaestro(r):null)?.PRODUCTO??r.PRODUCTO??'')
+    : (r[col]??'')).trim();
+ const options=[...new Set(mainMod().rows.map(readFilterValue).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+ const canSelect=true;
+ const values=options;
+ const select=`<select id="colFilterValue"><option value="">Todos los valores</option>${values.map(v=>`<option value="${esc(v)}" ${colFilters[col]===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`;
  f.innerHTML=`<h4>Filtrar: ${esc(col)}</h4>${select}<div class="row"><button class="button" id="colAsc">${ic('sort',12)} A → Z</button><button class="button" id="colDesc">Z → A</button></div><div class="row"><button class="button" id="colClear">Limpiar</button><button class="button primary" id="colApply">Aplicar</button></div>`;
  document.body.appendChild(f);
  document.getElementById('colApply').onclick=()=>{const v=document.getElementById('colFilterValue').value.trim();if(v)colFilters[col]=v;else delete colFilters[col];page=1;f.remove();tableRender()};
@@ -5358,6 +5385,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
 
     const tsfV127EditableAnterior=isEditableColumn;
     isEditableColumn=function(indice,col,fila=null){
+      // Tracking (1) y GPS (6) siempre consultan el maestro: nunca lo editan.
+      if((indice===1||indice===6)&&TSF_IDENTIFICADORES_SOLO_LECTURA.has(col))return false;
       if(indice!==0&&TSF_V127_MAESTROS.has(col)){
         return tsfV127PermitidoOtroModulo(indice,col,fila);
       }
@@ -5366,6 +5395,10 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
 
     const tsfV127CambioAnterior=updateCell;
     updateCell=function(id,col,valor,opts={}){
+      if((mIdx===1||mIdx===6)&&TSF_IDENTIFICADORES_SOLO_LECTURA.has(col)){
+        toast('Dato heredado de Gestión de Operaciones: solo lectura.');
+        return false;
+      }
       if(mIdx!==0&&TSF_V127_MAESTROS.has(col)){
         const fila=mainMod().rows.find(r=>keyID(r)===id);
         const maestra=tsfV127ResolverMaestro(fila);
@@ -5440,7 +5473,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V16.1 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V16.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -5958,7 +5991,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     tableRender=function(...args){
       const result=tsfV135RenderPrevio.apply(this,args);
       document.body.classList.toggle('tsf-v150-gps',mIdx===6);
-      // V16.1: ejecutar REALMENTE el ordenamiento GPS sobre cada tabla recién creada.
+      // V16.2: ejecutar REALMENTE el ordenamiento GPS sobre cada tabla recién creada.
       // Antes la función estaba declarada pero nunca era llamada.
       // GPS se genera correctamente en mIdx=6 desde tableRender; no reordenar el DOM.
       return result;
