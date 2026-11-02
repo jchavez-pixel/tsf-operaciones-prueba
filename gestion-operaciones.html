@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V17.2 — GPS CAF fijo y PRODUCTO</title>
+<title>TSF | Operaciones V17.4 — CRUD TB3-TB6 y CAF fijo</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -1454,12 +1454,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V17.2 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V17.4 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V17.2 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V17.4 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2283,7 +2283,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V17.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V17.4 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===4||isTsfRemoteIndex());
@@ -5901,7 +5901,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V17.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V17.4 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -6703,7 +6703,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     };
 
     // =============================================================
-    // V17.3 — EDICIÓN REAL DE CELDAS EN TB3 - BIENES
+    // V17.3 — EDICIÓN REAL DE CELDAS EN TB3 - BIENES (base V17.4)
     // Se habilitan únicamente los campos propios de la fila SharePoint.
     // CAF / PRODUCTO / RUC / CLIENTE siguen heredados y bloqueados.
     // =============================================================
@@ -6959,6 +6959,426 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         toast('No se eliminó la fila: ' + String(error?.message || error));
       }
     };
+
+    // =============================================================
+    // V17.4 — CRUD REAL Y EDICIÓN DIRECTA EN TB3, TB4, TB5 Y TB6
+    // CAF permanece como primera columna fija.
+    // ID_OPERACION se muestra después de CAF y permanece de solo lectura.
+    // Los cuatro datos heredados (CAF/PRODUCTO/RUC/CLIENTE) no se editan.
+    // Cada fila se identifica por su ID interno de SharePoint (__spId),
+    // no por ID_OPERACION, porque una operación puede tener varias filas.
+    // =============================================================
+    const TSF_V174_REMOTE_INDEXES = [2, 3, 4, 5];
+    const TSF_V174_LOCKED_COLUMNS = new Set([
+      'ID_OPERACION', 'ID OPERACION', 'ID OPERACIÓN',
+      'CAF', 'PRODUCTO', 'RUC', 'CLIENTE',
+      'FFNN', 'FUNCIONARIO', 'ANALISTA OPERATIVO'
+    ]);
+    const tsfV174Edits = new Map(
+      TSF_V174_REMOTE_INDEXES.map(index => [index, new Map()])
+    ); // índice módulo -> Map(ID SharePoint -> Map(columna, valor))
+    const tsfV174Saving = new Set();
+
+    // CAF siempre primero para que la fijación horizontal no dependa del orden
+    // de las demás columnas. ID_OPERACION queda inmediatamente después.
+    for (const index of TSF_V174_REMOTE_INDEXES) {
+      for (const model of [base[index], modules[index]]) {
+        if (!model || !Array.isArray(model.columns)) continue;
+        model.columns = model.columns.filter(col => col !== 'ID_OPERACION');
+        const cafPosition = model.columns.indexOf('CAF');
+        model.columns.splice(cafPosition >= 0 ? cafPosition + 1 : 0, 0, 'ID_OPERACION');
+      }
+    }
+
+    function tsfV174Count(index) {
+      const rows = tsfV174Edits.get(Number(index));
+      if (!rows) return 0;
+      let total = 0;
+      for (const fields of rows.values()) total += fields.size;
+      return total;
+    }
+
+    function tsfV174CanEdit(index, col, row) {
+      index = Number(index);
+      if (!TSF_V174_REMOTE_INDEXES.includes(index) || !isTsfRemoteIndex(index)) return false;
+      if (window.TSF_SESSION_ROLE !== 'EDICION' || tsfV174Saving.has(index)) return false;
+      if (TSF_V174_LOCKED_COLUMNS.has(col)) return false;
+      const meta = window.tsfRemoteCrudMeta?.[index];
+      const spId = Number(row?.__spId);
+      return Boolean(meta?.map?.[col] && Number.isSafeInteger(spId) && spId > 0);
+    }
+
+    const tsfV174FieldRoleAnterior = fieldRole;
+    fieldRole = function(index, col, row = null) {
+      if (TSF_V174_REMOTE_INDEXES.includes(Number(index)) && isTsfRemoteIndex(Number(index))) {
+        if (TSF_V174_LOCKED_COLUMNS.has(col)) return 'inherited';
+        const meta = window.tsfRemoteCrudMeta?.[Number(index)];
+        return window.TSF_SESSION_ROLE === 'EDICION' && Boolean(meta?.map?.[col])
+          ? 'manual' : 'workflow';
+      }
+      return tsfV174FieldRoleAnterior(index, col, row);
+    };
+
+    const tsfV174EditableAnterior = isEditableColumn;
+    isEditableColumn = function(index, col, row = null) {
+      if (TSF_V174_REMOTE_INDEXES.includes(Number(index)) && isTsfRemoteIndex(Number(index))) {
+        return tsfV174CanEdit(Number(index), col, row);
+      }
+      return tsfV174EditableAnterior(index, col, row);
+    };
+
+    function tsfV174ValorSharePoint(col, value, meta) {
+      const type = meta?.types?.[col] || 'Text';
+      const raw = String(value ?? '').trim();
+      if (type === 'DateTime') {
+        if (!raw) return null;
+        let year, month, day, hour = '00', minute = '00';
+        let match = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?$/);
+        if (match) {
+          day = match[1]; month = match[2]; year = match[3];
+          hour = match[4] || '00'; minute = match[5] || '00';
+        } else {
+          match = raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/);
+          if (!match) throw new Error(col + ': usa DD/MM/AAAA o DD/MM/AAAA HH:mm.');
+          year = match[1]; month = match[2]; day = match[3];
+          hour = match[4] || '00'; minute = match[5] || '00';
+        }
+        const check = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+        if (check.getUTCFullYear() !== Number(year) ||
+            check.getUTCMonth() + 1 !== Number(month) ||
+            check.getUTCDate() !== Number(day)) {
+          throw new Error(col + ': la fecha no es válida.');
+        }
+        return `${year}-${month}-${day}T${hour}:${minute}:00-05:00`;
+      }
+      if (type === 'Number') {
+        if (!raw) return null;
+        const number = Number(raw.replace(',', '.'));
+        if (!Number.isFinite(number)) throw new Error(col + ': introduce un valor numérico válido.');
+        return number;
+      }
+      return raw;
+    }
+
+    const tsfV174UpdateAnterior = updateCell;
+    updateCell = function(id, col, value, opts = {}) {
+      const index = Number(mIdx);
+      if (!TSF_V174_REMOTE_INDEXES.includes(index) || !isTsfRemoteIndex(index)) {
+        return tsfV174UpdateAnterior(id, col, value, opts);
+      }
+      const row = mainMod().rows.find(item => keyID(item) === String(id));
+      if (!row || !tsfV174CanEdit(index, col, row)) return false;
+
+      let next = String(value ?? '').trim();
+      if (isDateField(col, mainMod())) next = minuteDisplay(next);
+      const current = String(row[col] ?? '').trim();
+      if (current === next) return true;
+
+      const spId = Number(row.__spId);
+      if (!row.__tsfV174Baseline) row.__tsfV174Baseline = {};
+      if (!Object.prototype.hasOwnProperty.call(row.__tsfV174Baseline, col)) {
+        row.__tsfV174Baseline[col] = current;
+      }
+      row[col] = next;
+
+      const byRow = tsfV174Edits.get(index);
+      const fields = byRow.get(spId) || new Map();
+      const original = String(row.__tsfV174Baseline[col] ?? '');
+      if (next === original) fields.delete(col);
+      else fields.set(col, next);
+      if (fields.size) byRow.set(spId, fields);
+      else byRow.delete(spId);
+
+      updateDirtyLabel();
+      const control = [...document.querySelectorAll('#dataTable .cell-input[data-id], #dataTable .tsf-cell-select[data-id]')]
+        .find(el => el.dataset.id === String(id) && mainMod().columns[Number(el.dataset.col)] === col);
+      if (control) control.classList.toggle('changed', fields.has(col));
+      return true;
+    };
+
+    async function tsfV174GuardarModulo(index) {
+      index = Number(index);
+      if (!TSF_V174_REMOTE_INDEXES.includes(index) || !isTsfRemoteIndex(index)) return;
+      if (window.TSF_SESSION_ROLE !== 'EDICION') {
+        toast('Perfil Consulta: no puedes guardar cambios.');
+        return;
+      }
+      const byRow = tsfV174Edits.get(index);
+      const pendientes = [...byRow.entries()];
+      const total = tsfV174Count(index);
+      if (!total) {
+        toast('No hay celdas modificadas para guardar.');
+        return;
+      }
+      const lista = TSF_REMOTE_LISTS[index].lista;
+      if (!confirm(`¿Guardar ${total} cambio(s) en ${pendientes.length} fila(s) de ${lista}?`)) return;
+
+      const meta = window.tsfRemoteCrudMeta?.[index];
+      if (!meta) {
+        toast('No se ha cargado el esquema de ' + lista + '. Actualiza los registros.');
+        return;
+      }
+
+      tsfV174Saving.add(index);
+      updateDirtyLabel();
+      let saved = 0;
+      const failures = [];
+      try {
+        for (const [spId, changes] of pendientes) {
+          const row = tsfRemoteStores[index]?.rows.find(item => Number(item.__spId) === Number(spId));
+          if (!row) {
+            failures.push(`SharePoint #${spId}: no se encontró la fila. Actualiza el módulo.`);
+            continue;
+          }
+          try {
+            if (!row.__spEtag) throw new Error('La fila no tiene ETag. Recarga el módulo antes de guardar.');
+            const campos = {};
+            for (const [col, value] of changes) {
+              const internalName = meta.map?.[col];
+              if (!internalName || TSF_V174_LOCKED_COLUMNS.has(col)) {
+                throw new Error('Campo no autorizado para edición: ' + col);
+              }
+              campos[internalName] = tsfV174ValorSharePoint(col, value, meta);
+            }
+            await tsfRemoteWrite(index, 'ACTUALIZAR', {
+              id_operacion: String(row.ID_OPERACION ?? ''),
+              id_sharepoint: Number(spId),
+              caf: String(row.CAF ?? ''),
+              campos,
+              etag: String(row.__spEtag ?? '')
+            });
+            for (const [col, value] of changes) {
+              if (!row.__tsfV174Baseline) row.__tsfV174Baseline = {};
+              row.__tsfV174Baseline[col] = String(value ?? '');
+            }
+            byRow.delete(Number(spId));
+            saved++;
+          } catch (error) {
+            failures.push(`SharePoint #${spId}: ${String(error?.message || error).slice(0, 180)}`);
+          }
+        }
+      } finally {
+        tsfV174Saving.delete(index);
+        updateDirtyLabel();
+      }
+
+      // Actualizar ETags y valores desde el endpoint de cambios solo cuando
+      // no queden filas pendientes; así no se pisan ediciones aún no guardadas.
+      if (saved > 0 && failures.length === 0) {
+        try {
+          await window.tsfRemoteReload?.(index);
+        } catch (error) {
+          console.warn('No se pudo refrescar ' + lista + ' después del guardado:', error);
+        }
+        tsfSafePaint(index);
+      } else if (saved > 0) {
+        tsfSafePaint(index);
+      }
+
+      if (failures.length) {
+        toast(`Se guardaron ${saved} fila(s). Quedan ${failures.length} fila(s) pendientes: ${failures[0]}`);
+      } else {
+        toast(`SharePoint confirmó ${saved} fila(s) actualizada(s) en ${lista}.`);
+      }
+      updateDirtyLabel();
+    }
+
+    const tsfV174DirtyAnterior = updateDirtyLabel;
+    updateDirtyLabel = function(...args) {
+      const result = tsfV174DirtyAnterior.apply(this, args);
+      if (TSF_V174_REMOTE_INDEXES.includes(Number(mIdx)) && isTsfRemoteIndex(Number(mIdx))) {
+        const count = tsfV174Count(mIdx);
+        const label = document.getElementById('dirtyCount');
+        const button = document.getElementById('saveBtn');
+        if (label) label.textContent = count ? '· ' + count : '';
+        if (button) {
+          button.disabled = window.TSF_SESSION_ROLE !== 'EDICION' || tsfV174Saving.has(Number(mIdx)) || count === 0;
+          button.title = count
+            ? `Guardar ${count} cambio(s) en ${TSF_REMOTE_LISTS[mIdx].lista}`
+            : `No hay cambios pendientes en ${TSF_REMOTE_LISTS[mIdx].lista}`;
+        }
+      }
+      return result;
+    };
+
+    const tsfV174SaveButton = document.getElementById('saveBtn');
+    if (tsfV174SaveButton) {
+      const tsfV174SaveAnterior = tsfV174SaveButton.onclick;
+      tsfV174SaveButton.onclick = function(event) {
+        const index = Number(mIdx);
+        if (TSF_V174_REMOTE_INDEXES.includes(index) && isTsfRemoteIndex(index)) {
+          event?.preventDefault?.();
+          void tsfV174GuardarModulo(index);
+          return;
+        }
+        if (typeof tsfV174SaveAnterior === 'function') {
+          return tsfV174SaveAnterior.call(this, event);
+        }
+      };
+    }
+
+    // Eliminar por ID interno de SharePoint. No usar id_sp: Flujo 2 declara
+    // id_sharepoint y permite eliminar una sola fila aunque comparta CAF/Title.
+    const tsfV174DeleteAnterior = tsfRemoteDeleteOne;
+    tsfRemoteDeleteOne = async function(spId) {
+      const index = Number(mIdx);
+      if (!TSF_V174_REMOTE_INDEXES.includes(index) || !isTsfRemoteIndex(index)) {
+        return tsfV174DeleteAnterior(spId);
+      }
+      const store = tsfRemoteStores[index];
+      const row = store?.rows.find(item => Number(item.__spId) === Number(spId));
+      const lista = TSF_REMOTE_LISTS[index].lista;
+      if (!row) return toast('No se encontró el registro en ' + lista + '.');
+      if (window.TSF_SESSION_ROLE !== 'EDICION') return toast('Perfil Consulta: no puedes eliminar filas.');
+      if (tsfV174Edits.get(index)?.has(Number(spId))) {
+        if (!confirm(`La fila SharePoint #${spId} tiene cambios sin guardar. ¿Eliminarla de todas formas?`)) return;
+      } else if (!confirm(`¿Eliminar únicamente la fila SharePoint #${spId} de ${lista}?\nID_OPERACION: ${row.ID_OPERACION || '—'}\nCAF: ${row.CAF || '—'}\nEsta acción no se puede deshacer.`)) {
+        return;
+      }
+      try {
+        await tsfRemoteWrite(index, 'ELIMINAR', {
+          id_sharepoint: Number(spId),
+          id_operacion: String(row.ID_OPERACION ?? ''),
+          caf: String(row.CAF ?? ''),
+          confirmar_eliminacion: true,
+          etag: String(row.__spEtag ?? '')
+        });
+        tsfV174Edits.get(index)?.delete(Number(spId));
+        store.rows = store.rows.filter(item => Number(item.__spId) !== Number(spId));
+        toast('SharePoint confirmó la eliminación. Actualizando ' + lista + '…');
+        tsfSafePaint(index);
+        try { await window.tsfRemoteReload?.(index); } catch (_) {}
+        tsfSafePaint(index);
+      } catch (error) {
+        toast('No se eliminó la fila: ' + String(error?.message || error));
+      }
+      updateDirtyLabel();
+    };
+
+    // Presentar ID_OPERACION como identificador de solo lectura y fijar CAF
+    // en el encabezado y en cada fila durante el desplazamiento horizontal.
+    const tsfV174TableRenderAnterior = tableRender;
+    tableRender = function(...args) {
+      const index = Number(mIdx);
+      if (TSF_V174_REMOTE_INDEXES.includes(index) && isTsfRemoteIndex(index)) {
+        for (const model of [base[index], modules[index]]) {
+          if (!model || !Array.isArray(model.columns)) continue;
+          if (!model.columns.includes('ID_OPERACION')) {
+            const cafPosition = model.columns.indexOf('CAF');
+            model.columns.splice(cafPosition >= 0 ? cafPosition + 1 : 0, 0, 'ID_OPERACION');
+          }
+        }
+      }
+      const result = tsfV174TableRenderAnterior.apply(this, args);
+      if (TSF_V174_REMOTE_INDEXES.includes(index) && isTsfRemoteIndex(index)) {
+        const mod = mainMod();
+        const cafIndex = mod.columns.indexOf('CAF');
+        const idIndex = mod.columns.indexOf('ID_OPERACION');
+        const table = document.getElementById('dataTable');
+        const header = table?.querySelector('thead tr:last-child');
+        const cafHead = header?.children?.[cafIndex];
+        if (cafHead) cafHead.classList.add('tsf-v174-caf-head');
+        const idHead = header?.children?.[idIndex];
+        if (idHead) idHead.classList.add('tsf-v174-id-head');
+
+        table?.querySelectorAll('tbody tr').forEach(tr => {
+          const cafCell = tr.children?.[cafIndex];
+          if (cafCell) cafCell.classList.add('tsf-v174-caf-cell');
+          const idCell = tr.children?.[idIndex];
+          if (idCell) {
+            idCell.classList.add('tsf-v174-id-cell');
+            const oldInput = idCell.querySelector('input.cell-input');
+            if (oldInput) {
+              const label = document.createElement('span');
+              label.className = 'tsf-v163-inherited tsf-v174-id-value';
+              label.textContent = oldInput.value || '—';
+              idCell.replaceChildren(label);
+            }
+          }
+          const rowKey = tr.dataset.id;
+          const row = mod.rows.find(item => keyID(item) === rowKey);
+          const fields = row ? tsfV174Edits.get(index)?.get(Number(row.__spId)) : null;
+          tr.querySelectorAll('.cell-input[data-col], .tsf-cell-select[data-col]').forEach(control => {
+            const col = mod.columns[Number(control.dataset.col)];
+            if (col) control.classList.toggle('changed', Boolean(fields?.has(col)));
+            // El listener original de los selects actualiza su clase con el
+            // mapa local; este listener posterior restaura el estado remoto real.
+            if (control.matches('.tsf-cell-select')) {
+              control.addEventListener('change', () => {
+                const latest = row ? tsfV174Edits.get(index)?.get(Number(row.__spId)) : null;
+                if (col) control.classList.toggle('changed', Boolean(latest?.has(col)));
+              });
+            }
+          });
+        });
+        const metaLabel = document.getElementById('tableMeta');
+        const remoteStore = tsfRemoteStores[index];
+        if (metaLabel && remoteStore) {
+          const mode = window.TSF_SESSION_ROLE === 'EDICION' ? 'campos propios editables' : 'solo lectura';
+          const sync = remoteStore.loading ? 'cargando' : remoteStore.error ? 'error de lectura' :
+            remoteStore.historyLoading ? 'histórico cargando' : remoteStore.historyDone ? 'histórico completo' : 'histórico pendiente';
+          metaLabel.textContent = `${TSF_REMOTE_LISTS[index].lista} · ${remoteStore.rows.length} registros reales · ${mode} · ${tsfV174Count(index)} cambios pendientes · ${sync}`;
+        }
+      }
+      return result;
+    };
+
+    // Proteger los cambios pendientes ante una recarga manual de la lista.
+    const tsfV174RefreshButton = document.getElementById('resetView');
+    if (tsfV174RefreshButton) {
+      const tsfV174RefreshAnterior = tsfV174RefreshButton.onclick;
+      tsfV174RefreshButton.onclick = async function(event) {
+        const index = Number(mIdx);
+        if (TSF_V174_REMOTE_INDEXES.includes(index) && isTsfRemoteIndex(index) && tsfV174Count(index) > 0) {
+          toast('Hay cambios pendientes. Pulsa Guardar cambios antes de recargar la lista.');
+          return;
+        }
+        if (typeof tsfV174RefreshAnterior === 'function') {
+          return tsfV174RefreshAnterior.call(this, event);
+        }
+      };
+    }
+
+    // Ajustes visuales para las cinco columnas identificadoras: CAF, ID_OPERACION,
+    // PRODUCTO, RUC y CLIENTE. Solo CAF queda fija horizontalmente.
+    const tsfV174Style = document.createElement('style');
+    tsfV174Style.id = 'tsf-v174-remote-editable-style';
+    tsfV174Style.textContent = `
+      body.tsf-v164-remote #dataTable { border-collapse:separate!important; border-spacing:0!important; }
+      body.tsf-v164-remote #dataTable thead tr:last-child th:nth-child(-n+5) {
+        background:#e6e9ee!important; color:#35465c!important;
+      }
+      body.tsf-v164-remote #dataTable tbody td:nth-child(-n+5) {
+        background:#f1f3f6!important;
+      }
+      body.tsf-v164-remote #dataTable tbody td:nth-child(-n+5) .tsf-v163-inherited {
+        display:block!important; width:100%!important; background:transparent!important;
+        border:0!important; box-shadow:none!important; border-radius:0!important;
+        padding:0 2px!important; color:#475569!important; font-weight:650!important;
+        white-space:nowrap!important; overflow:hidden!important; text-overflow:ellipsis!important;
+        line-height:24px!important; cursor:default!important;
+      }
+      body.tsf-v164-remote #dataTable thead tr:last-child th.tsf-v174-caf-head {
+        position:sticky!important; left:0!important; top:0!important; z-index:90!important;
+        background:#e6e9ee!important; border-right:1px solid #cbd5df!important;
+        box-shadow:none!important;
+      }
+      body.tsf-v164-remote #dataTable tbody td.tsf-v174-caf-cell {
+        position:sticky!important; left:0!important; z-index:45!important;
+        background:#f1f3f6!important; border-right:1px solid #d4dce6!important;
+        box-shadow:none!important;
+      }
+      body.tsf-v164-remote #dataTable thead tr:last-child th.tsf-v174-id-head,
+      body.tsf-v164-remote #dataTable tbody td.tsf-v174-id-cell { background:#eef1f5!important; }
+      body.tsf-v164-remote #dataTable tbody td.tsf-v174-id-cell .tsf-v174-id-value {
+        color:#46566d!important; font-weight:750!important; letter-spacing:.1px;
+      }
+      body.tsf-v164-remote #dataTable tbody td:not(:nth-child(-n+5)) .cell-input:not([readonly]),
+      body.tsf-v164-remote #dataTable tbody td:not(:nth-child(-n+5)) select.tsf-cell-select {
+        cursor:text!important;
+      }
+    `;
+    document.head.appendChild(tsfV174Style);
 
     // Inicializar sin tocar los borradores ni recargar la página.
     tsfActualizarEstadosGestion();
