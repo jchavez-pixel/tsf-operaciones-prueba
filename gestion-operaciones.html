@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V17.7 — Alta automática de Tracking</title>
+<title>TSF | Operaciones V17.8 — Guardado inteligente y filtro de estado</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -412,6 +412,10 @@ body.tsf-seg-active #tsf-seg-view{display:block}
 .tsf-seg-hero h1{font-size:25px;letter-spacing:-.7px;line-height:1.1;margin:0 0 5px;font-weight:850;color:#171c24}
 .tsf-seg-hero p{font-size:12px;color:#687483;margin:0}
 .tsf-seg-tools{display:flex;gap:8px;align-items:center}
+.tsf-seg-filter{display:flex;align-items:center;gap:7px;min-height:40px;padding:0 10px;border:1px solid #dce2e8;background:#fff;border-radius:9px;color:#718096}
+.tsf-seg-filter:focus-within{border-color:#e8ba18;box-shadow:0 0 0 2px #ffcb1622}
+.tsf-seg-filter span{font-size:9px;font-weight:850;letter-spacing:.45px;color:#788595;white-space:nowrap}
+.tsf-seg-filter select{min-width:145px;border:0;outline:0;background:transparent;color:#263341;font-size:11px;font-weight:780;cursor:pointer;padding:8px 2px}
 .tsf-seg-btn{font-size:12px;font-weight:750;border:1px solid #dce2e8;background:#fff;border-radius:9px;padding:11px 14px;color:#26313d;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}
 .tsf-seg-btn:hover{border-color:#f0bd14;background:#fffae9}
 .tsf-seg-readonly{display:inline-flex;align-items:center;gap:5px;border:1px solid #dbe2e8;background:#f2f4f6;color:#5f6b76;border-radius:30px;padding:9px 12px;font-size:11px;font-weight:800}
@@ -475,7 +479,7 @@ body.tsf-seg-active #tsf-seg-view{display:block}
 .tsf-seg-msg.warn{background:#fff6dc;color:#86600c}
 @media(max-width:1200px){.tsf-seg-layout{grid-template-columns:255px minmax(0,1fr)}.tsf-seg-facts,.tsf-seg-data-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:850px){.tsf-seg-layout{grid-template-columns:minmax(0,1fr)}#tsf-seg-caf-list{max-height:270px;min-height:80px}.tsf-seg-right{padding:13px}.tsf-seg-hero h1{font-size:21px}}
-@media(max-width:460px){.tsf-seg-facts,.tsf-seg-data-grid{grid-template-columns:1fr}.tsf-seg-tools{width:100%}.tsf-seg-btn{flex:1}}
+@media(max-width:460px){.tsf-seg-facts,.tsf-seg-data-grid{grid-template-columns:1fr}.tsf-seg-tools{width:100%;flex-wrap:wrap}.tsf-seg-filter{flex:1;min-width:0}.tsf-seg-filter select{min-width:0;flex:1}.tsf-seg-btn{flex:1}}
 
 /* V13.1: únicamente CAF se mantiene fijo horizontalmente. */
 body.tsf-v130-tracking #dataTable thead tr:last-child th,
@@ -1454,12 +1458,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V17.7 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V17.8 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V17.7 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V17.8 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2283,7 +2287,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V17.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V17.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===4||isTsfRemoteIndex());
@@ -5029,11 +5033,8 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
 
       const ids = [...spEdits.keys()];
 
-      if (!confirm(
-        `¿Revisar y guardar los cambios de ${ids.length} `+
-        'operación(es)? Se compararán las celdas con SharePoint.'
-      )) return;
-
+      // El botón Guardar ya representa la confirmación del usuario.
+      // La revisión adicional solo aparece si la validación detecta observaciones.
       let guardados = 0;
       let observados = 0;
       let iguales = 0;
@@ -5649,7 +5650,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         return;
       }
       const n=ids.reduce((total,id)=>total+(soloGestion?1:trackingSp.edits.get(id).size),0);
-      if(!confirm(`¿Revisar y guardar ${n} cambio(s) de Tracking en ${ids.length} operación(es)?`))return;
+      // El botón Guardar confirma la acción; no mostrar una segunda ventana nativa.
       trackingSp.saving=true;
       updateDirtyLabel();
       tsfWaitBegin('guardar-tracking-seguro','Verificando versiones','Comparando cambios con TB2 - Tracking Operativo…');
@@ -6146,7 +6147,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V17.7 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V17.8 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -6171,7 +6172,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     const tsfSegDummy={key:'SEGUIMIENTOS',name:'Seguimientos',icon:'activity',description:'Seguimiento ejecutivo por CAF · solo lectura',columns:['CAF'],rows:[]};
     base.push(clone(tsfSegDummy));
     modules.push(clone(tsfSegDummy));
-    const tsfSegState={caf:'',id:'',tab:'generales',query:'',loading:false,refreshing:false};
+    const tsfSegState={caf:'',id:'',tab:'generales',query:'',estado:'TODOS',loading:false,refreshing:false};
     const tsfSegTabs=[
       ['generales','Datos generales'],['tracking','Tracking'],['gps','GPS y Seguros'],
       ['bienes','Bienes'],['garantias','Garantías'],['reprocesos','Reprocesos'],['modificaciones','Modificaciones']
@@ -6223,6 +6224,20 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         todos.get(k).operaciones.push({id,caf,master,track,estado:deriva});
       }
       return [...todos.values()].sort((a,b)=>a.caf.localeCompare(b.caf,'es',{numeric:true}));
+    }
+    function tsfSegFiltrarEstado(grupos){
+      const filtro=String(tsfSegState.estado||'TODOS').toUpperCase();
+      if(filtro==='TODOS')return grupos;
+      return grupos.map(grupo=>({
+        ...grupo,
+        operaciones:grupo.operaciones.filter(op=>{
+          const clase=tsfSegClaseEstado(op.estado);
+          if(filtro==='EN PROCESO')return clase==='proceso';
+          if(filtro==='DESEMBOLSADO')return clase==='desembolsado';
+          if(filtro==='PENDIENTE')return clase==='pendiente';
+          return true;
+        })
+      })).filter(grupo=>grupo.operaciones.length>0);
     }
     function tsfSegFilasRelacionadas(idx,id){
       const store=tsfRemoteStores[idx];
@@ -6312,17 +6327,37 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     }
     function tsfSegRender(){
       if(mIdx!==TSF_SEG_INDEX)return;
-      const grupos=tsfSegAgrupar();
-      if(!grupos.some(g=>g.caf===tsfSegState.caf))tsfSegState.caf=grupos[0]?.caf||'';
+      const gruposTotales=tsfSegAgrupar();
+      const grupos=tsfSegFiltrarEstado(gruposTotales);
+      if(!grupos.some(g=>g.caf===tsfSegState.caf)){
+        tsfSegState.caf=grupos[0]?.caf||'';
+        tsfSegState.id='';
+      }
       const grupo=grupos.find(g=>g.caf===tsfSegState.caf);
       if(grupo&&!grupo.operaciones.some(op=>op.id===tsfSegState.id))tsfSegState.id=grupo.operaciones[0].id;
       const op=grupo?.operaciones.find(x=>x.id===tsfSegState.id)||null;
       const pendientes=[...spEdits.values()].some(mp=>mp.size>0)||trackingSp.edits.size>0;
+      const emptyMessage=spPreview.loading||!spPreview.rows?.length
+        ?'Cargando operaciones reales de Gestión…'
+        :gruposTotales.length
+          ?'No hay operaciones que coincidan con el estado seleccionado.'
+          :'No hay operaciones con CAF registrado en Gestión.';
       tsfSegHost.innerHTML=`
         <header class="tsf-seg-hero"><div><div class="tsf-seg-crumb">PORTAL / MEDIANO PLAZO / SEGUIMIENTOS</div>
           <h1>Seguimientos por CAF</h1><p>Vista consolidada de operaciones, trámites, bienes y garantías.</p></div>
-          <div class="tsf-seg-tools"><span class="tsf-seg-readonly">${ic('lock',13)} SOLO LECTURA</span>
-            <button type="button" id="tsf-seg-refresh" class="tsf-seg-btn">${ic('refresh',14)} Actualizar datos</button></div></header>
+          <div class="tsf-seg-tools">
+            <label class="tsf-seg-filter" for="tsf-seg-status">
+              <span>ESTADO</span>
+              <select id="tsf-seg-status" aria-label="Filtrar por estado de operación">
+                <option value="TODOS" ${tsfSegState.estado==='TODOS'?'selected':''}>Todos los estados</option>
+                <option value="EN PROCESO" ${tsfSegState.estado==='EN PROCESO'?'selected':''}>EN PROCESO</option>
+                <option value="DESEMBOLSADO" ${tsfSegState.estado==='DESEMBOLSADO'?'selected':''}>DESEMBOLSADO</option>
+                <option value="PENDIENTE" ${tsfSegState.estado==='PENDIENTE'?'selected':''}>PENDIENTE</option>
+              </select>
+            </label>
+            <span class="tsf-seg-readonly">${ic('lock',13)} SOLO LECTURA</span>
+            <button type="button" id="tsf-seg-refresh" class="tsf-seg-btn">${ic('refresh',14)} Actualizar datos</button>
+          </div></header>
         <div class="tsf-seg-layout"><aside class="tsf-seg-panel tsf-seg-list-panel">
           <div class="tsf-seg-panel-title">Operaciones por CAF</div><div id="tsf-seg-count" class="tsf-seg-micro"></div>
           <label class="tsf-seg-search">${ic('search',16)}<input id="tsf-seg-search" type="search" autocomplete="off" aria-label="Buscar por CAF, cliente, RUC o ID de operación" placeholder="Buscar CAF, cliente, RUC…" value="${esc(tsfSegState.query)}"></label>
@@ -6343,7 +6378,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
               ${tsfSegTabs.map(([k,n])=>`<button type="button" class="tsf-seg-tab ${tsfSegState.tab===k?'active':''}" role="tab" aria-selected="${tsfSegState.tab===k}" data-seg-tab="${k}">${esc(n)}</button>`).join('')}</div>
               <div id="tsf-seg-tab-panel" role="tabpanel">${tsfSegTabDatos(op)}</div></section>
             ${pendientes?'<div class="tsf-seg-msg warn">Hay cambios pendientes de guardar en otros módulos. Esta vista puede mostrarlos temporalmente; comprueba el guardado en SharePoint antes de considerarlos confirmados.</div>':''}
-          `:`<div class="tsf-seg-empty">${spPreview.loading||!spPreview.rows?.length?'Cargando operaciones reales de Gestión…':'No hay operaciones con CAF registrado en Gestión.'}</div>`}
+          `:`<div class="tsf-seg-empty">${emptyMessage}</div>`}
           </div></div>
         <div class="tsf-seg-msg">Los datos se consultan a partir de Gestión, TB2 (Tracking/GPS y Seguros) y TB3–TB6. Este módulo no escribe ni modifica registros. Los históricos de TB3–TB6 se completan progresivamente.</div>`;
       tsfSegListaCAF(grupos);
@@ -6401,7 +6436,15 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       if(e.target.closest('#tsf-seg-refresh'))void tsfSegActualizar();
     });
     tsfSegHost.addEventListener('input',e=>{
-      if(e.target.id==='tsf-seg-search'){tsfSegState.query=e.target.value;tsfSegListaCAF(tsfSegAgrupar());}
+      if(e.target.id==='tsf-seg-search'){tsfSegState.query=e.target.value;tsfSegListaCAF(tsfSegFiltrarEstado(tsfSegAgrupar()));}
+    });
+    tsfSegHost.addEventListener('change',e=>{
+      if(e.target.id==='tsf-seg-status'){
+        tsfSegState.estado=e.target.value||'TODOS';
+        tsfSegState.caf='';
+        tsfSegState.id='';
+        tsfSegRender();
+      }
     });
     const tsfSegNavAnterior=navRender;
     navRender=function(...args){
@@ -7355,7 +7398,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         return;
       }
       const lista = TSF_REMOTE_LISTS[index].lista;
-      if (!confirm(`¿Guardar ${total} cambio(s) en ${pendientes.length} fila(s) de ${lista}?`)) return;
+      // El botón Guardar confirma la acción; no mostrar una segunda ventana nativa.
 
       const meta = window.tsfRemoteCrudMeta?.[index];
       if (!meta) {
@@ -7657,7 +7700,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
 
 
     // ================================================================
-    // V17.7 — CENTRO DE REVISIÓN + ALTA AUTOMÁTICA TB1 → TB2
+    // V17.8 — GUARDADO INTELIGENTE + FILTRO DE ESTADO EN SEGUIMIENTOS
     // Revisa campos pendientes y crea Tracking cuando los tres datos obligatorios estén guardados.
     // Las observaciones nunca eliminan borradores automáticamente.
     // ================================================================
@@ -8059,7 +8102,17 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         if(window.TSF_SESSION_ROLE!=='EDICION')return toast('Perfil solo consulta.');
         if(spSaving||trackingSp.saving||tsfV174Saving?.has?.(Number(mIdx)))return toast('Espera a que termine el guardado actual.');
         const items=tsfSaveReviewCollect();
-        if(!items.length)return toast('No hay cambios pendientes para revisar.');
+        if(!items.length)return toast('No hay cambios pendientes para guardar.');
+
+        // V17.8: si todos los cambios superan la validación local,
+        // se guardan directamente sin abrir el panel de revisión.
+        // El panel solo se muestra cuando existe al menos una observación.
+        const observations=items.filter(item=>Boolean(item.issue));
+        if(observations.length===0){
+          await tsfSaveReviewExecute([]);
+          return;
+        }
+
         const decision=await tsfSaveReviewOpen();
         if(!decision)return;
         await tsfSaveReviewExecute(decision.skipKeys);
@@ -8088,7 +8141,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       return result;
     };
     // ================================================================
-    // FIN V17.7 — CENTRO DE REVISIÓN Y GUARDADO PROTEGIDO
+    // FIN V17.8 — GUARDADO INTELIGENTE Y FILTRO DE ESTADO
     // ================================================================
 
     const header = document.querySelector('.headright');
