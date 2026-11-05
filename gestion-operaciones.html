@@ -3818,20 +3818,47 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     const TSF_REMOTE_HISTORY_COUNT=100;
     const TSF_REMOTE_HISTORY_LIMIT=300;
     function tsfRemotePaint(i){if(mIdx===i)tsfSafePaint(i);}
+    // V17.9: diagnóstico explícito de sesión/Worker/flujo. No repetir escrituras.
+    // Una respuesta 401 del flujo NO demuestra por sí sola que el login haya caducado.
     async function tsfRemoteRequest(i,accion,params={}){
       const response=await fetch('/api/operaciones',{
         method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',
         body:JSON.stringify({accion,id_operacion:'',...params})
       });
       const raw=await response.text();let json;
-      try{json=JSON.parse(raw)}catch(_){throw new Error('El flujo no devolvió JSON para '+accion);}
-      if(!response.ok||json?.ok===false){
-        throw new Error('HTTP '+response.status+(Number.isInteger(json?.codigo)?' (flujo '+json.codigo+')':'')+': '+String(json?.error||json?.mensaje||'Acción rechazada').slice(0,150));
+      try { json=JSON.parse(raw); }
+      catch (_) { throw new Error('HTTP '+response.status+' · '+accion+': el servidor no devolvió JSON.'); }
+      if(!response.ok||json?.ok===false||Number(json?.codigo)>=400){
+        const code=Number(json?.codigo)||response.status;
+        const detail=String(json?.error||json?.mensaje||json?.message||'Acción rechazada').slice(0,180);
+        if(code===401||response.status===401){
+          let validSession=false;
+          try {
+            const bearer=sessionStorage.getItem('TSF_PILOTO_TOKEN');
+            if(bearer){
+              const check=await fetch('https://tsf-operaciones-api-prueba.jchavez-23e.workers.dev/auth/me',{
+                headers:{Authorization:'Bearer '+bearer},cache:'no-store'
+              });
+              if(check.ok){
+                const status=await check.json();
+                validSession=status?.ok===true&&['LECTURA','EDICION'].includes(status?.rol);
+              }else if(check.status===401||check.status===403){
+                window.TSF_REMOTE_AUTH_EXPIRED=true;
+              }
+            }
+          }catch(_){ /* Error de red: no suponer caducidad. */ }
+          if(window.TSF_REMOTE_AUTH_EXPIRED){
+            throw new Error('HTTP 401 · sesión vencida. Vuelve a iniciar sesión y repite la consulta.');
+          }
+          throw new Error('HTTP 401 · '+accion+(validSession?' · login válido; revisar Worker/Power Automate: ':' · comprobar sesión y flujo: ')+detail);
+        }
+        throw new Error('HTTP '+response.status+' (código '+code+') · '+accion+': '+detail);
       }
       const records=Array.isArray(json)?json:
         Array.isArray(json?.value)?json.value:
-        Array.isArray(json?.body?.value)?json.body.value:null;
-      if(!records)throw new Error('Response de '+accion+' no devolvió el arreglo value de SharePoint.');
+        Array.isArray(json?.body?.value)?json.body.value:
+        Array.isArray(json?.resultado?.value)?json.resultado.value:null;
+      if(!records)throw new Error(accion+': Response no devolvió un arreglo value válido de SharePoint.');
       return records;
     }
     function tsfRemoteConvertir(i,records){
@@ -4036,7 +4063,19 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     // Refrescar solo el módulo seleccionado, sin descartar otras listas cargadas.
     const tsfRecargarAntes=document.getElementById('resetView').onclick;
     document.getElementById('resetView').onclick=async()=>{
-      if(isTsfRemoteIndex())return tsfCargarListaModulo(mIdx,{force:true});
+      if(isTsfRemoteIndex()){
+        const index=Number(mIdx);
+        if(typeof tsfV174Count==='function'&&tsfV174Count(index)>0){
+          toast('Hay cambios sin guardar en '+TSF_REMOTE_LISTS[index].lista+'. Guárdalos antes de recargar.');
+          return;
+        }
+        const store=tsfRemoteStores[index];
+        // Si falló una página histórica, reanudar desde el cursor sin volver a descargar las primeras diez.
+        if(store?.loaded&&store?.nextCursor&&store?.historyError){
+          return tsfCargarHistorial(index,{permitirOculto:true});
+        }
+        return tsfCargarListaModulo(index,{force:true});
+      }
       return tsfRecargarAntes?.();
     };
     // Carga principal en paralelo (TB1 + TB2), sin sumar 4 llamadas simultáneas.
