@@ -1450,6 +1450,24 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
 .tsf-dashboard .tsf-dash-month-select:focus-visible{outline:2px solid #e5bb23;outline-offset:2px}
 @media(max-width:650px){.tsf-dashboard .tsf-dash-controls{width:100%}.tsf-dashboard .tsf-dash-month-select{flex:1;min-width:0}}
 </style>
+<style id="tsf-v18-ux-perf">
+/* Mejoras no invasivas: tabla corporativa con columnas redimensionables */
+#dataTable thead tr:last-child th{position:sticky;}
+#dataTable thead tr:last-child th .tsf-ux-resizer{
+  position:absolute;right:-3px;top:0;bottom:0;width:8px;z-index:90;
+  cursor:col-resize;touch-action:none;user-select:none;
+}
+#dataTable thead tr:last-child th .tsf-ux-resizer:hover,
+body.tsf-ux-resizing #dataTable thead tr:last-child th .tsf-ux-resizer:hover{
+  background:rgba(234,179,8,.35);border-right:2px solid #d1a20c;
+}
+body.tsf-ux-resizing,body.tsf-ux-resizing *{cursor:col-resize!important;user-select:none!important}
+.tsf-ux-reset{display:inline-flex;align-items:center;margin:3px 0 0;padding:3px 7px;
+ border:1px solid #dbe1e8;background:#fff;color:#637182;border-radius:5px;
+ font:600 10px 'Segoe UI',Arial,sans-serif;cursor:pointer;}
+.tsf-ux-reset:hover{border-color:#e0b530;color:#51400a;background:#fffaf0}
+#dataTable .cell-input,#dataTable .tsf-cell-select{max-width:100%;box-sizing:border-box;}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -2776,7 +2794,7 @@ function navRender(){
  }).join('');
  document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>switchModule(+b.dataset.module));
 }
-function switchModule(idx){mIdx=idx;query='';analyst='';state='';page=1;pendingOnly=false;sorting={col:'',dir:1};colFilters={};drawerId=null;document.getElementById('q').value='';draw();}
+function switchModule(idx){if(typeof tsfSearchTimer!=='undefined'&&tsfSearchTimer!==null){clearTimeout(tsfSearchTimer);tsfSearchTimer=null;}mIdx=idx;query='';analyst='';state='';page=1;pendingOnly=false;sorting={col:'',dir:1};colFilters={};drawerId=null;document.getElementById('q').value='';draw();}
 function statCount(terms){return mainMod().rows.filter(r=>terms.some(s=>statusOf(r).toUpperCase().includes(s))).length}
 function drawKpis(){
  const filas=mainMod().rows,total=filas.length;
@@ -3450,7 +3468,7 @@ for(const name of ['save','refresh','download','plus','filter']){document.queryS
 document.body.innerHTML=document.body.innerHTML.replace('ICON_LOCK',ic('lock',15)).replace('ICON_CHEVRON',ic('chevron',15)).replace('ICON_TEST',ic('test',14)).replace('ICON_ALERT',ic('alert',17)).replace('ICON_SEARCH',ic('search',15));
 document.getElementById('sidebarToggle').onclick=()=>document.getElementById('app').classList.toggle('min');
 let tsfSearchTimer=null;
-document.getElementById('q').addEventListener('input',e=>{const value=e.target.value.trim().toLowerCase();if(tsfSearchTimer!==null)clearTimeout(tsfSearchTimer);tsfSearchTimer=setTimeout(()=>{tsfSearchTimer=null;query=value;page=1;tableRender()},100)});
+document.getElementById('q').addEventListener('input',e=>{const value=e.target.value.trim().toLowerCase();if(tsfSearchTimer!==null)clearTimeout(tsfSearchTimer);tsfSearchTimer=setTimeout(()=>{tsfSearchTimer=null;query=value;page=1;tableRender()},320)});
 document.getElementById('analystFilter').onchange=e=>{analyst=e.target.value;page=1;tableRender()};
 document.getElementById('statusFilter').onchange=e=>{state=e.target.value;page=1;tableRender()};
 document.getElementById('pageSize').onchange=e=>{pageSize=+e.target.value;page=1;tableRender()};
@@ -4230,6 +4248,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       }
     }
     async function tsfSyncSafe(){
+      if(document.hidden)return;
       if(tsfSyncBusy||tsfSyncBloqueado()||
          !['LECTURA','EDICION'].includes(window.TSF_SESSION_ROLE))return;
       tsfSyncBusy=true;
@@ -8230,6 +8249,126 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     // FIN V18.0 — GUARDADO INTELIGENTE Y FILTRO DE ESTADO
     // ================================================================
 
+    // ================================================================
+    // TSF V18.0 | Optimización de experiencia (sin tocar endpoints API)
+    // Anchos por módulo + redimensionado + restauración de columnas.
+    // Sólo persiste preferencias VISUALES en el navegador.
+    // ================================================================
+    const tsfUxWidthPrefix = 'tsf_v18_widths_';
+    const tsfUxWidthsCache = new Map();
+    function tsfUxKey(index){
+      return tsfUxWidthPrefix + String(modules[index]?.key || index).replace(/[^a-z0-9_-]+/gi,'_').toLowerCase();
+    }
+    function tsfUxWidths(index){
+      const key = tsfUxKey(index);
+      if(!tsfUxWidthsCache.has(key)){
+        let found={};
+        try{
+          const stored=JSON.parse(localStorage.getItem(key)||'{}');
+          if(stored && typeof stored==='object' && !Array.isArray(stored)) found=stored;
+        }catch(_){ /* Navegación privada: anchos por sesión. */ }
+        tsfUxWidthsCache.set(key,found);
+      }
+      return tsfUxWidthsCache.get(key);
+    }
+    function tsfUxWidth(column, index){
+      const n=Number(tsfUxWidths(index)[String(column)]);
+      return Number.isFinite(n)&&n>=76&&n<=650?Math.round(n):null;
+    }
+    function tsfUxStoreWidth(column,index,width){
+      const data=tsfUxWidths(index);
+      data[String(column)]=Math.round(Math.min(650,Math.max(76,width)));
+      try{localStorage.setItem(tsfUxKey(index),JSON.stringify(data));}catch(_){/* cuota o privacidad */}
+    }
+    // Las demás extensiones de la V18 siguen calculando el ancho base.
+    const tsfUxWidthOriginal=getColumnWidth;
+    getColumnWidth=function(column,mod,index){
+      const custom=tsfUxWidth(column,mIdx);
+      return custom===null?tsfUxWidthOriginal.call(this,column,mod,index):custom;
+    };
+    const tsfUxTableOriginal=tableRender;
+    tableRender=function(...args){
+      const result=tsfUxTableOriginal.apply(this,args);
+      const tbl=document.getElementById('dataTable');
+      const head=tbl?.tHead?.rows?.[tbl.tHead.rows.length-1];
+      if(!head)return result;
+      const cols=modules[mIdx]?.columns||[];
+      // Detectar las columnas reales, incluidas extensiones de V18 (ej. VAF).
+      // Sólo agregar manipuladores a columnas que puedan asociarse sin ambigüedad.
+      const candidates=[...head.cells];
+      const used=new Set();
+      cols.forEach((column,sourceIndex)=>{
+        const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[_\s]+/g,'').trim().toUpperCase();
+        const label=norm(columnLabel(column));
+        let th=candidates[sourceIndex];
+        // Encabezados agregados por wrappers pueden alterar los índices.
+        if(!th || norm(th.querySelector('.thname')?.textContent||th.textContent)!==label){
+          th=candidates.find(c=>!used.has(c)&&norm(c.querySelector('.thname')?.textContent||c.textContent)===label);
+        }
+        if(!th||used.has(th))return;
+        used.add(th);
+        if(th.querySelector('.tsf-ux-resizer'))return;
+        const handle=document.createElement('span');
+        handle.className='tsf-ux-resizer';
+        handle.title='Arrastra para ajustar el ancho de '+column;
+        handle.setAttribute('role','separator');
+        handle.setAttribute('aria-label','Ajustar ancho de '+column);
+        handle.setAttribute('aria-orientation','vertical');
+        th.appendChild(handle);
+        const displayIndex=Array.prototype.indexOf.call(head.cells,th);
+        handle.addEventListener('pointerdown',ev=>{
+          if(ev.button!==0)return;
+          ev.preventDefault();ev.stopPropagation();
+          const originX=ev.clientX;
+          const startWidth=th.getBoundingClientRect().width;
+          const tableWidth=tbl.getBoundingClientRect().width;
+          const col=tbl.querySelector('colgroup')?.children[displayIndex];
+          const body=tbl.tBodies[0];
+          let finalWidth=startWidth;
+          document.body.classList.add('tsf-ux-resizing');
+          handle.setPointerCapture?.(ev.pointerId);
+          const move=e=>{
+            finalWidth=Math.max(76,Math.min(650,startWidth+e.clientX-originX));
+            const px=Math.round(finalWidth)+'px';
+            th.style.setProperty('width',px,'important');
+            th.style.setProperty('min-width',px,'important');
+            th.style.setProperty('max-width',px,'important');
+            if(col){col.style.setProperty('width',px,'important');col.style.setProperty('min-width',px,'important');col.style.setProperty('max-width',px,'important');}
+            if(body)for(const tr of body.rows){
+              const cell=tr.cells[displayIndex];
+              if(cell){cell.style.setProperty('width',px,'important');cell.style.setProperty('min-width',px,'important');cell.style.setProperty('max-width',px,'important');}
+            }
+            tbl.style.setProperty('width',Math.round(tableWidth+finalWidth-startWidth)+'px','important');
+          };
+          const end=()=>{
+            handle.removeEventListener('pointermove',move);
+            handle.removeEventListener('pointerup',end);
+            handle.removeEventListener('pointercancel',end);
+            document.body.classList.remove('tsf-ux-resizing');
+            if(Math.abs(finalWidth-startWidth)>2)tsfUxStoreWidth(column,mIdx,finalWidth);
+          };
+          handle.addEventListener('pointermove',move);
+          handle.addEventListener('pointerup',end,{once:true});
+          handle.addEventListener('pointercancel',end,{once:true});
+        });
+      });
+      return result;
+    };
+    const tsfUxTitle=document.getElementById('tableTitle');
+    if(tsfUxTitle&&!document.getElementById('tsfUxReset')){
+      const reset=document.createElement('button');
+      reset.type='button';reset.id='tsfUxReset';reset.className='tsf-ux-reset';
+      reset.textContent='Restablecer anchos';
+      reset.title='Restablece los anchos de columnas solamente en este módulo';
+      reset.onclick=()=>{
+        const key=tsfUxKey(mIdx);
+        tsfUxWidthsCache.delete(key);
+        try{localStorage.removeItem(key);}catch(_){}
+        tableRender();
+        toast('Anchos de columnas restablecidos para este módulo.');
+      };
+      tsfUxTitle.insertAdjacentElement('afterend',reset);
+    }
     const header = document.querySelector('.headright');
     if (header) {
       const strip = document.createElement('div');
