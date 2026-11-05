@@ -513,6 +513,15 @@ body.tsf-dashboard-active .tsf-dashboard{display:block}
 .tsf-dash-count{text-align:right;font-weight:800}.tsf-dash-note{font-size:11px;color:#738197;line-height:1.5}
 @media(max-width:1100px){.tsf-dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tsf-dashboard-panels{grid-template-columns:1fr}}
 @media(max-width:650px){.tsf-dashboard-grid{grid-template-columns:1fr}.tsf-dashboard{padding:13px}}
+
+/* V18.0 · indicador de histórico sin ocupar espacio de lectura */
+.kpi{position:relative}
+.tsf-load-status{position:absolute;right:14px;top:13px;display:inline-grid;place-items:center;width:20px;height:20px;font-size:13px;font-weight:900}
+.tsf-load-spinner{width:17px;height:17px;border:2.5px solid #dbe2ec;border-top-color:#e1a900;border-radius:50%;animation:tsf-spin .8s linear infinite}
+.tsf-load-complete{color:#159b68;font-size:15px;opacity:.75}
+.tsf-load-error{background:#fff1df;color:#b35d00;border-radius:50%}
+@keyframes tsf-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.tsf-load-spinner{animation:none;border-style:dotted}}
 </style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
@@ -2775,9 +2784,13 @@ function drawKpis(){
  const inProcess=clasificacion?clasificacion.enProceso:statCount(['EN PROCESO','EN TRÁMITE','EN TRAMITE']);
  const disb=clasificacion?clasificacion.desembolsadas:statCount(['DESEMBOLSAD']);
  const pending=clasificacion?clasificacion.pendientes:filas.filter(tsfFilaSinAsignacion).length;
- const historyPending=(mIdx===0&&spPreview.historyLoading)||(mIdx===1&&trackingSp.historyLoading);
+ const remoteKpiStore=tsfRemoteStores[mIdx];
+ const historyPending=(mIdx===0&&(spPreview.loading||spPreview.historyLoading))||
+   ([1,6].includes(mIdx)&&(trackingSp.loading||trackingSp.historyLoading))||
+   (Boolean(remoteKpiStore)&&(remoteKpiStore.loading||remoteKpiStore.historyLoading||(!remoteKpiStore.historyDone&&!remoteKpiStore.historyError)));
+ const historyFailed=mIdx===0?Boolean(spPreview.historyError):[1,6].includes(mIdx)?Boolean(trackingSp.historyError):Boolean(remoteKpiStore?.historyError||remoteKpiStore?.error);
  const numbers=[[historyPending?'Registros cargados':'Total registros',total,'layers','yellow'],['En proceso',inProcess,'activity',''],['Desembolsadas',disb,'check','green'],['Sin asignación',pending,'alert',pending?'red':'green']];
- document.getElementById('kpis').innerHTML=numbers.map(([title,num,ico,tone])=>`<div class="kpi"><div class="kpi-icon ${tone}">${ic(ico,20)}</div><div><div class="kpilabel">${title}</div><div class="kpivalue">${num}</div></div></div>`).join('');
+ document.getElementById('kpis').innerHTML=numbers.map(([title,num,ico,tone],index)=>`<div class="kpi"><div class="kpi-icon ${tone}">${ic(ico,20)}</div><div><div class="kpilabel">${title}</div><div class="kpivalue">${num}</div></div>${index===0?(historyFailed?'<span class="tsf-load-status tsf-load-error" title="Histórico incompleto. Revisa el mensaje del módulo.">!</span>':historyPending?'<span class="tsf-load-status tsf-load-spinner" role="status" aria-label="Cargando registros restantes" title="Todavía se están cargando registros"></span>':'<span class="tsf-load-status tsf-load-complete" title="Histórico completo">✓</span>'):''}</div>`).join('');
  document.getElementById('pendingChip').textContent=pending+' sin asignación';
  document.getElementById('pendingOnly').textContent=pendingOnly?'Mostrar todos':'Ver por atender';
  document.getElementById('pendingOnly').title='Ver operaciones en proceso y sin asignación';
@@ -3913,8 +3926,10 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
         try{
           let batches=0;
           while(t.nextCursor&&token===t.request&&batches<TSF_REMOTE_HISTORY_LIMIT){
-            // Dejar de consultar cuando se abandona el módulo; retomar en la siguiente visita.
-            if(!permitirOculto&&(mIdx!==i||document.hidden))break;
+            // Las consultas ocultas ceden prioridad inmediatamente al módulo activo.
+            if(document.hidden)break;
+            if(!permitirOculto&&mIdx!==i)break;
+            if(permitirOculto&&isTsfRemoteIndex()&&mIdx!==i)break;
             const prev=t.nextCursor;
             const raw=await tsfRemoteRequest(i,c.pagina,{cursor:prev});
             if(token!==t.request)return;
@@ -3940,6 +3955,8 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
             t.historyLoading=false;
             t.historyStarted=!!t.historyDone;
             tsfRemotePaint(i);
+            // Cuando un histórico termina, activar la siguiente precarga.
+            if(typeof tsfImpulsarPrecarga==='function')tsfImpulsarPrecarga();
           }
         }
       })();
@@ -4016,33 +4033,62 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       }
       if(!t.historyDone)throw new Error('Histórico no completado de '+c.lista);
     }
-    // Igual que Tracking: datos recientes disponibles antes del clic.
-    // Dos líneas de precarga y sin descargar el histórico de módulos no abiertos.
+    // V18.0: TB3-TB6 precargan sus diez recientes sin intervención del usuario.
+    // El histórico se procesa en segundo plano, de forma secuencial y con
+    // preferencia para el módulo que el usuario está viendo.
     const tsfSwitchOriginal=switchModule;
+    let tsfPrecargaActiva=false,tsfPrecargaPendiente=false,tsfPrecargaPreparada=false;
+    function tsfImpulsarPrecarga(){
+      if(!tsfPrecargaPreparada||tsfPrecargaActiva||tsfPrecargaPendiente||document.hidden)return;
+      tsfPrecargaPendiente=true;
+      setTimeout(()=>{tsfPrecargaPendiente=false;void tsfPrecargarHistoricosV180();},250);
+    }
     switchModule=function(idx){
       tsfSwitchOriginal(idx);
       if(isTsfRemoteIndex(idx)){
         void tsfCargarListaModulo(idx).then(()=>{
-          if(mIdx===idx)void tsfCargarHistorial(idx);
+          if(mIdx===idx)void tsfCargarHistorial(idx).finally(tsfImpulsarPrecarga);
         });
-      }
+      }else tsfImpulsarPrecarga();
     };
-    // V12.2: evitar que TB3-TB6 compitan con las cargas iniciales de Gestión y Tracking.
-    // Cuando ambos módulos principales terminan, precargar TB3-TB6 UNO POR UNO.
-    // Si el usuario abre otro módulo, detener la precarga (su consulta es prioritaria).
-    // Si algún flujo falla, no saturar Power Automate con otros intentos automáticos.
-    async function tsfPrecargarRemotosV122(cargaPrincipal){
-      await cargaPrincipal;
-      await new Promise(resolve=>setTimeout(resolve,1500));
-      for(const idx of [2,3,4,5]){
-        if(document.hidden||isTsfRemoteIndex()||tsfSyncBloqueado())break;
-        const store=tsfRemoteStores[idx];
-        if(!store||store.loaded||store.loading)continue;
-        await tsfCargarListaModulo(idx,{prefetch:true});
-        if(store.error)break;
-        await new Promise(resolve=>setTimeout(resolve,500));
-      }
+    async function tsfPrecargarHistoricosV180(){
+      if(tsfPrecargaActiva||!tsfPrecargaPreparada||document.hidden)return;
+      tsfPrecargaActiva=true;
+      try{
+        for(const idx of [2,3,4,5]){
+          if(document.hidden||tsfSyncBloqueado())break;
+          // Si se abre otro módulo remoto, darle preferencia exclusiva.
+          if(isTsfRemoteIndex()&&mIdx!==idx)break;
+          const t=tsfRemoteStores[idx];
+          if(!t.loaded){
+            await tsfCargarListaModulo(idx,{prefetch:true});
+            if(t.error)continue; // Una lista fallida no bloquea las demás.
+          }
+          if(!t.loaded||t.historyDone||t.historyError)continue;
+          if(t.historyLoading){await t.historyPromise;continue;}
+          await tsfCargarHistorial(idx,{permitirOculto:true});
+          // El historial pausado se reanudará tras cambiar de módulo.
+          if(isTsfRemoteIndex()&&mIdx!==idx)break;
+          await new Promise(resolve=>setTimeout(resolve,120));
+        }
+      }finally{tsfPrecargaActiva=false;}
     }
+    async function tsfPrecargarRemotosV180(cargaPrincipal){
+      // loadSpPreview y loadTrackingSp terminan tras mostrar los 10 recientes,
+      // mientras sus históricos siguen descargándose.
+      await cargaPrincipal;
+      tsfPrecargaPreparada=true;
+      // Primera vuelta: descargar los 10 recientes de TODAS las tablas.
+      for(const idx of [2,3,4,5]){
+        if(document.hidden||tsfSyncBloqueado())break;
+        const t=tsfRemoteStores[idx];
+        if(!t.loaded&&!t.loading)await tsfCargarListaModulo(idx,{prefetch:true});
+      }
+      tsfImpulsarPrecarga();
+    }
+    document.addEventListener('visibilitychange',()=>{
+      if(!document.hidden)tsfImpulsarPrecarga();
+    });
     // Mostrar listas reales, no los registros simulados
     spPreview.active = true;
     trackingSp.active = true;
@@ -4083,8 +4129,8 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       loadSpPreview(),
       loadTrackingSp(true)
     ]);
-    // Las tablas nuevas precargan únicamente después, de forma secuencial.
-    void tsfPrecargarRemotosV122(tsfCargaPrincipalV122);
+    // Primeros diez de cada tabla y después históricos en segundo plano.
+    void tsfPrecargarRemotosV180(tsfCargaPrincipalV122);
     
     // ==========================================
     // TSF V11.7 - SINCRONIZACION MULTIUSUARIO
