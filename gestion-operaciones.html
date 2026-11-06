@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V19.15 — Confirmaciones y alta de Tracking</title>
+<title>TSF | Operaciones V19.14 — Confirmaciones y alta de Tracking</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -523,7 +523,7 @@ body.tsf-dashboard-active .tsf-dashboard{display:block}
 @keyframes tsf-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.tsf-load-spinner{animation:none;border-style:dotted}}
 .toast.warning{background:#302a1f;border-left-color:#ffcb16}.toast.warning .toast-icon{background:#ffcb16;color:#262626}.toast-action{border:1px solid #e9d797;border-radius:7px;background:#fff7dc;color:#3c3114;font-weight:750;font-size:11px;cursor:pointer;padding:6px 12px;margin-top:9px}.toast-action:hover{background:#ffcb16}.toast-action:focus-visible{outline:2px solid #fff;outline-offset:2px}
-/* V19.15: identificación visual de la operación localizada, sin cambiar anchuras. */
+/* V19.14: identificación visual de la operación localizada, sin cambiar anchuras. */
 #dataTable tbody tr.tsf-v1914-created-row td{box-shadow:inset 0 2px 0 #c89d14,inset 0 -2px 0 #c89d14}
 </style>
 <style id="tsf-auth-style">
@@ -1219,7 +1219,7 @@ body.tsf-v150-gps #dataTable tbody td.tsf-v150-caf .tsf-v163-inherited {font-wei
 </style>
 <style id="tsf-v164-crud-style">
 body.tsf-v164-remote #newRecord{display:inline-flex!important}
-/* V19.15: botón alta de Tracking visible SOLO para el perfil edición. */
+/* V19.14: botón alta de Tracking visible SOLO para el perfil edición. */
 body.tsf-v1913-tracking:not(.tsf-lector) #newRecord{display:inline-flex!important}
 body.tsf-v1913-tracking.tsf-lector #newRecord{display:none!important}
 .tsf-v164-delete{display:block;margin:5px auto 0;font-size:10px;border:1px solid #e9c5c5;border-radius:5px;color:#9c3434;background:#fff8f8;padding:5px 7px;cursor:pointer;white-space:nowrap}
@@ -1508,7 +1508,7 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
 </style>
 
 <style id="tsf-v1911-excepcion-confirm-style">
-/* V19.15: diálogo corporativo compacto para registrar Excepciones. Solo interfaz. */
+/* V19.14: diálogo corporativo compacto para registrar Excepciones. Solo interfaz. */
 .tsf-v1911-excepcion-modal{width:min(520px,100%);max-height:min(90vh,720px);overflow-y:auto}
 .tsf-v1911-excepcion-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:9px;background:#514416;color:#ffd548}
 .tsf-v1911-excepcion-icon svg{width:21px;height:21px}
@@ -1539,12 +1539,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.15 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.14 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V19.15 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V19.14 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2378,7 +2378,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V19.15 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V19.14 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===1||mIdx===4||isTsfRemoteIndex());tsfActualizarDescripcionGestion();
@@ -3060,7 +3060,7 @@ getColumnWidth = function(column,mod,index){
  if(key.includes('ORIGEN DE FONDOS'))valueWidth=192;
  return Math.round(Math.min(/COMENTARI|DETALLE/.test(key)?275:280,Math.max(94,titleWidth,valueWidth)));
 };
-// V19.15: se recupera el formateador numérico ya definido en el portal.
+// V19.14: se recupera el formateador numérico ya definido en el portal.
 // V19.4: formato exclusivamente visual; los números originales se mantienen
 // para cálculos, edición y sincronización a SharePoint.
 function tsfDisplayNumeric(column,value,row=null){
@@ -3756,7 +3756,7 @@ function tsfConfirmarEliminacionTB2(row){
     backdrop.querySelector('.tsf-v189-delete-cancel').focus();
   });
 }
-// V19.15 — Misma confirmación que Tracking para TB3, TB4, TB5 y TB6.
+// V19.14 — Misma confirmación que Tracking para TB3, TB4, TB5 y TB6.
 // Solo presenta el diálogo; la escritura/eliminación sigue usando el ID y ETag reales.
 function tsfConfirmarEliminacionModulo(row,index,conCambios=false){
   const nombres={2:'Bienes',3:'Garantías',4:'Excepciones',5:'Modificaciones'};
@@ -4866,7 +4866,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return resultado;
     };
 
-    // V19.15: registro de Excepción verificado + sincronización progresiva con Tracking.
+    // V19.14: registro de Excepción verificado + sincronización progresiva con Tracking.
     // Se utilizan acciones existentes: REPROCESOS_CREAR / REPROCESOS_ELIMINAR y TRACKING_ACTUALIZAR.
     const tsfReproPending=new Set();
     const tsfReproRegistrados=new Set();
@@ -6366,163 +6366,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return resultado;
     }
 
-
-    // =============================================================
-    // V19.15 — FONDO CRECER (Gestión / TB1) <=> TIPO_COFIDE (Tracking / TB2)
-    // Misma operación (Title / ID_OPERACION), escrituras físicas en ambas
-    // listas con ETag y lectura posterior. No se crean registros nuevos.
-    // =============================================================
-    const TSF_V1915_TO_TRACKING_KEY='TSF_V1915_FONDO_PENDIENTE_TRACKING';
-    const TSF_V1915_TO_GESTION_KEY='TSF_V1915_FONDO_PENDIENTE_GESTION';
-    function tsfV1915ReadIds(key){
-      try{
-        const ids=JSON.parse(sessionStorage.getItem(key)||'[]');
-        return Array.isArray(ids)?ids.filter(v=>typeof v==='string'&&/^MID-\d{4}-\d{4,8}$/.test(v)).slice(0,100):[];
-      }catch{return [];}
-    }
-    const tsfV1915RetryTracking=new Set(tsfV1915ReadIds(TSF_V1915_TO_TRACKING_KEY));
-    const tsfV1915RetryGestion=new Set(tsfV1915ReadIds(TSF_V1915_TO_GESTION_KEY));
-    function tsfV1915Persist(){
-      try{
-        sessionStorage.setItem(TSF_V1915_TO_TRACKING_KEY,JSON.stringify([...tsfV1915RetryTracking].slice(0,100)));
-        sessionStorage.setItem(TSF_V1915_TO_GESTION_KEY,JSON.stringify([...tsfV1915RetryGestion].slice(0,100)));
-      }catch{}
-    }
-    function tsfV1915Normalize(value){
-      const raw=String(value??'').trim();
-      const key=raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ');
-      if(key==='FONDEO')return {key:'FONDEO',gestion:'Fondeo',tracking:'Fondeo'};
-      if(key==='COBERTURA')return {key:'COBERTURA',gestion:'Cobertura',tracking:'Cobertura'};
-      if(key==='FONDEO + COBERTURA'||key==='FONDEO+COBERTURA')
-        return {key:'FONDEO+COBERTURA',gestion:'Fondeo + Cobertura',tracking:'Fondeo + Cobertura'};
-      if(!key||['COMPLETAR','NO APLICA','N/A','-','—','SELECCIONAR...'].includes(key))
-        return {key:'NO APLICA',gestion:'No aplica',tracking:''};
-      return null; // No sobreescribir valores históricos desconocidos.
-    }
-    function tsfV1915ChangeLocal(index,id,field,value,verified){
-      const store=index===0?spPreview:trackingSp;
-      const edited=index===0?spEdits:trackingSp.edits;
-      if(edited.get(id)?.has(field))return;
-      const live=store.rows.find(r=>keyID(r)===id);
-      if(!live)return;
-      live[field]=String(value??'');
-      if(!live.__spBaseline)live.__spBaseline={};
-      live.__spBaseline[field]=String(value??'');
-      if(verified?.__spEtag)live.__spEtag=verified.__spEtag;
-    }
-    async function tsfV1915ConfirmValue(reader,id,column,expected){
-      for(let round=0;round<3;round++){
-        if(round)await new Promise(resolve=>setTimeout(resolve,500*round));
-        const row=(await reader([id])).get(id);
-        const normalized=tsfV1915Normalize(row?.[column]);
-        if(row&&normalized?.key===expected)return row;
-      }
-      return null;
-    }
-    // dir='tracking': Gestión -> Tracking. dir='gestion': Tracking -> Gestión.
-    async function tsfV1915SyncFondo(dir,ids,{notify=true}={}){
-      const result={actualizados:[],sinCambios:[],pendientes:[]};
-      const destino=dir==='tracking'?tsfV1915RetryTracking:tsfV1915RetryGestion;
-      const sourceReader=dir==='tracking'?tsfLeerFilasGestion:tsfLeerFilasTracking;
-      const targetReader=dir==='tracking'?tsfLeerFilasTracking:tsfLeerFilasGestion;
-      const sourceField=dir==='tracking'?'FONDO CRECER':'TIPO_COFIDE';
-      const targetField=dir==='tracking'?'TIPO_COFIDE':'FONDO CRECER';
-      const internal=dir==='tracking'?'field_27':'field_11';
-      const action=dir==='tracking'?'TRACKING_ACTUALIZAR':'ACTUALIZAR';
-      const targetIndex=dir==='tracking'?1:0;
-      const candidatos=[...new Set((ids||[]).filter(v=>/^MID-\d{4}-\d{4,8}$/.test(String(v))))];
-      if(!candidatos.length)return result;
-      tsfWaitBegin('tsf-v1915-fondo','Enlazando el fondeo','Comprobando los valores en ambos módulos…');
-      try{
-        for(const id of candidatos){
-          try{
-            // Una edición local del destino tiene prioridad: no se pisa.
-            const localEdits=targetIndex===0?spEdits:trackingSp.edits;
-            if(localEdits.get(id)?.has(targetField))throw new Error('Existe una edición pendiente del mismo campo en el módulo de destino.');
-            const origen=(await sourceReader([id])).get(id);
-            if(!origen)throw new Error('No se pudo localizar el registro original.');
-            const nuevo=tsfV1915Normalize(origen[sourceField]);
-            if(!nuevo)throw new Error('El valor no corresponde a Fondeo, Cobertura, Fondeo + Cobertura o No aplica. Corrige la selección.');
-            const actual=(await targetReader([id])).get(id);
-            if(!actual?.__spEtag)throw new Error('No se pudo comprobar la versión actual del registro vinculado.');
-            const existente=tsfV1915Normalize(actual[targetField]);
-            if(existente?.key===nuevo.key){
-              destino.delete(id);
-              result.sinCambios.push(id);
-              tsfV1915ChangeLocal(targetIndex,id,targetField,actual[targetField],actual);
-              continue;
-            }
-            const nuevoValor=dir==='tracking'?nuevo.tracking:nuevo.gestion;
-            const respuesta=await trackingApi({accion:action,id_operacion:id,campos:{[internal]:nuevoValor},etag:actual.__spEtag});
-            if(respuesta?.ok!==true)throw new Error('El servidor no confirmó la actualización.');
-            // Evitar una confirmación falsa si la escritura tarda o no se aplicó.
-            const comprobado=await tsfV1915ConfirmValue(targetReader,id,targetField,nuevo.key);
-            if(!comprobado)throw new Error('El cambio todavía no aparece confirmado.');
-            destino.delete(id);
-            result.actualizados.push(id);
-            tsfV1915ChangeLocal(targetIndex,id,targetField,comprobado[targetField],comprobado);
-          }catch(error){
-            destino.add(id);
-            result.pendientes.push({id,detail:String(error?.message||error).slice(0,230)});
-          }
-        }
-      }finally{
-        tsfWaitEnd('tsf-v1915-fondo');
-        tsfV1915Persist();
-        updateDirtyLabel();
-        if([0,1,6].includes(mIdx) && !document.activeElement?.matches?.('.cell-input:not([readonly]),.tsf-cell-select'))
-          tableRender();
-      }
-      if(notify){
-        if(result.pendientes.length){
-          const primera=result.pendientes[0];
-          console.warn('TSF V19.15: fondeo pendiente de sincronizar',result.pendientes);
-          toast(`El fondeo está guardado en el módulo de origen, pero falta actualizar el módulo vinculado para ${primera.id}. No lo ingreses otra vez.`,
-            'warning','Actualización pendiente',{label:'Reintentar',onClick:()=>tsfV1915SyncFondo(dir,[...destino])});
-        }else if(result.actualizados.length){
-          toast(result.actualizados.length===1
-            ?`El fondeo de ${result.actualizados[0]} ya está actualizado en Gestión y Tracking.`
-            :`El fondeo de ${result.actualizados.length} operaciones se actualizó en ambos módulos.`,
-            'success','Fondeo sincronizado');
-        }else if(result.sinCambios.length){
-          toast('El fondeo ya coincide en Gestión y Tracking.','success','Datos verificados');
-        }
-      }
-      return result;
-    }
-
-
-    // Conciliación acotada de datos guardados antes de instalar V19.15.
-    // Solo revisa filas recientes visibles donde Tracking tiene una opción válida
-    // y FONDO CRECER todavía está vacío. Nunca sustituye valores ya informados.
-    let tsfV1915RetroTries=0;
-    let tsfV1915RetroRunning=false;
-    const tsfV1915RetroTimer=setInterval(async()=>{
-      if(++tsfV1915RetroTries>18){clearInterval(tsfV1915RetroTimer);return;}
-      if(tsfV1915RetroRunning||window.TSF_SESSION_ROLE!=='EDICION'||
-         !spPreview.active||!trackingSp.active||spPreview.loading||trackingSp.loading||
-         spSaving||trackingSp.saving||spEdits.size||trackingSp.edits.size)return;
-      const rows=trackingSp.rows.slice(0,10);
-      const candidatos=[];
-      for(const fila of rows){
-        const id=keyID(fila);
-        const maestro=spPreview.rows.find(r=>keyID(r)===id);
-        if(!maestro)continue;
-        const origen=tsfV1915Normalize(fila.TIPO_COFIDE);
-        const destino=tsfV1915Normalize(maestro['FONDO CRECER']);
-        if(origen&&origen.key!=='NO APLICA' && destino?.key==='NO APLICA'&&
-           !spEdits.get(id)?.has('FONDO CRECER')&&!trackingSp.edits.get(id)?.has('TIPO_COFIDE')){
-          candidatos.push(id);
-        }
-      }
-      if(!candidatos.length)return;
-      clearInterval(tsfV1915RetroTimer);
-      tsfV1915RetroRunning=true;
-      try{await tsfV1915SyncFondo('gestion',candidatos.slice(0,3));}
-      catch(error){console.warn('TSF fondeo: conciliación reciente pendiente',error);}
-      finally{tsfV1915RetroRunning=false;}
-    },3500);
-
     async function tsfGuardarTrackingConConflictos(soloGestion=false){
       if(trackingSp.saving)return;
       if(window.TSF_SESSION_ROLE!=='EDICION')return toast('Perfil sin edición.');
@@ -6538,7 +6381,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       updateDirtyLabel();
       tsfWaitBegin('guardar-tracking-seguro','Verificando versiones','Comparando cambios con TB2 - Tracking Operativo…');
       let guardados=0,observados=0,coincidentes=0,error='';
-      const fondoConfirmados=new Set();
       try{
         const actuales=await tsfLeerFilasTracking(ids);
         for(const id of ids){
@@ -6600,7 +6442,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
               if(col===TSF_ESTADO_COLUMNA)tsfEstadoEditadoEnGestion.delete(id);
             }
             guardados++;
-            if(aprobados.has('TIPO_COFIDE'))fondoConfirmados.add(id);
           }
           if(!changes.size)trackingSp.edits.delete(id);
           // Se vuelve a comprobar ETag real antes de futuras escrituras.
@@ -6612,19 +6453,13 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         tsfActualizarEstadosGestion();
         updateDirtyLabel();
         if([0,1,6].includes(mIdx))draw();
-        // Primero verificar el guardado físico en TB2; después llevar el fondeo a TB1.
-        // Si otra celda falla, sincronizar solamente las ya confirmadas.
-        if(fondoConfirmados.size){
-          await tsfV1915SyncFondo('gestion',[...fondoConfirmados],{notify:!error});
-        }
         if(error){
           toast('No fue posible confirmar todos los cambios de Tracking. Los datos pendientes se conservan para intentarlo nuevamente.', 'warning', 'Revisar guardado');
           if(!/cancelado/i.test(error))await tsfSaveReviewShowFailures('Tracking Operativo · TB2',[error]);
         }else if(observados>0 || trackingSp.edits.size>0){
           toast('Algunos cambios necesitan revisión. Los valores no confirmados continúan en pantalla.', 'warning', 'Guardado parcial');
         }else if(guardados || coincidentes){
-          if(!fondoConfirmados.size)
-            toast('Los datos fueron almacenados correctamente en Tracking Operativo.', 'success', 'Cambios guardados');
+          toast('Los datos fueron almacenados correctamente en Tracking Operativo.', 'success', 'Cambios guardados');
         }
         // Sin recargas destructivas: el siguiente delta actualiza los ETags.
       }
@@ -6858,7 +6693,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return {creados,existentes,pendientes,errores};
     }
 
-    // V19.15: alta manual buscando por ID_OPERACION o CAF. La creación continúa
+    // V19.14: alta manual buscando por ID_OPERACION o CAF. La creación continúa
     // por ID_OPERACION para evitar duplicados y conserva el flujo TRACKING_CREAR.
     function tsfV1914SearchValue(value){return String(value??'').trim().toUpperCase()}
     function tsfV1914MatchingCandidates(value,rows){
@@ -7009,7 +6844,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       input.focus();
     };
 
-    // V19.15: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
+    // V19.14: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
     // VAF no existe físicamente en TB2: se visualiza siempre desde el maestro TB1.
     const TSF_V199_MONTH_RETRY_KEY='TSF_MES_PENDIENTES_TB2';
     const tsfV199MesSyncRetry=new Set((()=>{
@@ -7080,7 +6915,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return resultado;
     }
 
-    // V19.15 — CAF: Gestión es la fuente única. Cada cambio confirmado se refleja
+    // V19.14 — CAF: Gestión es la fuente única. Cada cambio confirmado se refleja
     // físicamente en Tracking (field_5) usando ID_OPERACION y ETag, sin crear duplicados.
     const TSF_V1910_CAF_RETRY_KEY='TSF_V1910_CAF_PENDIENTE';
     const tsfV1910CafRetry=new Set((()=>{
@@ -7188,7 +7023,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
          const operacionesEditadas=[...spEdits.keys()];
          const mesesEditados=operacionesEditadas.filter(id=>spEdits.get(id)?.has('MES DE COLOCACIÓN'));
          const cafesEditados=operacionesEditadas.filter(id=>spEdits.get(id)?.has('CAF'));
-         const fondosEditados=operacionesEditadas.filter(id=>spEdits.get(id)?.has('FONDO CRECER'));
          if(spEdits.size)await tsfGuardarGestionConConflictos();
          const confirmadas=operacionesEditadas.filter(id=>!spEdits.has(id));
          const rechazadas=operacionesEditadas.filter(id=>spEdits.has(id));
@@ -7215,14 +7049,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
              toast('El CAF se guardó en Gestión. Para que aparezca también en Tracking, completa Expediente y Analista operativo y pulsa «Guardar cambios».',
                'info','Falta completar la operación');
            }
-         }
-         // Replicar FONDO CRECER en TIPO_COFIDE solo tras guardar Gestión.
-         const fondosConfirmados=[...new Set([
-           ...fondosEditados.filter(id=>!spEdits.get(id)?.has('FONDO CRECER')),
-           ...tsfV1915RetryTracking
-         ])].filter(id=>!spEdits.get(id)?.has('FONDO CRECER'));
-         if(fondosConfirmados.length){
-           await tsfV1915SyncFondo('tracking',fondosConfirmados);
          }
          const mesesConfirmados=[...new Set([...mesesEditados.filter(id=>confirmadas.includes(id)),...tsfV199MesSyncRetry])]
            .filter(id=>!spEdits.get(id)?.has('MES DE COLOCACIÓN'));
@@ -7462,7 +7288,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       if(window.TSF_SESSION_ROLE!=='EDICION')return toast('No tienes permiso para modificar datos.','warning','Solo consulta');
       const teniaGestion=spEdits.size>0;
       const teniaTracking=[1,6].includes(mIdx)&&trackingSp.edits.size>0;
-      const fondosEnTracking=[1,6].includes(mIdx)?[...trackingSp.edits].filter(([id,changes])=>changes.has('TIPO_COFIDE')).map(([id])=>id):[];
       if(spEdits.size)await tsfGuardarGestionConConflictos();
       if(spEdits.size){
         // No anunciar un éxito si alguna escritura aún no está confirmada.
@@ -7474,16 +7299,8 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       if(spEdits.size || ([1,6].includes(mIdx)&&trackingSp.edits.size)){
         // Conservar el aviso de error/parcial emitido por el guardado específico.
       }else if(teniaGestion||teniaTracking){
-        const pendientesFondo=fondosEnTracking.filter(id=>tsfV1915RetryGestion.has(id));
-        if(pendientesFondo.length){
-          toast('Tus cambios de Tracking están guardados. La actualización del fondeo en Gestión está pendiente; no vuelvas a escribir el valor.',
-            'warning','Vinculación pendiente',{label:'Reintentar',onClick:()=>tsfV1915SyncFondo('gestion',pendientesFondo)});
-        }else if(fondosEnTracking.length){
-          toast('El fondeo está almacenado correctamente en Gestión y Tracking.','success','Fondeo sincronizado');
-        }else{
-          toast(`Los datos fueron almacenados correctamente en ${modules[mIdx]?.name||'este módulo'}.`,
-            'success','Datos guardados');
-        }
+        toast(`Los datos fueron almacenados correctamente en ${modules[mIdx]?.name||'este módulo'}.`,
+          'success','Datos guardados');
       }
       tsfV127Reflejar();
       updateDirtyLabel();
@@ -7500,7 +7317,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V19.15 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V19.14 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -9473,7 +9290,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return original;
     };
-    // V19.15: permitir reintentar CAF sin volver a escribirlo.
+    // V19.14: permitir reintentar CAF sin volver a escribirlo.
     const tsfV1910DirtyPrev=updateDirtyLabel;
     updateDirtyLabel=function(...args){
       const out=tsfV1910DirtyPrev.apply(this,args);
@@ -9483,14 +9300,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         const btn=document.getElementById('saveBtn');
         if(label)label.textContent='· '+n;
         if(btn){btn.disabled=spSaving||trackingSp.saving||tsfGuardandoGestionYTracking;btn.title='Hay un CAF pendiente de reflejar en Tracking. Pulsa Guardar cambios para reintentar.';}
-      }
-      // El botón sigue disponible para completar un fondeo guardado parcialmente.
-      const pendFondo=index===0?tsfV1915RetryTracking.size:([1,6].includes(index)?tsfV1915RetryGestion.size:0);
-      if(pendFondo && window.TSF_SESSION_ROLE==='EDICION'){
-        const lbl=document.getElementById('dirtyCount');
-        const btn=document.getElementById('saveBtn');
-        if(lbl && !String(lbl.textContent||'').trim())lbl.textContent='· '+pendFondo+' vínculo(s) pendientes';
-        if(btn){btn.disabled=false;btn.title='Hay fondeos pendientes de actualizar en el módulo relacionado. Pulsa Guardar cambios para reintentar.';}
       }
       return out;
     };
@@ -9503,8 +9312,6 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         const items=tsfSaveReviewCollect();
         if(!items.length){
           if(Number(mIdx)===0&&(tsfTrackingRetryIds.size||tsfV199MesSyncRetry.size||tsfV1910CafRetry.size))return tsfGuardarAmbosGestion();
-          if(Number(mIdx)===0&&tsfV1915RetryTracking.size)return tsfV1915SyncFondo('tracking',[...tsfV1915RetryTracking]);
-          if([1,6].includes(Number(mIdx))&&tsfV1915RetryGestion.size)return tsfV1915SyncFondo('gestion',[...tsfV1915RetryGestion]);
           return toast('No hay cambios pendientes para guardar.');
         }
 
@@ -9544,7 +9351,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return result;
     };
-    // V19.15: si Gestión carga en segundo plano mientras se observa Tracking,
+    // V19.14: si Gestión carga en segundo plano mientras se observa Tracking,
     // refrescar el VAF derivado sin interrumpir a quien está editando una celda.
     const tsfV199SafePaintAnterior=tsfSafePaint;
     tsfSafePaint=function(index){
