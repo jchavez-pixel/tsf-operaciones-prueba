@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V19.11 — Sesión estable y corrección de visualización</title>
+<title>TSF | Operaciones V19.12 — Sesión estable y corrección de visualización</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -1502,7 +1502,7 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
 </style>
 
 <style id="tsf-v1911-excepcion-confirm-style">
-/* V19.11: diálogo corporativo compacto para registrar Excepciones. Solo interfaz. */
+/* V19.12: diálogo corporativo compacto para registrar Excepciones. Solo interfaz. */
 .tsf-v1911-excepcion-modal{width:min(520px,100%);max-height:min(90vh,720px);overflow-y:auto}
 .tsf-v1911-excepcion-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:9px;background:#514416;color:#ffd548}
 .tsf-v1911-excepcion-icon svg{width:21px;height:21px}
@@ -1533,12 +1533,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.11 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.12 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V19.11 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V19.12 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2372,7 +2372,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V19.11 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V19.12 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===4||isTsfRemoteIndex());tsfActualizarDescripcionGestion();
@@ -3054,7 +3054,7 @@ getColumnWidth = function(column,mod,index){
  if(key.includes('ORIGEN DE FONDOS'))valueWidth=192;
  return Math.round(Math.min(/COMENTARI|DETALLE/.test(key)?275:280,Math.max(94,titleWidth,valueWidth)));
 };
-// V19.11: se recupera el formateador numérico ya definido en el portal.
+// V19.12: se recupera el formateador numérico ya definido en el portal.
 // V19.4: formato exclusivamente visual; los números originales se mantienen
 // para cálculos, edición y sincronización a SharePoint.
 function tsfDisplayNumeric(column,value,row=null){
@@ -3216,7 +3216,7 @@ const specialSelect =
     ((([1,6].includes(mIdx) && ['ID_OPERACION','RUC','CLIENTE','FFNN','ANALISTA OPERATIVO','PRODUCTO','CAF'].includes(col)) || ([2,3,4,5].includes(mIdx) && !editable && ['CAF','PRODUCTO','RUC','CLIENTE'].includes(col)))
       ? `<span class="tsf-v163-inherited" title="${esc(val||'Sin información')}">${esc(tsfDisplayNumeric(col,val,row)||'—')}</span>`
       : `<div class="${dateField?'tsf-date-cell':'tsf-text-cell'}">${dateField&&editable&&mIdx!==0?`<input type="checkbox" class="tsf-date-now" data-id="${esc(keyID(row))}" data-col="${i}" title="Colocar fecha y hora actual (hora de Lima); luego puedes editarla" aria-label="Poner fecha y hora actual en ${esc(col)}"/>`:''}<input aria-label="${esc(col)}" aria-readonly="${!editable}" class="cell-input ${!editable?'readonly':''} ${(isTrackingSp()?trackingSp.edits.get(keyID(row))?.has(col):isSpPreview()?spEdits.get(keyID(row))?.has(col):dirty.has(m.key+'|'+keyID(row)+'|'+col))?'changed':''}" data-id="${esc(keyID(row))}" data-col="${i}" ${!editable?'readonly tabindex="-1"':''} value="${esc(dateField?minuteDisplay(val):tsfDisplayNumeric(col,val,row))}" placeholder="${editable?'Completar':'—'}"/></div>`) )}</td>`;
- }).join('')}<td style="text-align:center"><button class="openrow" data-detail="${esc(keyID(row))}">${ic('eye',13)} Ver</button>${mIdx===1&&window.TSF_SESSION_ROLE==='EDICION'?`<button type="button" class="tsf-v164-delete" data-tracking-delete="${esc(String(row.__spId??''))}" aria-label="Eliminar fila de Tracking" title="Eliminar únicamente esta fila de TB2 en SharePoint">${ic('trash-2',12)} Eliminar</button>`:''}${isTsfRemoteIndex()&&window.TSF_SESSION_ROLE==='EDICION'?`<button type="button" class="tsf-v164-delete" data-remote-delete="${esc(row.__spId)}" title="Eliminar únicamente este registro de ${esc(m.name)}">${ic('trash-2',12)} Eliminar</button>`:''}</td>${mIdx===1?`<td class="tsf-repro-cell" style="width:104px;text-align:center"><input type="checkbox" class="tsf-repro-check" data-repro-reg="${esc(keyID(row))}" aria-label="Registrar excepción para ${esc(keyID(row))}" title="Marcar para registrar una excepción en TB5" ${tsfRemoteStores[4]?.rows.some(rr=>keyID(rr)===keyID(row)&&String(rr.CAF??'').trim()===String(row.CAF??'').trim())?'checked disabled':''}/></td>`:''}</tr>`).join('');
+ }).join('')}<td style="text-align:center"><button class="openrow" data-detail="${esc(keyID(row))}">${ic('eye',13)} Ver</button>${mIdx===1&&window.TSF_SESSION_ROLE==='EDICION'?`<button type="button" class="tsf-v164-delete" data-tracking-delete="${esc(String(row.__spId??''))}" aria-label="Eliminar fila de Tracking" title="Eliminar únicamente esta fila de TB2 en SharePoint">${ic('trash-2',12)} Eliminar</button>`:''}${isTsfRemoteIndex()&&window.TSF_SESSION_ROLE==='EDICION'?`<button type="button" class="tsf-v164-delete" data-remote-delete="${esc(row.__spId)}" title="Eliminar únicamente este registro de ${esc(m.name)}">${ic('trash-2',12)} Eliminar</button>`:''}</td>${mIdx===1?`<td class="tsf-repro-cell" style="width:104px;text-align:center"><input type="checkbox" class="tsf-repro-check" data-repro-reg="${esc(keyID(row))}" aria-label="Registrar excepción para ${esc(keyID(row))}" title="Marcar para registrar una excepción en TB5" ${tsfRemoteStores[4]?.rows.some(rr=>String(rr.ID_OPERACION??'').trim()===String(row.ID_OPERACION??'').trim()&&String(rr.CAF??'').trim()===String(row.CAF??'').trim())?'checked disabled':''}/></td>`:''}</tr>`).join('');
  document.getElementById('dataTable').innerHTML=head+'<tbody>'+body+'</tbody>';
  const empty=document.getElementById('emptyState');
   empty.style.display=all.length?'none':'block';
@@ -4812,7 +4812,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return resultado;
     };
 
-    // Alta de Excepción: crear en TB5 mediante Flujo 2 y marcar SÍ en TB2 mediante Flujo 1.
+    // V19.12: registro de Excepción verificado + sincronización progresiva con Tracking.
     // Se utilizan acciones existentes: REPROCESOS_CREAR / REPROCESOS_ELIMINAR y TRACKING_ACTUALIZAR.
     const tsfReproPending=new Set();
     const tsfReproRegistrados=new Set();
@@ -4903,169 +4903,327 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       tsfReproFieldCache=field;
       return field;
     }
+    // Una creación y su marca en Tracking son DOS confirmaciones distintas.
+    // Nunca deshacer ni repetir un alta confirmada en Excepciones por un fallo posterior.
+    const tsfReproVinculosPendientes = new Map();
+    const tsfReproSyncEnCurso = new Set();
+    const tsfReproClave=(id,caf)=>String(id||'').trim()+'|'+String(caf||'').trim();
+    const tsfReproPendientesStorageKey='TSF_EXCEPCIONES_PENDIENTES_V1912';
+    function tsfReproPersistirPendientes(){
+      try{
+        sessionStorage.setItem(tsfReproPendientesStorageKey,JSON.stringify(
+          [...tsfReproVinculosPendientes.values()].map(x=>({...x,fecha:x.fecha||Date.now()}))
+        ));
+      }catch(_){} // No bloquear las operaciones si el navegador limita el almacenamiento.
+    }
+    function tsfReproEstablecerPendiente(id,caf,datos={}){
+      const clave=tsfReproClave(id,caf);
+      tsfReproVinculosPendientes.set(clave,{id,caf,fecha:Date.now(),...datos});
+      tsfReproPersistirPendientes();
+    }
+    function tsfReproLimpiarPendiente(id,caf){
+      tsfReproVinculosPendientes.delete(tsfReproClave(id,caf));
+      tsfReproPersistirPendientes();
+    }
+    try{
+      const stored=JSON.parse(sessionStorage.getItem(tsfReproPendientesStorageKey)||'[]');
+      if(Array.isArray(stored))for(const item of stored){
+        if(!item||typeof item.id!=='string'||typeof item.caf!=='string'||
+          Date.now()-Number(item.fecha||0)>24*3600*1000)continue;
+        tsfReproVinculosPendientes.set(tsfReproClave(item.id,item.caf),item);
+      }
+    }catch(_){}
+    const tsfReproPausa=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
+    function tsfReproExiste(id,caf){
+      return tsfRemoteStores[4]?.rows.find(r=>
+        String(r.ID_OPERACION??'').trim()===id&&String(r.CAF??'').trim()===String(caf??'').trim()
+      )||null;
+    }
+    function tsfReproRefrescarVista(){
+      if(mIdx===4||mIdx===1)tableRender();
+    }
+    function tsfReproAlmacenarConfirmada(id,caf,spId,etag,datos={}){
+      if(!Number.isSafeInteger(Number(spId))||Number(spId)<1)return null;
+      const store=tsfRemoteStores[4];
+      if(!store)return null;
+      // Inserción local SOLO si el servidor confirmó ID real del registro creado.
+      // La siguiente sincronización sustituye este resumen por los campos reales.
+      const existente=store.rows.find(r=>Number(r.__spId)===Number(spId));
+      const fila={...datos,...existente,
+        ID_OPERACION:id,CAF:caf,__spId:Number(spId),__spEtag:String(etag||existente?.__spEtag||''),
+        __tsfRecordKey:'SP:4:'+Number(spId)};
+      store.rows=tsfRemoteCombinar(store.rows,[fila]);
+      store.loaded=true;store.lastSync=new Date();
+      tsfReproRegistrados.add(tsfReproClave(id,caf));
+      tsfReproRefrescarVista();
+      return fila;
+    }
+    async function tsfReproBuscarReciente(id,caf){
+      const t=tsfRemoteStores[4];
+      // Consultar registros reales, no asumir que la respuesta CREAR ya es visible.
+      const raw=await tsfRemoteRequest(4,TSF_REMOTE_LISTS[4].pagina,{cursor:''});
+      const recientes=tsfRemoteConvertir(4,raw);
+      t.rows=tsfRemoteCombinar(t.rows,recientes);
+      t.lastSync=new Date();
+      tsfReproRefrescarVista();
+      return tsfReproExiste(id,caf);
+    }
+    async function tsfReproEsperarConfirmacion(id,caf,rondas=5){
+      for(let i=0;i<rondas;i++){
+        if(i)await tsfReproPausa([0,1100,2500,4000,6000][i]||6000);
+        try{
+          const encontrada=await tsfReproBuscarReciente(id,caf);
+          if(encontrada)return encontrada;
+        }catch(e){console.warn('[TSF] Excepciones: consulta temporal:',String(e?.message||e));}
+      }
+      return null;
+    }
+    async function tsfReproMarcarTracking(id){
+      // Obtener el ETag más reciente en cada intento, no utilizar una versión antigua.
+      const field=await tsfReproGetField();
+      const internal=trackingFieldName(field);
+      if(!internal)throw new Error('No se pudo identificar el indicador de Excepciones.');
+      const valor=trackingFieldType(field)==='Boolean'?true:'SÍ';
+      let ultimoError=null;
+      for(let intento=0;intento<2;intento++){
+        try{
+          const vigentes=await tsfLeerFilasTracking([id]);
+          const fila=vigentes.get(id);
+          if(!fila?.__spId||!fila?.__spEtag)throw new Error('No se pudo verificar la versión actual de la operación.');
+          const r=await trackingApi({
+            accion:'TRACKING_ACTUALIZAR',id_operacion:id,
+            campos:{[internal]:valor},etag:String(fila.__spEtag)
+          });
+          if(r?.ok===false)throw new Error(String(r?.error||r?.mensaje||'No se confirmó la actualización.'));
+          const local=trackingSp.rows.find(x=>keyID(x)===id);
+          if(local){
+            local.__spEtag=String(r?.etag||fila.__spEtag);
+            local.__tsfExcepcionVinculada=true;
+          }
+          return true;
+        }catch(error){
+          ultimoError=error;
+          // Reintentar solo la marca, NUNCA la creación. Un intento adicional ante
+          // conflictos de versión o confirmaciones transitorias, con ETag fresco.
+          if(intento===0)await tsfReproPausa(700);
+        }
+      }
+      throw ultimoError||new Error('No se confirmó la actualización en Tracking.');
+    }
+    function tsfReproAvisarPendiente(id,caf,detalle=''){
+      const clave=tsfReproClave(id,caf);
+      const resumen=detalle?` La actualización de Tracking continúa pendiente.`:'';
+      toast(`La excepción de ${id} ya quedó registrada.${resumen} No vuelvas a registrarla.`,
+        'warning','Excepción registrada · vinculación pendiente',{
+          label:'Revisar estado',onClick:()=>{void tsfReproCompletarVinculo(id,caf,true)}
+        });
+      tsfReproEstablecerPendiente(id,caf,{registrada:true});
+    }
+    async function tsfReproCompletarVinculo(id,caf,avisar=true){
+      const clave=tsfReproClave(id,caf);
+      if(tsfReproSyncEnCurso.has(clave))return false;
+      tsfReproSyncEnCurso.add(clave);
+      try{
+        const confirmada=tsfReproExiste(id,caf)||await tsfReproEsperarConfirmacion(id,caf,3);
+        if(!confirmada){
+          if(avisar)toast('El registro aún se está verificando. Espera a que aparezca en Excepciones antes de volver a intentarlo.',
+            'warning','Verificando registro');
+          return false;
+        }
+        await tsfReproMarcarTracking(id);
+        tsfReproLimpiarPendiente(id,caf);
+        tsfReproRegistrados.add(clave);
+        tsfReproRefrescarVista();
+        if(avisar)toast(`La excepción de ${id} está registrada y vinculada correctamente.`,
+          'success','Excepción guardada ✓');
+        return true;
+      }catch(error){
+        console.warn('[TSF] Vínculo de Excepción pendiente:',String(error?.message||error));
+        if(avisar)tsfReproAvisarPendiente(id,caf,String(error?.message||error));
+        return false;
+      }finally{tsfReproSyncEnCurso.delete(clave);}
+    }
+    async function tsfReproRevisarEnSegundoPlano(id,caf){
+      // Sólo revalidar el vínculo, sin repetir CREAR ni mostrar alertas técnicas.
+      for(const demora of [3500,9000,18000]){
+        if(!tsfReproVinculosPendientes.has(tsfReproClave(id,caf)))return;
+        await tsfReproPausa(demora);
+        if(!tsfReproVinculosPendientes.has(tsfReproClave(id,caf)))return;
+        if(await tsfReproCompletarVinculo(id,caf,false)){
+          toast(`La excepción de ${id} ya está completamente sincronizada.`,
+            'success','Sincronización completada ✓');
+          return;
+        }
+      }
+    }
     document.getElementById('dataTable').addEventListener('click', async ev=>{
       const boton=ev.target.closest('input.tsf-repro-check[data-repro-reg]');
       if(!boton||mIdx!==1)return;
       ev.preventDefault();
-      boton.checked=false;
-      boton.value='NO';
-      const id=boton.dataset.reproReg;
-      if(window.TSF_SESSION_ROLE!=='EDICION'){toast('Solo el perfil EDICIÓN puede registrar un excepción.');return}
+      boton.checked=false;boton.value='NO';
+      const id=String(boton.dataset.reproReg||'').trim();
+      if(window.TSF_SESSION_ROLE!=='EDICION'){
+        toast('Para registrar excepciones, utiliza un perfil con permiso de edición.','warning','Acceso de consulta');return;
+      }
       if(tsfReproPending.has(id))return;
       const tracking=trackingSp.rows.find(r=>keyID(r)===id);
       const gestion=spPreview.rows.find(r=>keyID(r)===id);
       const caf=String(gestion?.CAF??tracking?.CAF??'').trim();
       if(!tracking?.__spId||!caf){
-        toast('Faltan el CAF o el identificador de SharePoint de la operación.');
-        return;
+        toast('Revisa el CAF de la operación y recarga la vista antes de registrar la excepción.',
+          'warning','Faltan datos');return;
       }
       if(trackingSp.edits.has(id)||spEdits.has(id)){
-        toast('Primero guarda los cambios pendientes de esta operación en Gestión o Tracking.');
+        toast('Guarda primero los cambios pendientes de esta operación y vuelve a intentarlo.',
+          'warning','Cambios pendientes');return;
+      }
+      const clave=tsfReproClave(id,caf);
+      // No lanzar una segunda creación si existe registro confirmado.
+      const existenteLocal=tsfReproExiste(id,caf);
+      if(tsfReproVinculosPendientes.has(clave)||existenteLocal){
+        toast('Esta excepción ya está registrada. Revisaremos únicamente su estado en Tracking.',
+          'info','Registro existente');
+        void tsfReproCompletarVinculo(id,caf,true);
         return;
       }
       if(!(await tsfConfirmarNuevaExcepcion({
-        id,caf,
-        ruc:String(gestion?.RUC??tracking?.RUC??''),
+        id,caf,ruc:String(gestion?.RUC??tracking?.RUC??''),
         cliente:String(gestion?.CLIENTE??tracking?.CLIENTE??'')
       })))return;
-
       tsfReproPending.add(id);
       boton.disabled=true;
-      boton.title='Registrando en TB5 y actualizando TB2…';
-      let createdId=0;
-      let createdEtag='';
-      let completed=false;
+      boton.title='Verificando y registrando la excepción…';
+      toast('Estamos comprobando la operación y registrando tu solicitud. No necesitas pulsar otra vez.',
+        'info','Registrando excepción');
+      let altaConfirmada=false,marcaConfirmada=false,creacionIncierta=false;
       try{
-        // Asegurar que el historial de TB5 esté actualizado para no duplicar ID_OPERACION + CAF.
-        const reproStore=tsfRemoteStores[4];
-        if(!reproStore?.loaded||!reproStore?.historyDone){
-          await tsfRemoteCompletarParaExcel(4);
+        // Primera verificación: historial para no duplicar excepciones previas.
+        const store=tsfRemoteStores[4];
+        if(!store?.loaded||!store?.historyDone)await tsfRemoteCompletarParaExcel(4);
+        if(!tsfRemoteStores[4]?.historyDone){
+          throw new Error('No se pudo verificar el historial de excepciones. No se creó otra fila.');
         }
-        if(!tsfRemoteStores[4]?.historyDone)throw new Error('No se pudo verificar el histórico de TB5. No se creará el excepción para evitar duplicados.');
-        const duplicate=tsfRemoteStores[4]?.rows.some(r=>
-          keyID(r)===id&&String(r.CAF??'').trim()===caf
-        );
-        if(duplicate)throw new Error('Esta operación y CAF ya tienen una fila en TB5 - REPROCESOS. No se creó un duplicado.');
-
-        // Leer la fila TB2 otra vez para usar el ETag más reciente.
-        const freshRows=await tsfLeerFilasTracking([id]);
-        const freshTracking=freshRows.get(id);
-        if(!freshTracking?.__spId||!freshTracking?.__spEtag)throw new Error('No se pudo obtener el ETag vigente de TB2. Recarga Tracking y vuelve a intentar.');
-
-        // Confirmar que la columna de SharePoint admite exactamente SÍ / NO.
-        const reproField=await tsfReproGetField();
-        const reproValue=trackingFieldType(reproField)==='Boolean'?true:'SÍ';
-        const reproInternal=trackingFieldName(reproField);
-
-        // Copiar a TB5 los datos de la fila de Tracking que también existan en el esquema de TB5.
-        const targetMeta=window.tsfRemoteCrudMeta?.[4];
-        if(!targetMeta?.map)throw new Error('No se cargó el esquema de TB5 - REPROCESOS. Actualiza el módulo Excepciones.');
-        const master=gestion||{};
-        const sourceColumns=[...new Set([
-          'ID_OPERACION','CAF','PRODUCTO','RUC','CLIENTE',
-          ...modules[1].columns
-        ])];
-        const campos={};
-        for(const col of sourceColumns){
-          const internal=targetMeta.map[col];
-          if(!internal)continue;
-          const rawValue=(freshTracking[col]!==undefined&&freshTracking[col]!==''&&freshTracking[col]!==null)
-            ?freshTracking[col]:(master[col]??'');
-          if(rawValue===''||rawValue===null||rawValue===undefined)continue;
-          try{
+        let encontrada=tsfReproExiste(id,caf);
+        if(!encontrada){
+          // Verificar también los registros recientes para detectar altas de otra sesión.
+          encontrada=await tsfReproBuscarReciente(id,caf);
+        }
+        if(encontrada){
+          altaConfirmada=true;
+          tsfReproRegistrados.add(clave);
+          toast(`La excepción de ${id} ya estaba registrada. Estamos comprobando su estado.`,
+            'info','Registro existente');
+        }else{
+          const freshRows=await tsfLeerFilasTracking([id]);
+          const freshTracking=freshRows.get(id);
+          if(!freshTracking?.__spId)throw new Error('No se pudo localizar la operación. Recarga la vista e intenta nuevamente.');
+          const targetMeta=window.tsfRemoteCrudMeta?.[4];
+          if(!targetMeta?.map)throw new Error('Todavía se está preparando Excepciones. Vuelve a intentarlo.');
+          const master=gestion||{};
+          const sourceColumns=[...new Set(['ID_OPERACION','CAF','PRODUCTO','RUC','CLIENTE',...modules[1].columns])];
+          const campos={};
+          for(const col of sourceColumns){
+            const internal=targetMeta.map[col];if(!internal)continue;
+            const rawValue=(freshTracking[col]!==undefined&&freshTracking[col]!==''&&freshTracking[col]!==null)
+              ?freshTracking[col]:(master[col]??'');
+            if(rawValue===''||rawValue===null||rawValue===undefined)continue;
             campos[internal]=tsfV174ValorSharePoint(col,rawValue,targetMeta);
-          }catch(error){
-            throw new Error('No se pudo copiar el campo '+col+' a TB5: '+String(error?.message||error));
           }
-        }
-        if(!Object.keys(campos).length)throw new Error('No hay campos compatibles para crear la fila en TB5. Revisa el mapeo de la lista.');
-
-        // PRIMERA ESCRITURA: Flujo 2 -> crear fila en TB5.
-        const created=await tsfRemoteWrite(4,'CREAR',{
-          id_operacion:id,
-          caf,
-          campos
-        });
-        createdId=Number(created?.ID??created?.Id??created?.id??created?.sharepoint_id??created?.item_id??created?.tb5_item_id??0);
-        createdEtag=String(created?.['@odata.etag']??created?.etag??'');
-        if(!Number.isSafeInteger(createdId)||createdId<1){
-          // Algunas respuestas HTTP solo devuelven creado=true; buscar el ID real recién creado.
-          const firstPage=await tsfRemoteRequest(4,TSF_REMOTE_LISTS[4].pagina,{cursor:''});
-          const found=tsfRemoteConvertir(4,firstPage).find(r=>
-            keyID(r)===id&&String(r.CAF??'').trim()===caf
-          );
-          if(found){createdId=Number(found.__spId);createdEtag=String(found.__spEtag||'');}
-        }
-        if(!Number.isSafeInteger(createdId)||createdId<1)throw new Error('Flujo 2 no devolvió ni permitió localizar el ID de SharePoint de la nueva fila de Excepciones. No se marcará TB2 hasta identificar la fila creada.');
-
-        // SEGUNDA ESCRITURA: Flujo 1 -> marcar BOTÓN_REPROCESO = SÍ en TB2.
-        try{
-          const marked=await trackingApi({
-            accion:'TRACKING_ACTUALIZAR',
-            id_operacion:id,
-            campos:{[reproInternal]:reproValue},
-            etag:String(freshTracking.__spEtag)
-          });
-          if(marked?.ok===false)throw new Error(String(marked?.error||marked?.mensaje||'SharePoint no confirmó la marca SÍ.'));
-          completed=true;
-        }catch(markError){
-          // Compensación: si TB2 rechaza la marca, intentar retirar la fila recién creada en TB5.
-          let rollbackError='';
+          // Validar CAF desde la operación, aunque el dato heredado tenga carga diferida.
+          if(targetMeta.map.CAF)campos[targetMeta.map.CAF]=caf;
+          if(!Object.keys(campos).length)throw new Error('No hay datos suficientes para registrar la excepción.');
+          let created;
           try{
-            await tsfRemoteWrite(4,'ELIMINAR',{
-              id_sharepoint:createdId,
-              id_operacion:id,
-              caf,
-              confirmar_eliminacion:true,
-              etag:createdEtag
-            });
-          }catch(rollback){
-            rollbackError=String(rollback?.message||rollback).slice(0,170);
+            created=await tsfRemoteWrite(4,'CREAR',{id_operacion:id,caf,campos});
+          }catch(error){
+            // Si se perdió la respuesta, el servidor podría haber creado la fila.
+            // Antes de permitir otra alta, verificar existencia. No emitir fallo definitivo.
+            creacionIncierta=true;
+            const aparecio=await tsfReproEsperarConfirmacion(id,caf,5);
+            if(!aparecio){
+              tsfReproEstablecerPendiente(id,caf,{verificando:true});
+              toast('Estamos confirmando tu registro. No pulses de nuevo «Registrar excepción». Usa Recargar vista para revisar el resultado.',
+                'warning','Registro en verificación');
+              return;
+            }
+            encontrada=aparecio;
           }
-          if(rollbackError){
-            throw new Error('TB5 creó la fila #'+createdId+', pero TB2 no aceptó BOTÓN_REPROCESO = SÍ. Tampoco se pudo revertir TB5: '+rollbackError+'. Revisa ambos módulos antes de reintentar.');
+          if(!encontrada){
+            const resultado=created?.resultado??created?.body??created??{};
+            const createdId=Number(resultado?.ID??resultado?.Id??resultado?.id??resultado?.sharepoint_id??resultado?.item_id??resultado?.tb5_item_id??0);
+            const createdEtag=String(resultado?.['@odata.etag']??resultado?.etag??'');
+            if(Number.isSafeInteger(createdId)&&createdId>0){
+              encontrada=tsfReproAlmacenarConfirmada(id,caf,createdId,createdEtag,{
+                PRODUCTO:String(master?.PRODUCTO??freshTracking.PRODUCTO??''),
+                RUC:String(master?.RUC??freshTracking.RUC??''),
+                CLIENTE:String(master?.CLIENTE??freshTracking.CLIENTE??'')
+              });
+            }else{
+              encontrada=await tsfReproEsperarConfirmacion(id,caf,5);
+              if(!encontrada){
+                creacionIncierta=true;
+                tsfReproEstablecerPendiente(id,caf,{verificando:true});
+                toast('Recibimos tu solicitud. Estamos esperando la confirmación; no la envíes otra vez.',
+                  'warning','Registro en verificación');
+                return;
+              }
+            }
           }
-          throw new Error('TB2 no aceptó BOTÓN_REPROCESO = SÍ. La fila recién creada en TB5 fue retirada para evitar una operación incompleta. Detalle: '+String(markError?.message||markError));
+          altaConfirmada=Boolean(encontrada);
+          tsfReproRegistrados.add(clave);
+          toast(`La excepción de ${id} fue registrada. Estamos actualizando su estado en Tracking.`,
+            'success','Excepción registrada ✓');
         }
-
-        boton.checked=true;
-        boton.value='SÍ';
-        boton.disabled=true;
-        boton.title='SÍ · Excepción creada en TB5 y marcado en TB2';
-        tsfReproRegistrados.add(id+'|'+caf);
-        toast('La operación quedó registrada en Excepciones y marcada en Tracking. No necesitas realizar ninguna otra acción.',
-          'success','Excepción registrada');
-        // Actualizar el ETag local sin descartar otros borradores de Tracking.
-        try{
-          const updatedRows=await tsfLeerFilasTracking([id]);
-          const updated=updatedRows.get(id);
-          const local=trackingSp.rows.find(r=>keyID(r)===id);
-          if(local&&updated){
-            local.__spEtag=updated.__spEtag;
-            local.__spBaseline={...local.__spBaseline,...updated.__spBaseline};
-          }
-        }catch(_){}
-        // Refrescar la primera página de TB5 sin cambiar de módulo ni iniciar una recarga destructiva.
-        try{
-          const rawTb5=await tsfRemoteRequest(4,TSF_REMOTE_LISTS[4].pagina,{cursor:''});
-          const rowsTb5=tsfRemoteConvertir(4,rawTb5);
-          tsfRemoteStores[4].rows=tsfRemoteCombinar(tsfRemoteStores[4].rows,rowsTb5);
-          tsfRemoteStores[4].lastSync=new Date();
-        }catch(refreshError){
-          console.warn('El excepción se creó, pero no se pudo refrescar la vista TB5:',String(refreshError?.message||refreshError));
+        // SEGUNDA ESCRITURA independiente: sólo marcar el indicador de TB2.
+        // No intentar borrar una excepción ya creada si esta actualización falla.
+        marcaConfirmada=await tsfReproCompletarVinculo(id,caf,false);
+        if(marcaConfirmada){
+          boton.checked=true;boton.value='SÍ';boton.disabled=true;
+          boton.title='Excepción registrada y vinculada';
+          toast(`La excepción de ${id} se guardó correctamente y ya está vinculada a Tracking.`,
+            'success','Datos almacenados ✓');
+        }else{
+          boton.checked=true;boton.value='SÍ';boton.disabled=true;
+          boton.title='Excepción registrada; verificación de Tracking pendiente';
+          tsfReproAvisarPendiente(id,caf,'');
+          void tsfReproRevisarEnSegundoPlano(id,caf);
         }
-        if(mIdx===1)tableRender();
-      }catch(err){
-        boton.checked=false;
-        boton.value='NO';
-        boton.disabled=false;
-        boton.title='NO · No se completó el registro del excepción';
-        toast('No se completó el excepción: '+String(err?.message||err).slice(0,220));
+        tsfReproRefrescarVista();
+        // Confirmación de visibilidad: la carga histórica no debe ocultar el alta.
+        void tsfReproEsperarConfirmacion(id,caf,3);
+      }catch(error){
+        if(altaConfirmada||creacionIncierta){
+          // Alta confirmada o de resultado incierto: nunca decir «No se creó».
+          boton.checked=altaConfirmada;boton.disabled=altaConfirmada;
+          if(altaConfirmada){
+            tsfReproAvisarPendiente(id,caf,String(error?.message||error));
+            void tsfReproRevisarEnSegundoPlano(id,caf);
+          }else{
+            toast('La solicitud está en verificación. Revisa Excepciones antes de volver a registrarla.',
+              'warning','Confirmación pendiente');
+          }
+        }else{
+          boton.checked=false;boton.disabled=false;
+          toast('No se pudo iniciar el registro. Revisa los datos de la operación y vuelve a intentarlo.',
+            'error','Registro no iniciado');
+        }
+        console.warn('[TSF] Registrar excepción:',String(error?.message||error));
       }finally{
         tsfReproPending.delete(id);
-        if(!completed&&createdId>0)console.warn('Excepción incompleto. Revisar SharePoint TB5 item:',createdId);
+        if(mIdx===1)tsfReproRefrescarVista();
       }
     });
+
+    // Recuperación tras recarga: completar únicamente el vínculo pendiente.
+    // No se ejecuta ninguna creación automática durante la recuperación.
+    setTimeout(()=>{
+      for(const job of tsfReproVinculosPendientes.values()){
+        void tsfReproCompletarVinculo(job.id,job.caf,false).then(ok=>{
+          if(ok)toast('La excepción de '+job.id+' se sincronizó correctamente.',
+            'success','Sincronización completada ✓');
+        });
+      }
+    },4500);
 
     // Redibujar si Tracking está abierto
     if (mIdx === 1) {
@@ -6477,7 +6635,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return {creados,existentes,pendientes,errores};
     }
 
-    // V19.11: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
+    // V19.12: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
     // VAF no existe físicamente en TB2: se visualiza siempre desde el maestro TB1.
     const TSF_V199_MONTH_RETRY_KEY='TSF_MES_PENDIENTES_TB2';
     const tsfV199MesSyncRetry=new Set((()=>{
@@ -6548,7 +6706,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return resultado;
     }
 
-    // V19.11 — CAF: Gestión es la fuente única. Cada cambio confirmado se refleja
+    // V19.12 — CAF: Gestión es la fuente única. Cada cambio confirmado se refleja
     // físicamente en Tracking (field_5) usando ID_OPERACION y ETag, sin crear duplicados.
     const TSF_V1910_CAF_RETRY_KEY='TSF_V1910_CAF_PENDIENTE';
     const tsfV1910CafRetry=new Set((()=>{
@@ -6945,7 +7103,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V19.11 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V19.12 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -8922,7 +9080,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return original;
     };
-    // V19.11: permitir reintentar CAF sin volver a escribirlo.
+    // V19.12: permitir reintentar CAF sin volver a escribirlo.
     const tsfV1910DirtyPrev=updateDirtyLabel;
     updateDirtyLabel=function(...args){
       const out=tsfV1910DirtyPrev.apply(this,args);
@@ -8972,7 +9130,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
           const master=spPreview.rows.find(r=>keyID(r)===id);
           const caf=String(master?.CAF??source?.CAF??'').trim();
           const registered=tsfReproRegistrados.has(id+'|'+caf)||
-            tsfRemoteStores[4]?.rows.some(r=>keyID(r)===id&&String(r.CAF??'').trim()===caf);
+            tsfRemoteStores[4]?.rows.some(r=>String(r.ID_OPERACION??'').trim()===id&&String(r.CAF??'').trim()===caf);
           if(registered){
             check.checked=true;
             check.disabled=true;
@@ -8983,7 +9141,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return result;
     };
-    // V19.11: si Gestión carga en segundo plano mientras se observa Tracking,
+    // V19.12: si Gestión carga en segundo plano mientras se observa Tracking,
     // refrescar el VAF derivado sin interrumpir a quien está editando una celda.
     const tsfV199SafePaintAnterior=tsfSafePaint;
     tsfSafePaint=function(index){
