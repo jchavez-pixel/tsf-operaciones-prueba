@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V19.10 — Sesión estable y corrección de visualización</title>
+<title>TSF | Operaciones V19.11 — Sesión estable y corrección de visualización</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -1500,6 +1500,22 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
 .tsf-v189-delete-toast-close{border:0;background:transparent;color:#d4e6dc;font-size:18px;padding:0 1px;margin:-3px -5px 0 auto}
 @media(max-width:550px){.tsf-v189-delete-overlay{padding:12px}.tsf-v189-delete-header{padding:17px 16px 12px}.tsf-v189-delete-body{padding:0 16px 12px}.tsf-v189-delete-actions{padding:9px 16px 15px}.tsf-v189-delete-title{font-size:16px}.tsf-v189-delete-ids{grid-template-columns:auto 1fr}}
 </style>
+
+<style id="tsf-v1911-excepcion-confirm-style">
+/* V19.11: diálogo corporativo compacto para registrar Excepciones. Solo interfaz. */
+.tsf-v1911-excepcion-modal{width:min(520px,100%);max-height:min(90vh,720px);overflow-y:auto}
+.tsf-v1911-excepcion-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:9px;background:#514416;color:#ffd548}
+.tsf-v1911-excepcion-icon svg{width:21px;height:21px}
+.tsf-v1911-excepcion-modal .tsf-v189-delete-header{padding-bottom:13px}
+.tsf-v1911-excepcion-modal .tsf-v189-delete-body>p{margin-bottom:12px}
+.tsf-v1911-excepcion-modal .tsf-v190-delete-details{margin-top:2px}
+.tsf-v1911-excepcion-modal .tsf-v189-delete-note{display:flex;gap:7px;align-items:flex-start;line-height:1.55}
+.tsf-v1911-excepcion-modal .tsf-v189-delete-note svg{flex:0 0 15px;margin-top:1px;color:#ffce30}
+.tsf-v1911-excepcion-confirm{background:#ffcb16!important;border:1px solid #ffcb16!important;color:#1f252b!important;font-weight:800!important;min-width:150px!important}
+.tsf-v1911-excepcion-confirm:hover{background:#f2bc00!important;border-color:#f2bc00!important}
+.tsf-v1911-excepcion-modal button:focus-visible{outline:3px solid #f6d44c;outline-offset:3px}
+@media(max-width:550px){.tsf-v1911-excepcion-modal .tsf-v189-delete-actions{flex-wrap:wrap}.tsf-v1911-excepcion-modal .tsf-v189-delete-actions button{flex:1}}
+</style>
 </head>
 <body>
 <div id="tsf-entry-splash" role="status" aria-live="polite" aria-label="Verificando acceso al portal">
@@ -1517,12 +1533,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.10 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.11 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V19.10 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V19.11 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2356,7 +2372,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V19.10 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V19.11 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===4||isTsfRemoteIndex());tsfActualizarDescripcionGestion();
@@ -3038,7 +3054,7 @@ getColumnWidth = function(column,mod,index){
  if(key.includes('ORIGEN DE FONDOS'))valueWidth=192;
  return Math.round(Math.min(/COMENTARI|DETALLE/.test(key)?275:280,Math.max(94,titleWidth,valueWidth)));
 };
-// V19.10: se recupera el formateador numérico ya definido en el portal.
+// V19.11: se recupera el formateador numérico ya definido en el portal.
 // V19.4: formato exclusivamente visual; los números originales se mantienen
 // para cálculos, edición y sincronización a SharePoint.
 function tsfDisplayNumeric(column,value,row=null){
@@ -4800,6 +4816,72 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
     // Se utilizan acciones existentes: REPROCESOS_CREAR / REPROCESOS_ELIMINAR y TRACKING_ACTUALIZAR.
     const tsfReproPending=new Set();
     const tsfReproRegistrados=new Set();
+    let tsfExcepcionConfirmacionAbierta=false;
+    // Confirmación propia del portal: no altera ni reemplaza las acciones existentes.
+    function tsfConfirmarNuevaExcepcion(registro){
+      if(tsfExcepcionConfirmacionAbierta)return Promise.resolve(false);
+      tsfExcepcionConfirmacionAbierta=true;
+      return new Promise(resolve=>{
+        const datos={
+          id:String(registro?.id??'').trim()||'—',
+          caf:String(registro?.caf??'').trim()||'—',
+          ruc:String(registro?.ruc??'').trim()||'—',
+          cliente:String(registro?.cliente??'').trim()||'—'
+        };
+        const backdrop=document.createElement('div');
+        backdrop.className='tsf-v189-delete-overlay';
+        backdrop.innerHTML=`
+          <section class="tsf-v189-delete-modal tsf-v1911-excepcion-modal" role="alertdialog" aria-modal="true" aria-labelledby="tsf-v1911-excepcion-title" aria-describedby="tsf-v1911-excepcion-description">
+            <div class="tsf-v189-delete-header">
+              <span class="tsf-v1911-excepcion-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h10a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7l4-3Z"/><path d="M8 4v4H4M8 12h8M8 16h5"/></svg></span>
+              <h2 id="tsf-v1911-excepcion-title" class="tsf-v189-delete-title">Registrar excepción</h2>
+              <button type="button" class="tsf-v189-delete-x" data-tsf-v1911-cancel aria-label="Cerrar ventana">&times;</button>
+            </div>
+            <div class="tsf-v189-delete-body" id="tsf-v1911-excepcion-description">
+              <p>¿Deseas registrar una <strong>excepción</strong> para esta operación?</p>
+              <div class="tsf-v190-delete-details">
+                <div class="tsf-v190-delete-field tsf-v190-delete-main-field"><span class="tsf-v190-delete-label">ID_OPERACION:</span><strong class="tsf-v190-delete-value">${esc(datos.id)}</strong></div>
+                <div class="tsf-v190-delete-field tsf-v190-delete-main-field"><span class="tsf-v190-delete-label">CAF:</span><strong class="tsf-v190-delete-value">${esc(datos.caf)}</strong></div>
+                <div class="tsf-v190-delete-line">
+                  <div class="tsf-v190-delete-field"><span class="tsf-v190-delete-label">RUC</span><strong class="tsf-v190-delete-value">${esc(datos.ruc)}</strong></div>
+                  <div class="tsf-v190-delete-field"><span class="tsf-v190-delete-label">CLIENTE</span><strong class="tsf-v190-delete-value">${esc(datos.cliente)}</strong></div>
+                </div>
+              </div>
+              <div class="tsf-v189-delete-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 11v6m0-10v1"/></svg><span>Al confirmar, se creará un registro en <strong>Excepciones</strong> y se marcará esta operación en Tracking. Los datos originales no se eliminarán.</span></div>
+            </div>
+            <div class="tsf-v189-delete-actions">
+              <button type="button" class="tsf-v189-delete-cancel" data-tsf-v1911-cancel>Cancelar</button>
+              <button type="button" class="tsf-v1911-excepcion-confirm" data-tsf-v1911-confirm>Registrar excepción</button>
+            </div>
+          </section>`;
+        const previous=document.activeElement;
+        let settled=false;
+        const keyHandler=ev=>{
+          if(ev.key==='Escape'){ev.preventDefault();finish(false);return;}
+          if(ev.key==='Tab'){
+            const buttons=[...backdrop.querySelectorAll('button:not([disabled])')];
+            const first=buttons[0],last=buttons[buttons.length-1];
+            if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}
+            else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}
+          }
+        };
+        const finish=confirmed=>{
+          if(settled)return;
+          settled=true;
+          tsfExcepcionConfirmacionAbierta=false;
+          document.removeEventListener('keydown',keyHandler,true);
+          backdrop.remove();
+          try{previous?.focus?.();}catch(_){}
+          resolve(confirmed);
+        };
+        backdrop.querySelectorAll('[data-tsf-v1911-cancel]').forEach(button=>button.addEventListener('click',()=>finish(false)));
+        backdrop.querySelector('[data-tsf-v1911-confirm]').addEventListener('click',()=>finish(true));
+        backdrop.addEventListener('mousedown',ev=>{if(ev.target===backdrop)finish(false)});
+        document.addEventListener('keydown',keyHandler,true);
+        document.body.appendChild(backdrop);
+        backdrop.querySelector('.tsf-v189-delete-cancel')?.focus();
+      });
+    }
     let tsfReproFieldCache=null;
     async function tsfReproGetField(){
       if(tsfReproFieldCache)return tsfReproFieldCache;
@@ -4841,7 +4923,11 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         toast('Primero guarda los cambios pendientes de esta operación en Gestión o Tracking.');
         return;
       }
-      if(!confirm('¿Crear una fila en TB5 - REPROCESOS con los datos de esta operación y marcar BOTÓN_REPROCESO = SÍ en TB2?'))return;
+      if(!(await tsfConfirmarNuevaExcepcion({
+        id,caf,
+        ruc:String(gestion?.RUC??tracking?.RUC??''),
+        cliente:String(gestion?.CLIENTE??tracking?.CLIENTE??'')
+      })))return;
 
       tsfReproPending.add(id);
       boton.disabled=true;
@@ -4947,7 +5033,8 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         boton.disabled=true;
         boton.title='SÍ · Excepción creada en TB5 y marcado en TB2';
         tsfReproRegistrados.add(id+'|'+caf);
-        toast('Excepción creada en TB5 y BOTÓN_REPROCESO actualizado a SÍ en TB2.');
+        toast('La operación quedó registrada en Excepciones y marcada en Tracking. No necesitas realizar ninguna otra acción.',
+          'success','Excepción registrada');
         // Actualizar el ETag local sin descartar otros borradores de Tracking.
         try{
           const updatedRows=await tsfLeerFilasTracking([id]);
@@ -6390,7 +6477,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return {creados,existentes,pendientes,errores};
     }
 
-    // V19.10: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
+    // V19.11: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
     // VAF no existe físicamente en TB2: se visualiza siempre desde el maestro TB1.
     const TSF_V199_MONTH_RETRY_KEY='TSF_MES_PENDIENTES_TB2';
     const tsfV199MesSyncRetry=new Set((()=>{
@@ -6461,7 +6548,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return resultado;
     }
 
-    // V19.10 — CAF: Gestión es la fuente única. Cada cambio confirmado se refleja
+    // V19.11 — CAF: Gestión es la fuente única. Cada cambio confirmado se refleja
     // físicamente en Tracking (field_5) usando ID_OPERACION y ETag, sin crear duplicados.
     const TSF_V1910_CAF_RETRY_KEY='TSF_V1910_CAF_PENDIENTE';
     const tsfV1910CafRetry=new Set((()=>{
@@ -6589,8 +6676,8 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
              toast('El CAF quedó guardado en Gestión, pero todavía no pudimos confirmar que aparezca en Tracking. No necesitas escribirlo otra vez; pulsa «Reintentar» o «Guardar cambios».',
                'warning','CAF pendiente de actualizar',{label:'Reintentar',onClick:()=>tsfGuardarAmbosGestion()});
            }else if(syncCaf.actualizados.length){
-             toast(`El CAF de ${syncCaf.actualizados.length===1?syncCaf.actualizados[0]:syncCaf.actualizados.length+' operaciones'} ya figura correctamente en Gestión y Tracking.`,
-               'success','CAF actualizado',{label:'Ver Tracking',onClick:()=>{switchModule(1);if(syncCaf.actualizados.length===1){query=syncCaf.actualizados[0];page=1;const q=document.getElementById('q');if(q)q.value=query;draw();}}});
+             toast(`El CAF de ${syncCaf.actualizados.length===1?syncCaf.actualizados[0]:syncCaf.actualizados.length+' operaciones'} se guardó correctamente y ya está actualizado en ambos módulos.`,
+               'success','CAF actualizado');
            }else if(syncCaf.sinFila.length){
              toast('El CAF se guardó en Gestión. Para que aparezca también en Tracking, completa Expediente y Analista operativo y pulsa «Guardar cambios».',
                'info','Falta completar la operación');
@@ -6858,7 +6945,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V19.10 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V19.11 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -8835,7 +8922,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return original;
     };
-    // V19.10: permitir reintentar CAF sin volver a escribirlo.
+    // V19.11: permitir reintentar CAF sin volver a escribirlo.
     const tsfV1910DirtyPrev=updateDirtyLabel;
     updateDirtyLabel=function(...args){
       const out=tsfV1910DirtyPrev.apply(this,args);
@@ -8896,7 +8983,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return result;
     };
-    // V19.10: si Gestión carga en segundo plano mientras se observa Tracking,
+    // V19.11: si Gestión carga en segundo plano mientras se observa Tracking,
     // refrescar el VAF derivado sin interrumpir a quien está editando una celda.
     const tsfV199SafePaintAnterior=tsfSafePaint;
     tsfSafePaint=function(index){
