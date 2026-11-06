@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V19.1 — Eliminación segura y aviso corporativo</title>
+<title>TSF | Operaciones V19.2 — Eliminación segura y aviso corporativo</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -514,7 +514,7 @@ body.tsf-dashboard-active .tsf-dashboard{display:block}
 @media(max-width:1100px){.tsf-dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tsf-dashboard-panels{grid-template-columns:1fr}}
 @media(max-width:650px){.tsf-dashboard-grid{grid-template-columns:1fr}.tsf-dashboard{padding:13px}}
 
-/* V19.1 · indicador de histórico sin ocupar espacio de lectura */
+/* V19.2 · indicador de histórico sin ocupar espacio de lectura */
 .kpi{position:relative}
 .tsf-load-status{position:absolute;right:14px;top:13px;display:inline-grid;place-items:center;width:20px;height:20px;font-size:13px;font-weight:900}
 .tsf-load-spinner{width:17px;height:17px;border:2.5px solid #dbe2ec;border-top-color:#e1a900;border-radius:50%;animation:tsf-spin .8s linear infinite}
@@ -1452,7 +1452,7 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
 </style>
 
 <style id="tsf-v189-delete-confirm-style">
-/* V19.1: Aviso propio del portal. No altera estilos de tablas ni ancho de columnas. */
+/* V19.2: Aviso propio del portal. No altera estilos de tablas ni ancho de columnas. */
 .tsf-v189-delete-overlay{position:fixed;inset:0;z-index:2500;display:flex;align-items:center;justify-content:center;background:rgba(16,22,30,.63);padding:20px;backdrop-filter:blur(2px)}
 .tsf-v189-delete-modal{position:relative;width:min(520px,100%);border-radius:13px;overflow:hidden;color:#f7f9fc;background:#24282e;border:1px solid rgba(255,255,255,.13);border-top:3px solid #ffcb16;box-shadow:0 28px 78px #070b1480;font-family:inherit}
 .tsf-v189-delete-header{display:flex;gap:13px;align-items:center;padding:20px 22px 14px}
@@ -1466,10 +1466,10 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
 .tsf-v189-delete-ids{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 11px;font-size:11px;padding:11px 13px;background:#1c2026;border:1px solid #383e46;border-radius:8px;color:#bcc6d3}
 .tsf-v189-delete-ids strong{color:#fff;font-size:11px;overflow-wrap:anywhere}
 
-/* V19.1: datos de operación visibles en la confirmación (sin mostrar ID interno de SharePoint). */
+/* V19.2: datos de operación visibles en la confirmación (sin mostrar ID interno de SharePoint). */
 .tsf-v190-delete-details{display:grid;gap:7px;padding:11px;background:#1c2026;border:1px solid #383e46;border-radius:9px}
 .tsf-v190-delete-field{display:flex;align-items:baseline;justify-content:flex-start;gap:6px;min-width:0}
-/* V19.1: las cifras quedan PEGADAS a su etiqueta, sin columnas de 95px ni empuje al extremo. */
+/* V19.2: las cifras quedan PEGADAS a su etiqueta, sin columnas de 95px ni empuje al extremo. */
 .tsf-v190-delete-label{color:#aebaca;font-size:10px;font-weight:760;flex:0 0 auto;width:auto;letter-spacing:.02em;white-space:nowrap}
 .tsf-v190-delete-value{font-size:11.5px;color:#fff;font-weight:730;flex:0 1 auto;min-width:0;overflow-wrap:anywhere;text-align:left}
 .tsf-v190-delete-main-field{justify-content:flex-start!important;gap:6px!important}
@@ -1512,12 +1512,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.1 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.2 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V19.1 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V19.2 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1560,7 +1560,7 @@ const base=JSON.parse(document.getElementById('workbookData').textContent);
 // Es exactamente el mismo campo de TB2 utilizado por GPS y Seguros:
 // field_28. Ambos módulos comparten la misma fila, edición y ETag.
 // La restauración de la columna es visual: NO crea campos ni datos en SharePoint.
-// V19.1: conservar el orden original de las 29 columnas de Tracking.
+// V19.2: conservar el orden original de las 29 columnas de Tracking.
 // Los vencimientos originales (índices 20-21) ya pertenecen al grupo administrativo.
 const TSF_TRACKING_ALL_COLUMNS=[...base[1].columns];
 const tsfIndiceCofide=base[1].columns.indexOf('TIPO_COFIDE');
@@ -2345,7 +2345,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V19.1 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V19.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===4||isTsfRemoteIndex());
@@ -2938,7 +2938,7 @@ function tsfHeaderParts(label){
  return best?[words.slice(0,best).join(' '),words.slice(best).join(' ')]:[normalized];
 }
 function tsfHeaderDisplay(label){return tsfHeaderParts(label).map(t=>esc(t)).join('<br>')}
-// V19.1: ANCHO FIJO. Ni el contenido de las filas ni los gestos del usuario
+// V19.2: ANCHO FIJO. Ni el contenido de las filas ni los gestos del usuario
 // modifican estos valores. Solo queda el desplazamiento horizontal normal.
 getColumnWidth = function(column,mod,index){
  const key=String(column).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
@@ -2959,7 +2959,7 @@ getColumnWidth = function(column,mod,index){
  if(key.includes('ORIGEN DE FONDOS'))valueWidth=192;
  return Math.round(Math.min(/COMENTARI|DETALLE/.test(key)?275:280,Math.max(94,titleWidth,valueWidth)));
 };
-// V19.1: formato exclusivamente visual; los números originales se mantienen
+// V19.2: formato exclusivamente visual; los números originales se mantienen
 // para cálculos, edición y sincronización a SharePoint.
 function tsfDisplayNumeric(column,value){
  const name=String(column).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
@@ -3576,7 +3576,7 @@ function tsfRemoteOpenCreate(){
  };
 }
 
-// V19.1 — Confirmación compacta con identificadores comerciales visibles.
+// V19.2 — Confirmación compacta con identificadores comerciales visibles.
 // La eliminación continúa utilizando el ID INTERNO de SharePoint en la API,
 // aunque ese dato técnico ya no se muestra en el diálogo.
 function tsfConfirmarEliminacionTB2(row){
@@ -3644,7 +3644,7 @@ function tsfMostrarEliminacionConfirmada(itemId,idOperacion){
   window.setTimeout(()=>{if(note.isConnected)note.remove();},7500);
 }
 
-// V19.1: eliminar exactamente un registro de TB2 por ID interno de SharePoint.
+// V19.2: eliminar exactamente un registro de TB2 por ID interno de SharePoint.
 // Nunca usar ID_OPERACION para decidir qué fila borrar: puede repetirse.
 const tsfTrackingEliminarEnCurso = new Set();
 async function tsfTrackingEliminarFila(idSharePoint){
@@ -3708,7 +3708,7 @@ async function tsfTrackingEliminarFila(idSharePoint){
     }
   } catch(error) {
     const motivo=String(error?.message||error);
-    toast('No se eliminó TB2 #'+itemId+': '+(motivo.includes('HTTP 409')?'Power Automate rechazó la validación. Verifica TRACKING_ELIMINAR usando item_id, Title y ETag.':motivo));
+    toast('No se eliminó TB2 #'+itemId+': '+motivo);
   } finally {
     tsfTrackingEliminarEnCurso.delete(itemId);
     botones.forEach(b=>{b.disabled=false;delete b.dataset.tsfPending;});
@@ -4242,7 +4242,7 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
       }
       if(!t.historyDone)throw new Error('Histórico no completado de '+c.lista);
     }
-    // V19.1: TB3-TB6 precargan sus diez recientes sin intervención del usuario.
+    // V19.2: TB3-TB6 precargan sus diez recientes sin intervención del usuario.
     // El histórico se procesa en segundo plano, de forma secuencial y con
     // preferencia para el módulo que el usuario está viendo.
     const tsfSwitchOriginal=switchModule;
@@ -6514,7 +6514,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V19.1 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V19.2 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -7616,7 +7616,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     };
 
     // =============================================================
-    // V19.1 — CRUD REAL Y EDICIÓN DIRECTA EN TB3, TB4, TB5 Y TB6
+    // V19.2 — CRUD REAL Y EDICIÓN DIRECTA EN TB3, TB4, TB5 Y TB6
     // ID_OPERACION se muestra primero y permanece de solo lectura.
     // CAF se muestra segundo y es la única columna fija horizontalmente.
     // Los cuatro datos heredados (CAF/PRODUCTO/RUC/CLIENTE) no se editan.
@@ -7624,7 +7624,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
     // no por ID_OPERACION, porque una operación puede tener varias filas.
     // =============================================================
     const TSF_V174_REMOTE_INDEXES = [2, 3, 4, 5];
-    // V19.1: solo la clave de la operación queda protegida. Los campos
+    // V19.2: solo la clave de la operación queda protegida. Los campos
     // heredados se pueden editar POR LISTA si existe una columna real mapeada.
     // No escribir campos virtuales ni propagar automáticamente cambios a TB1.
     const TSF_V174_LOCKED_COLUMNS = new Set([
@@ -8068,7 +8068,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
 
 
     // ================================================================
-    // V19.1 — GUARDADO INTELIGENTE + FILTRO DE ESTADO EN SEGUIMIENTOS
+    // V19.2 — GUARDADO INTELIGENTE + FILTRO DE ESTADO EN SEGUIMIENTOS
     // Revisa campos pendientes y crea Tracking cuando los tres datos obligatorios estén guardados.
     // Las observaciones nunca eliminan borradores automáticamente.
     // ================================================================
@@ -8490,7 +8490,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
           return toast('No hay cambios pendientes para guardar.');
         }
 
-        // V19.1: si todos los cambios superan la validación local,
+        // V19.2: si todos los cambios superan la validación local,
         // se guardan directamente sin abrir el panel de revisión.
         // El panel solo se muestra cuando existe al menos una observación.
         const observations=items.filter(item=>Boolean(item.issue));
@@ -8527,7 +8527,7 @@ celdaVAF.className = 'field-inherited tsf-area-tr-base';
       return result;
     };
     // ================================================================
-    // FIN V19.1 — GUARDADO INTELIGENTE Y FILTRO DE ESTADO
+    // FIN V19.2 — GUARDADO INTELIGENTE Y FILTRO DE ESTADO
     // ================================================================
 
     const header = document.querySelector('.headright');
