@@ -3889,6 +3889,7 @@ if(location.hash.toLowerCase()==='#tracking')switchModule(1);
 else draw(); // DEMO: no consulta SharePoint ni Python.
 </script>
 
+<!-- V19.5: sesión estable; diagnóstico visible sin cerrar sesión por errores de carga. -->
 <script id="tsf-auth-guard">
 'use strict';
 (async function controlarAccesoTSF(){
@@ -3908,13 +3909,22 @@ else draw(); // DEMO: no consulta SharePoint ni Python.
     const response = await fetch(api + '/auth/me', {
       method:'GET',
       headers:{ 'Authorization':'Bearer ' + token },
+      credentials:'omit',
       cache:'no-store'
     });
-    if (!response.ok) throw new Error('Sesión inválida');
+    // Sólo cerrar la sesión cuando el servidor confirma que el token ya no es válido.
+    if (response.status === 401 || response.status === 403) {
+      salir(); return;
+    }
+    // Un error de red o HTTP 5xx no debe borrar una sesión válida.
+    if (!response.ok) {
+      throw new Error('No se pudo verificar el acceso (HTTP '+response.status+').');
+    }
     const session = await response.json();
     if (session.ok !== true || session.rol !== rolAnterior ||
         !['LECTURA','EDICION'].includes(session.rol)) {
-      throw new Error('Perfil inválido');
+      // El servidor respondió, pero el token/perfil no coincide con el autorizado.
+      salir(); return;
     }
     // La autorización real para cada futura escritura debe ocurrir en el Worker.
     window.TSF_SESSION_ROLE = session.rol;
@@ -8597,8 +8607,58 @@ celdaVAF.className = 'field-inherited tsf-area-tr-oper';
     const tsfSplash=document.getElementById('tsf-entry-splash');
     if(tsfSplash)window.setTimeout(()=>tsfSplash.remove(),380);
   } catch (error) {
-    // Fail closed: nunca liberar la vista cuando no pudo verificarse la sesión.
-    salir();
+    // V19.5: un fallo de red/inicialización NO equivale a una sesión inválida.
+    // El token sólo se elimina en las respuestas 401/403 o ante un perfil no autorizado.
+    const detalle = String(error?.message || error || 'Error desconocido').slice(0,320);
+    window.TSF_STARTUP_ERROR = detalle;
+    console.error('[TSF] No se completó la validación/carga del portal:', error);
+
+    const splash = document.getElementById('tsf-entry-splash');
+    const body = splash?.querySelector('.tsf-entry-body') || splash;
+    const track = splash?.querySelector('.tsf-entry-track');
+    if (track) track.style.display = 'none';
+
+    if (window.TSF_SESSION_ROLE && ['LECTURA','EDICION'].includes(window.TSF_SESSION_ROLE)) {
+      // La sesión ya fue verificada: mantener el acceso y mostrar una advertencia no bloqueante.
+      document.documentElement.classList.remove('tsf-auth-pending');
+      if (splash) splash.remove();
+      const aviso = document.createElement('div');
+      aviso.setAttribute('role','alert');
+      aviso.style.cssText = 'position:fixed;z-index:2147483647;top:14px;left:50%;transform:translateX(-50%);width:min(720px,calc(100vw - 28px));display:flex;gap:12px;align-items:center;justify-content:space-between;padding:13px 15px;background:#fff5d9;border:1px solid #e8c65a;border-left:5px solid #d6a600;border-radius:9px;box-shadow:0 8px 28px rgba(0,0,0,.18);color:#493900;font:12px/1.45 Inter,Segoe UI,Arial,sans-serif;';
+      const mensaje = document.createElement('span');
+      mensaje.textContent = 'Tu acceso fue validado, pero ocurrió un error al preparar una parte del portal: ' + detalle;
+      const reintentar = document.createElement('button');
+      reintentar.type = 'button';
+      reintentar.textContent = 'Recargar';
+      reintentar.style.cssText = 'flex:0 0 auto;border:0;border-radius:6px;background:#25282d;color:#fff;padding:8px 12px;font-weight:700;cursor:pointer;';
+      reintentar.addEventListener('click',()=>location.reload());
+      aviso.append(mensaje,reintentar);
+      document.body.appendChild(aviso);
+    } else {
+      // Si no se pudo consultar al servidor, conservar el token y permitir reintentar.
+      if (body) {
+        const note = body.querySelector('.tsf-entry-note');
+        if (note) note.textContent = 'No se pudo verificar el acceso con el servidor. Tu sesión se conserva.';
+        let detalleEl = body.querySelector('.tsf-entry-error');
+        if (!detalleEl) {
+          detalleEl = document.createElement('div');
+          detalleEl.className = 'tsf-entry-error';
+          detalleEl.style.cssText = 'max-width:min(560px,85vw);padding:11px 14px;border:1px solid rgba(255,203,22,.45);border-radius:8px;background:rgba(0,0,0,.22);color:#f4d77b;font-size:11px;line-height:1.5;overflow-wrap:anywhere;';
+          body.appendChild(detalleEl);
+        }
+        detalleEl.textContent = 'Detalle: ' + detalle;
+        let retry = body.querySelector('.tsf-entry-retry');
+        if (!retry) {
+          retry = document.createElement('button');
+          retry.type = 'button';
+          retry.className = 'tsf-entry-retry';
+          retry.textContent = 'Reintentar conexión';
+          retry.style.cssText = 'margin-top:8px;padding:10px 16px;border:0;border-radius:7px;background:#ffcb16;color:#202124;font-weight:800;cursor:pointer;';
+          retry.addEventListener('click',()=>location.reload());
+          body.appendChild(retry);
+        }
+      }
+    }
   }
 })();
 </script>
