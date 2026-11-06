@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V19.16 — Corrección de carga de datos</title>
+<title>TSF | Operaciones V19.17 — Tracking completo y catálogo Fondo Crecer</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -1539,12 +1539,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.16 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.17 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V19.16 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V19.17 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2378,7 +2378,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V19.16 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V19.17 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===1||mIdx===4||isTsfRemoteIndex());tsfActualizarDescripcionGestion();
@@ -2465,6 +2465,12 @@ function monthOptions(value='',row=null){
 function isMonthField(idx,col,row){return col==='MES DE COLOCACIÓN'&&isEditableColumn(idx,col,row)}
 // V11.7 — Catálogos de LISTAS(1).xlsx. Mantener valores históricos.
 const TSF_CATALOGOS = {
+ "0|FONDO CRECER": [
+  "Fondeo",
+  "Cobertura",
+  "Fondeo + Cobertura",
+  "No aplica"
+ ],
  "0|GARANTIA": [
   "CD - Pre constituida Mobiliaria",
   "GARANTIA",
@@ -2926,6 +2932,15 @@ function visible(){let rows=mainMod().rows.filter(r=>{
   return true;
  });
  if(sorting.col){const k=sorting.col,d=sorting.dir;rows.sort((a,b)=>String(a[k]??'').localeCompare(String(b[k]??''),'es',{numeric:true,sensitivity:'base'})*d)}
+ // V19.17: después de agregar desde Tracking, mostrar TODAS las operaciones
+ // (buscador limpio) y colocar temporalmente arriba la operación recién localizada.
+ // No altera el arreglo SharePoint ni los filtros que seleccione el usuario después.
+ const destacado=String(window.TSF_V1917_HIGHLIGHT_TRACKING_ID||'').trim();
+ if(mIdx===1 && destacado && !query && !analyst && !state && !pendingOnly &&
+    !sorting.col && !Object.values(colFilters).some(Boolean)){
+   const pos=rows.findIndex(r=>keyID(r)===destacado);
+   if(pos>0){const [registro]=rows.splice(pos,1);rows.unshift(registro)}
+ }
  return rows;
 }
 function navRender(){
@@ -2937,7 +2952,7 @@ function navRender(){
  }).join('');
  document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>switchModule(+b.dataset.module));
 }
-function switchModule(idx){mIdx=idx;query='';analyst='';state='';page=1;pendingOnly=false;sorting={col:'',dir:1};colFilters={};drawerId=null;document.getElementById('q').value='';draw();}
+function switchModule(idx){window.TSF_V1917_HIGHLIGHT_TRACKING_ID='';mIdx=idx;query='';analyst='';state='';page=1;pendingOnly=false;sorting={col:'',dir:1};colFilters={};drawerId=null;document.getElementById('q').value='';draw();}
 function statCount(terms){return mainMod().rows.filter(r=>terms.some(s=>statusOf(r).toUpperCase().includes(s))).length}
 function drawKpis(){
  const filas=mainMod().rows,total=filas.length;
@@ -3189,7 +3204,7 @@ function tableRender(){
  let head=colMarkup+'<thead>'+tsfEncabezadoGruposGPS(m.columns)+'<tr'+([1,2,3,4,5,6].includes(mIdx)?' class="tsf-columnas-gps"':'')+'>'+m.columns.map((column,i)=>{
   const role=fieldRole(mIdx,column);return `<th class="field-${role} ${tsfClaseZonaGPS(m.columns,column)} ${mIdx===6&&column==='CAF'?'tsf-v150-caf':''} ${mIdx===6&&column==='PRODUCTO'?'tsf-v150-producto':''}" title="${esc(column)} · ${descriptions[role]}" style="width:${widths[i]}px"><div class="thinner"><span class="thname" title="${esc(column)} · ${descriptions[role]}">${tsfHeaderDisplay(columnLabel(column))}</span><button class="header-filter ${colFilters[column]?'isactive':''}" data-filter="${i}" title="Filtrar / ordenar ${esc(column)}">${ic('filter',12)}</button></div></th>`;
  }).join('')+'<th style="width:80px;text-align:center">DETALLE</th>'+(mIdx===1?'<th class="tsf-repro-head" style="width:104px;text-align:center">EXCEPCIONES</th>':'')+'</tr></thead>';
- let body=records.map(row=>`<tr data-id="${esc(keyID(row))}">${m.columns.map((col,i)=>{
+ let body=records.map(row=>`<tr data-id="${esc(keyID(row))}" class="${mIdx===1&&keyID(row)===String(window.TSF_V1917_HIGHLIGHT_TRACKING_ID||'')?'tsf-v1914-created-row':''}">${m.columns.map((col,i)=>{
    const val=(mIdx===6&&col==='PRODUCTO')?String((typeof tsfV127ResolverMaestro==='function'?tsfV127ResolverMaestro(row):null)?.PRODUCTO??row.PRODUCTO??''):((col==='ESTADO_OPERACIÓN'&&[1,6].includes(mIdx)&&trackingSp.active&&typeof window.tsfEstadoPublico==='function')?window.tsfEstadoPublico(keyID(row)):String(row[col]??''));
    const hl=highlight(val),role=fieldRole(mIdx,col,row),editable=isEditableColumn(mIdx,col,row),dateField=isDateField(col,m);
   let style='width:'+widths[i]+'px;';
@@ -6944,20 +6959,18 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return [...found.values()];
     }
     function tsfV1914FocusTracking(id){
-      // El buscador de la tabla compara valores en minúsculas.
-      // Antes se asignaba MID-... en mayúsculas y ocultaba la fila existente.
+      // V19.17: mostrar toda la bandeja de Tracking, sin filtrar por ID.
+      // La operación confirmada se destaca y se ubica primero temporalmente;
+      // el resto de operaciones se mantiene visible y con paginación normal.
+      const target=String(id||'').trim();
+      window.TSF_V1917_HIGHLIGHT_TRACKING_ID=target;
       mIdx=1;
-      query=String(id||'').trim().toLowerCase();
+      query='';
       analyst='';state='';pendingOnly=false;colFilters={};sorting={col:'',dir:1};page=1;
       draw();
-      const row=[...(document.querySelectorAll('#dataTable tbody tr')||[])]
-        .find(tr=>tr.dataset.id===id);
       const scroll=document.getElementById('tableWrap');
       if(scroll){scroll.scrollTop=0;scroll.scrollLeft=0;}
-      if(row){
-        row.classList.add('tsf-v1914-created-row');
-        try{row.scrollIntoView({block:'nearest',inline:'nearest'});}catch{}
-      }
+      // La identificación visual sigue activa tras refrescos del histórico.
     }
     window.tsfTrackingOpenManual=function(){
       if(mIdx!==1 || window.TSF_SESSION_ROLE!=='EDICION'){
@@ -7544,7 +7557,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V19.16 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V19.17 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
