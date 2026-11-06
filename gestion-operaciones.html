@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V19.17 — Tracking completo y catálogo Fondo Crecer</title>
+<title>TSF | Operaciones V19.18 — Tracking completo y catálogo Fondo Crecer</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -1539,12 +1539,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.17 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.18 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V19.17 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V19.18 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -1683,6 +1683,8 @@ function spChange(id,col,val){
   toast('El RUC debe contener 11 dígitos.');return false;
  }
  row[col]=next;
+ tsfRowSearchCache.delete(row);
+ if(col==='ANALISTA OPERATIVO')tsfAnalystNamesCache=null;
  const initial=String(row.__spBaseline?.[col]??'');
  const fields=spEdits.get(id)||new Map();
  if(next===initial)fields.delete(col);else fields.set(col,next);
@@ -2072,6 +2074,8 @@ function trackingChange(id,col,value){
  if(typ==='Text'&&next.length>255){toast('Este campo admite como máximo 255 caracteres.');return false;}
  if(typ!=='Note'&&next.length>500){toast('Texto demasiado extenso.');return false;}
  row[col]=next;
+ tsfRowSearchCache.delete(row);
+ if(col==='ANALISTA OPERATIVO')tsfAnalystNamesCache=null;
  const previous=String(row.__spBaseline?.[col]??'');const changes=trackingSp.edits.get(id)||new Map();
  if(next===previous)changes.delete(col);else changes.set(col,next);
  if(changes.size)trackingSp.edits.set(id,changes);else trackingSp.edits.delete(id);
@@ -2378,7 +2382,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V19.17 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V19.18 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===1||mIdx===4||isTsfRemoteIndex());tsfActualizarDescripcionGestion();
@@ -2640,17 +2644,24 @@ function tsfOpcionesCatalogo(indice,columna,valor=''){
 }
 const TRACKING_STATES=['PENDIENTE','EN PROCESO','DESEMBOLSADO','ANULADO'];
 const addedAnalysts=new Set();
-function analystNames(selected=''){
- // Recoger los analistas de la fuente maestra real + listas existentes.
- // No aceptar números, fechas, CAF ni el texto «Completar» como nombres.
- const sources=[...(spPreview.active?spPreview.rows:modules[0].rows),
-                ...(trackingSp.active?trackingSp.rows:modules[1].rows),
-                ...modules[0].rows,...modules[1].rows];
- const names=new Set([...sources.map(r=>String(r['ANALISTA OPERATIVO']||'').trim()),
-                     ...addedAnalysts,String(selected||'').trim()]);
- const isName=s=>s.length>=5&&s.length<=110&&/^[\p{L}][\p{L}.'’-]*(?:\s+[\p{L}][\p{L}.'’-]*)+$/u.test(s)
+// V19.18: el catálogo se calcula una vez por dibujado, no por cada celda del analista.
+let tsfAnalystNamesCache=null;
+const tsfValidAnalystName=s=>s.length>=5&&s.length<=110&&/^[\p{L}][\p{L}.'’-]*(?:\s+[\p{L}][\p{L}.'’-]*)+$/u.test(s)
       &&!['NO APLICA','SIN ASIGNAR','POR ASIGNAR'].includes(s.toUpperCase());
- return [...names].filter(isName).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
+function analystNames(selected=''){
+ if(!tsfAnalystNamesCache){
+  const names=new Set(addedAnalysts);
+  const addRows=rows=>{for(const r of rows){const name=String(r['ANALISTA OPERATIVO']||'').trim();if(name)names.add(name);}};
+  addRows(spPreview.active?spPreview.rows:modules[0].rows);
+  addRows(trackingSp.active?trackingSp.rows:modules[1].rows);
+  addRows(modules[0].rows);
+  addRows(modules[1].rows);
+  tsfAnalystNamesCache=[...names].filter(tsfValidAnalystName).sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
+ }
+ const val=String(selected||'').trim();
+ if(val&&tsfValidAnalystName(val)&&!tsfAnalystNamesCache.includes(val))
+  return [...tsfAnalystNamesCache,val].sort((a,b)=>a.localeCompare(b,'es',{sensitivity:'base'}));
+ return tsfAnalystNamesCache;
 }
 function analystOptions(value=''){
  return '<option value="">Seleccionar analista...</option>'+analystNames(value).map(a=>`<option value="${esc(a)}" ${a===value?'selected':''}>${esc(a)}</option>`).join('')+
@@ -2681,6 +2692,7 @@ function chooseNewAnalyst(select,previous){
   toast('Escribe nombre y apellido del analista, no CAF ni códigos.');select.value=previous||'';return null;
  }
  addedAnalysts.add(clean);
+ tsfAnalystNamesCache=null;
  const option=new Option(clean,clean,true,true);
  select.add(option,select.options[select.options.length-1]);
  select.value=clean;
@@ -2904,8 +2916,19 @@ function tsfClasificarOperacionesGestion(operaciones,tracking){
  }
  return resultado;
 }
+// V19.18: búsquedas repetidas reutilizan el texto normalizado de cada fila.
+// No persistirlo en la fila (ni añadir propiedades que terminarían en SharePoint).
+let tsfRowSearchCache=new WeakMap();
+function tsfSearchText(row){
+ let value=tsfRowSearchCache.get(row);
+ if(value===undefined){
+  value=Object.values(row).map(v=>String(v??'').toLowerCase()).join('\u0000');
+  tsfRowSearchCache.set(row,value);
+ }
+ return value;
+}
 function visible(){let rows=mainMod().rows.filter(r=>{
-  if(query&&!Object.values(r).some(v=>String(v??'').toLowerCase().includes(query)))return false;
+  if(query&&!tsfSearchText(r).includes(query))return false;
   if(analyst&&analystOf(r)!==analyst)return false;
   if(state){
     if(state==='__SIN_ASIGNACION__'){if(!tsfFilaSinAsignacion(r))return false;}
@@ -2932,7 +2955,7 @@ function visible(){let rows=mainMod().rows.filter(r=>{
   return true;
  });
  if(sorting.col){const k=sorting.col,d=sorting.dir;rows.sort((a,b)=>String(a[k]??'').localeCompare(String(b[k]??''),'es',{numeric:true,sensitivity:'base'})*d)}
- // V19.17: después de agregar desde Tracking, mostrar TODAS las operaciones
+ // V19.18: después de agregar desde Tracking, mostrar TODAS las operaciones
  // (buscador limpio) y colocar temporalmente arriba la operación recién localizada.
  // No altera el arreglo SharePoint ni los filtros que seleccione el usuario después.
  const destacado=String(window.TSF_V1917_HIGHLIGHT_TRACKING_ID||'').trim();
@@ -3342,6 +3365,8 @@ function updateCell(id,col,val,{silent=false}={}){
   row.ID_OPERACION=next;
   id=next;
  }else row[col]=next;
+ tsfRowSearchCache.delete(row);
+ if(col==='ANALISTA OPERATIVO')tsfAnalystNamesCache=null;
  const k=m.key+'|'+id+'|'+col;
  const baseline=base[mIdx].rows.find(r=>keyID(r)===id);
  if(baseline&&String(baseline[col]??'')===next)dirty.delete(k);
@@ -3396,7 +3421,7 @@ function tsfActualizarDescripcionGestion(){
  const total=Array.isArray(spPreview.rows)?spPreview.rows.length:0;
  el.textContent='Fuente oficial: SharePoint · '+total+' operaciones cargadas'+(spPreview.historyLoading?' · histórico en proceso':'')+'.';
 }
-function draw(){document.body.classList.toggle('tsf-v164-remote',isTsfRemoteIndex());document.body.classList.toggle('tsf-v1913-tracking',mIdx===1);document.body.classList.toggle('tsf-v137-gestion',mIdx===0);document.body.classList.toggle('tsf-gestion-sp',isRemoteView());synchronizeDerivedFields();navRender();drawFieldLegend();const m=mainMod();updateSpPreviewUI();document.getElementById('newRecord').innerHTML=ic('plus',14)+(isTsfRemoteIndex()||mIdx===1?' Agregar fila':mIdx===4?' Nuevo excepción':' Nueva operación');document.getElementById('pageTitle').textContent=m.name;document.getElementById('pageDesc').textContent=m.description;tsfActualizarDescripcionGestion();document.getElementById('breadcrumbs').textContent='PORTAL / MEDIANO PLAZO / '+m.name.toUpperCase();document.getElementById('tableTitle').textContent='Bandeja · '+m.name;document.getElementById('q').value=query;drawKpis();drawSelectors();tableRender();updateDirtyLabel()}
+function draw(){tsfAnalystNamesCache=null;tsfRowSearchCache=new WeakMap();document.body.classList.toggle('tsf-v164-remote',isTsfRemoteIndex());document.body.classList.toggle('tsf-v1913-tracking',mIdx===1);document.body.classList.toggle('tsf-v137-gestion',mIdx===0);document.body.classList.toggle('tsf-gestion-sp',isRemoteView());synchronizeDerivedFields();navRender();drawFieldLegend();const m=mainMod();updateSpPreviewUI();document.getElementById('newRecord').innerHTML=ic('plus',14)+(isTsfRemoteIndex()||mIdx===1?' Agregar fila':mIdx===4?' Nuevo excepción':' Nueva operación');document.getElementById('pageTitle').textContent=m.name;document.getElementById('pageDesc').textContent=m.description;tsfActualizarDescripcionGestion();document.getElementById('breadcrumbs').textContent='PORTAL / MEDIANO PLAZO / '+m.name.toUpperCase();document.getElementById('tableTitle').textContent='Bandeja · '+m.name;document.getElementById('q').value=query;drawKpis();drawSelectors();tableRender();updateDirtyLabel()}
 function toast(message,kind='info',title='Aviso',action=null){
  const h=document.getElementById('toastHolder');if(!h)return;
  const type=['success','warning','error'].includes(kind)?kind:'info';
@@ -6294,7 +6319,17 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
      // Compatibilidad con borradores de versiones anteriores. La V17.7 ya no
      // crea estados sin fila TB2: el alta se solicita con TRACKING_CREAR.
      const tsfEstadoSinTB2=new Map();
-    const tsfEstadoPorId=id=>trackingSp.rows.find(r=>keyID(r)===id);
+    // V19.18: resolver estados en O(1), conservando la primera fila si existiesen duplicados.
+    let tsfEstadoRowsIndexadas=null,tsfEstadoRowsCantidad=-1,tsfEstadoIndice=new Map();
+    function tsfEstadoPorId(id){
+      const rows=trackingSp.rows;
+      if(tsfEstadoRowsIndexadas!==rows||tsfEstadoRowsCantidad!==rows.length){
+        const index=new Map();
+        for(const fila of rows){const key=keyID(fila);if(!index.has(key))index.set(key,fila);}
+        tsfEstadoIndice=index;tsfEstadoRowsIndexadas=rows;tsfEstadoRowsCantidad=rows.length;
+      }
+      return tsfEstadoIndice.get(id);
+    }
     const tsfEstadoValidos = new Set(TRACKING_STATES);
      function tsfEstadoEfectivo(id, registro=tsfEstadoPorId(id)){
        // Sin una fila real en TB2 no existe un estado que pueda guardarse.
@@ -6959,7 +6994,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return [...found.values()];
     }
     function tsfV1914FocusTracking(id){
-      // V19.17: mostrar toda la bandeja de Tracking, sin filtrar por ID.
+      // V19.18: mostrar toda la bandeja de Tracking, sin filtrar por ID.
       // La operación confirmada se destaca y se ubica primero temporalmente;
       // el resto de operaciones se mantiene visible y con paginación normal.
       const target=String(id||'').trim();
@@ -7378,18 +7413,30 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
     ]);
     const tsfV127CAF = valor => String(valor??'').trim().toUpperCase().replace(/\s+/g,' ');
 
+    // V19.18: índice por ID_OPERACION, evitando recorrer toda TB1 por cada celda.
+    // El valor null conserva la validación original: IDs duplicados no se enlazan.
+    let tsfV127RowsIndexadas=null,tsfV127CantidadIndexada=-1,tsfV127PorId=new Map();
+    function tsfV127IndiceGestion(disponibles){
+      if(tsfV127RowsIndexadas!==disponibles||tsfV127CantidadIndexada!==disponibles.length){
+        const index=new Map();
+        for(const registro of disponibles){
+          const id=String(registro.ID_OPERACION??'').trim();
+          if(!id)continue;
+          index.set(id,index.has(id)?null:registro);
+        }
+        tsfV127PorId=index;
+        tsfV127RowsIndexadas=disponibles;
+        tsfV127CantidadIndexada=disponibles.length;
+      }
+      return tsfV127PorId;
+    }
     function tsfV127ResolverMaestro(fila){
       if(!spPreview.active || !fila)return null;
       const disponibles=spPreview.rows;
-      const caf=tsfV127CAF(fila.CAF);
       const id=String(fila.ID_OPERACION??'').trim();
-      // ID_OPERACION es la clave única entre TB1 y TB2.
-      // Priorizarla permite sincronizar incluso antes de asignar CAF o si CAF cambia.
-      if(id){
-        const porId=disponibles.filter(r=>String(r.ID_OPERACION??'').trim()===id);
-        return porId.length===1?porId[0]:null;
-      }
-      // Solo las listas auxiliares sin identificador podrán consultar por CAF inequívoco.
+      if(id)return tsfV127IndiceGestion(disponibles).get(id)||null;
+      // Las filas sin ID continúan usando CAF; conservamos la regla de unicidad.
+      const caf=tsfV127CAF(fila.CAF);
       const exactas=caf?disponibles.filter(r=>tsfV127CAF(r.CAF)===caf):[];
       return exactas.length===1?exactas[0]:null;
     }
@@ -7557,7 +7604,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V19.17 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V19.18 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
