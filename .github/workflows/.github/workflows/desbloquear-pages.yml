@@ -1,0 +1,21 @@
+
+name: Desbloquear GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  desbloquear:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancelar publicacion bloqueada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -i -X POST \
+            "repos/jchavez-pixel/tsf-operaciones-prueba/pages/deployments/eb5ff25bdfe2c1df64949298db4eb243929fc58c/cancel"
