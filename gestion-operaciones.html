@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TSF | Operaciones V19.9 — Sesión estable y corrección de visualización</title>
+<title>TSF | Operaciones V19.10 — Sesión estable y corrección de visualización</title>
 <!-- V5: maestro 100% editable, cinco casos de prueba con 4 campos vacíos, alta automática en otros cinco módulos al completar los 4 campos. Piloto LOCAL sin SharePoint. -->
 <style>
 :root{--yellow:#ffcb16;--yellow-soft:#fff3b0;--ink:#1c2026;--graphite:#25292e;--slate:#5b6572;--muted:#8993a0;--border:#e5e9ee;--bg:#f4f6f9;--white:#fff;--green:#13835c;--red:#b83f46;--blue:#2e6ead;--sidebar:204px;--header-height:122px;--shadow:0 3px 16px rgba(19,30,42,.045)}
@@ -522,7 +522,7 @@ body.tsf-dashboard-active .tsf-dashboard{display:block}
 .tsf-load-error{background:#fff1df;color:#b35d00;border-radius:50%}
 @keyframes tsf-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.tsf-load-spinner{animation:none;border-style:dotted}}
-</style>
+.toast.warning{background:#302a1f;border-left-color:#ffcb16}.toast.warning .toast-icon{background:#ffcb16;color:#262626}.toast-action{border:1px solid #e9d797;border-radius:7px;background:#fff7dc;color:#3c3114;font-weight:750;font-size:11px;cursor:pointer;padding:6px 12px;margin-top:9px}.toast-action:hover{background:#ffcb16}.toast-action:focus-visible{outline:2px solid #fff;outline-offset:2px}</style>
 <style id="tsf-auth-style">
 /* Control visual de demostración, NO sustituto de autorización en el servidor */
 html.tsf-auth-pending { background:#191a1d; }
@@ -1517,12 +1517,12 @@ body.tsf-v137-gestion #dataTable tbody td:nth-child(2) .tsf-text-cell{
  <div class="sidefoot"><div class="sidefootbox">ICON_LOCK<span class="sidefoot-text"><b>Modo demostración</b><br/>Datos sintéticos · Sin SharePoint</span></div><button class="collapse" id="sidebarToggle" title="Contraer menú">ICON_CHEVRON</button></div>
 </aside>
 <div class="workspace">
-<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.9 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
+<header class="tophead"><div class="headphoto" aria-hidden="true"></div><div class="headleft"><h1 class="headtitle">Portal de Operaciones <b>Mediano Plazo</b></h1><p class="headsubtitle">Gestión, trazabilidad y seguimiento de operaciones de financiamiento de bienes productivos.</p></div><div class="headright"><div class="tsf-header-ident"><span class="tsf-header-emblem">TSF</span><span>V19.10 · PILOTO AUTENTICADO · SHAREPOINT</span></div></div></header>
 <main class="content">
  <div class="pagebar"><div><div class="overline" id="breadcrumbs">PORTAL / MÓDULOS OPERATIVOS</div><h2 class="pagetitle" id="pageTitle">Gestión de Operaciones</h2><p class="pagedesc" id="pageDesc"></p></div><div class="pageactions"><a class="button owner-only-link" id="ownerSharePointLink" href="#" target="_blank" rel="noopener noreferrer" title="Solo propietarios autorizados: abrir lista lista no disponible en demostración en SharePoint" aria-label="Abrir lista SharePoint, acceso restringido a propietarios">Ver lista SharePoint ↗</a><button class="button" id="resetView" title="Esta demostración no conecta con SharePoint">ICON_REFRESH Recargar vista</button><button class="button" id="sharepointViewBtn" type="button" title="Lectura de SharePoint">Conciliar Gestión (lectura)</button><button class="button" id="downloadCsv">ICON_DOWNLOAD Exportar CSV</button><button class="button" id="trackingMapButton" type="button" hidden aria-hidden="true" tabindex="-1">Ver mapeo</button><button class="button" id="newRecord">ICON_PLUS Nueva operación</button><button class="button primary" id="saveBtn">ICON_SAVE Guardar cambios <span id="dirtyCount"></span></button><button class="button" id="spPilotButton" type="button" title="Prueba controlada de Power Automate y SharePoint">ICON_TEST Probar Power Automate</button></div></div>
  <div class="tsf-kpi-row"><section class="kpis" id="kpis"></section><div class="tsf-pending-tools"><span class="smalltag" id="pendingChip" aria-live="polite">0 sin asignación</span><button class="button" id="pendingOnly" type="button" title="Ver operaciones en proceso y sin asignación" aria-label="Ver operaciones en proceso y sin asignación">Ver por atender</button></div></div>
  <section class="tablecard"><div class="toolbar"><div class="toolleft"><div><div class="tabletitle" id="tableTitle">Maestro de Operaciones</div><div class="tablemeta" id="tableMeta">Registros del archivo de origen</div></div><div class="searchbox">ICON_SEARCH<input id="q" type="search" placeholder="Buscar ID, cliente, RUC, CAF..." autocomplete="off"></div></div><div class="toolright"><label class="search-details" for="analystFilter">Analista</label><select class="smallselect" id="analystFilter"><option value="">Todos los analistas</option></select><label class="search-details" for="statusFilter">Estado</label><select class="smallselect" id="statusFilter"><option value="">Todos los estados</option></select><button class="button" id="clearFilters">ICON_FILTER Limpiar filtros</button></div></div><div class="table-legend" id="fieldLegend" aria-live="polite"></div><div class="tablewrap" id="tableWrap"><table class="data-table" id="dataTable"></table><div id="emptyState" style="display:none"></div></div><div class="tablefoot"><div id="paginationDescription">—</div><div class="pagination" id="pagination"></div><div><span>Filas por página: </span><select id="pageSize" class="smallselect" style="min-width:64px;height:28px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select></div></div></section>
- <div class="statusbottom"><span>V19.9 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
+ <div class="statusbottom"><span>V19.10 · Piloto autenticado · Gestión y TB2–TB6 en SharePoint</span><span class="offline"><span class="dot"></span>Sincronización automática cada 60 s</span></div>
 </main>
 </div></div>
 <div id="overlays"></div><div id="toastHolder"></div>
@@ -2356,7 +2356,7 @@ async function loadSpPreview(){
 }
 function updateSpPreviewUI(){
  const foot=document.querySelector('.sidefoot-text');
- if(foot)foot.innerHTML='<b>V19.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+ if(foot)foot.innerHTML='<b>V19.10 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
  const save=document.getElementById('saveBtn'),newButton=document.getElementById('newRecord');
  if(save){save.innerHTML=ic('save',14)+' Guardar cambios <span id="dirtyCount"></span>';save.disabled=false;}
  if(newButton)newButton.disabled=window.TSF_SESSION_ROLE!=='EDICION'||!(mIdx===0||mIdx===4||isTsfRemoteIndex());tsfActualizarDescripcionGestion();
@@ -3038,7 +3038,7 @@ getColumnWidth = function(column,mod,index){
  if(key.includes('ORIGEN DE FONDOS'))valueWidth=192;
  return Math.round(Math.min(/COMENTARI|DETALLE/.test(key)?275:280,Math.max(94,titleWidth,valueWidth)));
 };
-// V19.9: se recupera el formateador numérico ya definido en el portal.
+// V19.10: se recupera el formateador numérico ya definido en el portal.
 // V19.4: formato exclusivamente visual; los números originales se mantienen
 // para cálculos, edición y sincronización a SharePoint.
 function tsfDisplayNumeric(column,value,row=null){
@@ -3349,7 +3349,17 @@ function tsfActualizarDescripcionGestion(){
  el.textContent='Fuente oficial: SharePoint · '+total+' operaciones cargadas'+(spPreview.historyLoading?' · histórico en proceso':'')+'.';
 }
 function draw(){document.body.classList.toggle('tsf-v164-remote',isTsfRemoteIndex());document.body.classList.toggle('tsf-v137-gestion',mIdx===0);document.body.classList.toggle('tsf-gestion-sp',isRemoteView());synchronizeDerivedFields();navRender();drawFieldLegend();const m=mainMod();updateSpPreviewUI();document.getElementById('newRecord').innerHTML=ic('plus',14)+(isTsfRemoteIndex()?' Agregar fila':mIdx===4?' Nuevo excepción':' Nueva operación');document.getElementById('pageTitle').textContent=m.name;document.getElementById('pageDesc').textContent=m.description;tsfActualizarDescripcionGestion();document.getElementById('breadcrumbs').textContent='PORTAL / MEDIANO PLAZO / '+m.name.toUpperCase();document.getElementById('tableTitle').textContent='Bandeja · '+m.name;document.getElementById('q').value=query;drawKpis();drawSelectors();tableRender();updateDirtyLabel()}
-function toast(message,kind='info',title='Aviso'){const h=document.getElementById('toastHolder');const type=kind==='success'?'success':kind==='error'?'error':'info';const icon=type==='success'?'✓':type==='error'?'!':'i';h.innerHTML=`<div class="toast ${type}"><div class="toast-icon" aria-hidden="true">${icon}</div><div class="toast-body"><strong class="toast-title">${esc(title)}</strong><p class="toast-message">${esc(String(message??''))}</p></div><button type="button" class="toast-close" aria-label="Cerrar aviso">×</button></div>`;const closer=h.querySelector('.toast-close');if(closer)closer.onclick=()=>{h.innerHTML=''};clearTimeout(window._to);window._to=setTimeout(()=>{h.innerHTML=''},7800)}
+function toast(message,kind='info',title='Aviso',action=null){
+ const h=document.getElementById('toastHolder');if(!h)return;
+ const type=['success','warning','error'].includes(kind)?kind:'info';
+ const icon=type==='success'?'✓':type==='warning'?'!':type==='error'?'×':'i';
+ const actionHTML=action&&typeof action.onClick==='function'&&action.label
+  ?`<button type="button" class="toast-action">${esc(String(action.label))}</button>`:'';
+ h.innerHTML=`<div class="toast ${type}" role="status"><div class="toast-icon" aria-hidden="true">${icon}</div><div class="toast-body"><strong class="toast-title">${esc(title)}</strong><p class="toast-message">${esc(String(message??''))}</p>${actionHTML}</div><button type="button" class="toast-close" aria-label="Cerrar aviso">×</button></div>`;
+ const closer=h.querySelector('.toast-close');if(closer)closer.onclick=()=>{h.innerHTML=''};
+ const btn=h.querySelector('.toast-action');if(btn)btn.onclick=()=>{h.innerHTML='';action.onClick()};
+ clearTimeout(window._to);window._to=setTimeout(()=>{h.innerHTML=''},type==='warning'?14000:8800);
+}
 function showFilter(col,anchor){
  currentFilter=col;
  const box=anchor.getBoundingClientRect();
@@ -5627,16 +5637,17 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
 
         if (error) {
           window.TSF_TB1_LAST_ERROR=error;
-          toast('Guardado detenido: '+error.slice(0,230),'error','TB1 no confirmó el guardado');
+          console.warn('TSF Gestión: detalle técnico del guardado:',error);
+          toast('No pudimos confirmar este guardado. Tus cambios siguen en pantalla y no se han perdido. Revisa el aviso y vuelve a intentarlo.',
+            'warning','Guardado pendiente');
           if(!/cancelado/i.test(error))await tsfSaveReviewShowFailures('Gestión de Operaciones · TB1',[error]);
         } else {
           window.TSF_TB1_LAST_ERROR='';
-          toast(
-            `Gestión: ${guardados} operación(es) guardada(s), `+
-            `${observados} celda(s) observada(s), `+
-            `${iguales} ya coincidían. `+
-            `${spEditCount()} cambio(s) siguen pendientes.`
-          );
+          if(guardados||iguales){
+            toast(spEditCount()?`Se guardaron ${guardados} operación(es). Algunas celdas necesitan revisión.`:
+              `Los cambios de Gestión están guardados. Se están verificando las vistas relacionadas.`,
+              'success','Cambios guardados');
+          }
         }
       }
     }
@@ -6364,14 +6375,14 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
 
       const mensajes=[];
       if(creados.length)mensajes.push(`${creados.length} fila(s) creada(s) en Tracking con estado EN PROCESO`);
-      if(existentes.length)mensajes.push(`${existentes.length} operación(es) ya tenían fila en Tracking`);
+      // Una operación previamente vinculada es normal; no mostrarla como advertencia.
       if(pendientes.length){
         const detalle=pendientes.slice(0,4).map(x=>x.id+': '+x.campos.join(', ')).join(' | ');
         mensajes.push('No se creó Tracking hasta completar y guardar los campos obligatorios: '+detalle);
       }
       if(mensajes.length){
         const creadoMsg=creados.length?`${creados.length} fila(s) creada(s) en Tracking con estado EN PROCESO`:'';
-        const extraMsgs=[...(existentes.length?[`${existentes.length} operación(es) ya tenían fila en Tracking`]:[]),...(pendientes.length?[`No se creó Tracking hasta completar y guardar los campos obligatorios: ${pendientes.slice(0,4).map(x=>x.id+': '+x.campos.join(', ')).join(' | ')}`]:[])];
+        const extraMsgs=[...(pendientes.length?[`Para vincular otra operación, completa Expediente y Analista operativo y vuelve a guardar.`]:[])];
         if(creadoMsg)toast(extraMsgs.length?`${creadoMsg} · ${extraMsgs.join(' · ')}`:creadoMsg,'success','Tracking creado');
         else toast(mensajes.join(' · '));
       }
@@ -6379,7 +6390,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return {creados,existentes,pendientes,errores};
     }
 
-    // V19.9: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
+    // V19.10: sincronización de MES DE COLOCACIÓN tras confirmar TB1.
     // VAF no existe físicamente en TB2: se visualiza siempre desde el maestro TB1.
     const TSF_V199_MONTH_RETRY_KEY='TSF_MES_PENDIENTES_TB2';
     const tsfV199MesSyncRetry=new Set((()=>{
@@ -6450,6 +6461,105 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       return resultado;
     }
 
+    // V19.10 — CAF: Gestión es la fuente única. Cada cambio confirmado se refleja
+    // físicamente en Tracking (field_5) usando ID_OPERACION y ETag, sin crear duplicados.
+    const TSF_V1910_CAF_RETRY_KEY='TSF_V1910_CAF_PENDIENTE';
+    const tsfV1910CafRetry=new Set((()=>{
+      try{
+        const ids=JSON.parse(sessionStorage.getItem(TSF_V1910_CAF_RETRY_KEY)||'[]');
+        return Array.isArray(ids)?ids.filter(v=>typeof v==='string'&&/^MID-\d{4}-\d{4,8}$/.test(v)).slice(0,100):[];
+      }catch{return []}
+    })());
+    function tsfV1910CafPersist(){
+      try{sessionStorage.setItem(TSF_V1910_CAF_RETRY_KEY,JSON.stringify([...tsfV1910CafRetry].slice(0,100)))}catch{}
+    }
+    let tsfV1910CafSchema=null;
+    async function tsfV1910ValidarColumnaCaf(){
+      if(tsfV1910CafSchema)return tsfV1910CafSchema;
+      const response=await trackingApi({accion:'TRACKING_ESQUEMA',id_operacion:''});
+      const schema=trackingListArray(response);
+      const real=schema.find(f=>trackingFieldName(f)==='field_5');
+      if(!real || !normTracking(trackingFieldTitle(real)).startsWith('CAF') ||
+         trackingFieldType(real)!=='Text'||real.Hidden||real.ReadOnlyField){
+        throw new Error('La columna CAF de Tracking no coincide con su configuración esperada. No se modificó ninguna fila.');
+      }
+      tsfV1910CafSchema=real;
+      return real;
+    }
+    function tsfV1910CafLocal(id,value,verified){
+      const row=trackingSp.rows.find(r=>keyID(r)===id);
+      if(!row)return;
+      row.CAF=String(value??'');
+      if(!row.__spBaseline)row.__spBaseline={};
+      row.__spBaseline.CAF=String(value??'');
+      if(verified?.__spEtag)row.__spEtag=verified.__spEtag;
+    }
+    async function tsfV1910ReflejarCafConfirmado(ids){
+      const resultado={actualizados:[],sinCambios:[],sinFila:[],pendientes:[]};
+      const candidatos=[...new Set(ids||[])];
+      if(!candidatos.length)return resultado;
+      let campo;
+      try{campo=trackingFieldName(await tsfV1910ValidarColumnaCaf());}
+      catch(error){
+        for(const id of candidatos){tsfV1910CafRetry.add(id);resultado.pendientes.push(id+': '+String(error?.message||error));}
+        tsfV1910CafPersist();return resultado;
+      }
+      const waitKey='tsf-sincronizando-caf';
+      tsfWaitBegin(waitKey,'Actualizando el CAF','Comprobando la información entre Gestión y Tracking…');
+      try{
+        for(const id of candidatos){
+          const maestra=spPreview.rows.find(r=>keyID(r)===id);
+          if(!maestra||spEdits.get(id)?.has('CAF')){
+            tsfV1910CafRetry.add(id);
+            resultado.pendientes.push(id+': el CAF todavía no se confirmó en Gestión.');
+            continue;
+          }
+          const caf=String(maestra.CAF??'').trim();
+          const puedeCrear=TSF_TRACKING_REQUIRED_FIELDS.every(col=>tsfTrackingValorCompleto(maestra[col]));
+          try{
+            const remoto=(await tsfLeerFilasTracking([id])).get(id);
+            if(!remoto){throw new Error('La operación no está disponible en Tracking.');}
+            if(String(remoto.CAF??'').trim()===caf){
+              tsfV1910CafLocal(id,caf,remoto);
+              tsfV1910CafRetry.delete(id);
+              resultado.sinCambios.push(id);
+              continue;
+            }
+            if(!remoto.__spEtag)throw new Error('No fue posible comprobar la versión actual del registro.');
+            const respuesta=await trackingApi({accion:'TRACKING_ACTUALIZAR',id_operacion:id,
+              campos:{[campo]:caf},etag:remoto.__spEtag});
+            if(respuesta?.ok!==true)throw new Error('El guardado no fue confirmado.');
+            // No anunciar éxito con una respuesta HTTP solamente: consultar el valor real.
+            const comprobada=(await tsfLeerFilasTracking([id])).get(id);
+            if(!comprobada || String(comprobada.CAF??'').trim()!==caf){
+              throw new Error('El CAF aún no coincide al comprobar los cambios.');
+            }
+            tsfV1910CafLocal(id,caf,comprobada);
+            tsfV1910CafRetry.delete(id);
+            resultado.actualizados.push(id);
+          }catch(error){
+            const msg=String(error?.message||error);
+            if(!puedeCrear && /no se encontraron operaciones|no está disponible/i.test(msg)){
+              // Un CAF previo a Expediente y Analista queda en Gestión hasta crear la fila.
+              tsfV1910CafRetry.delete(id);
+              resultado.sinFila.push(id);
+            }else{
+              tsfV1910CafRetry.add(id);
+              resultado.pendientes.push(id+': '+msg.slice(0,180));
+            }
+          }
+        }
+      }finally{
+        tsfWaitEnd(waitKey);
+        tsfV1910CafPersist();
+        updateDirtyLabel();
+        if([0,1,6].includes(mIdx) && !document.activeElement?.matches?.('.cell-input:not([readonly]),.tsf-cell-select')){
+          tableRender();
+        }
+      }
+      return resultado;
+    }
+
     // Guardado conjunto: gestión en su lista y estados en Tracking.
      let tsfGuardandoGestionYTracking=false;
      async function tsfGuardarAmbosGestion(){
@@ -6458,14 +6568,34 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
        try{
          const operacionesEditadas=[...spEdits.keys()];
          const mesesEditados=operacionesEditadas.filter(id=>spEdits.get(id)?.has('MES DE COLOCACIÓN'));
+         const cafesEditados=operacionesEditadas.filter(id=>spEdits.get(id)?.has('CAF'));
          if(spEdits.size)await tsfGuardarGestionConConflictos();
          const confirmadas=operacionesEditadas.filter(id=>!spEdits.has(id));
          const rechazadas=operacionesEditadas.filter(id=>spEdits.has(id));
          // Los reintentos solo se hacen a petición del usuario y nunca si TB1
          // aún tiene cambios pendientes para esa misma operación.
          const candidatos=[...new Set([...confirmadas,...tsfTrackingRetryIds])]
-           .filter(id=>!spEdits.has(id));
-         if(candidatos.length)await tsfCrearTrackingAutomatico(candidatos);
+           .filter(id=>!spEdits.has(id) && !trackingSp.rows.some(r=>keyID(r)===id));
+         const nuevas=candidatos.length?await tsfCrearTrackingAutomatico(candidatos):{creados:[],existentes:[]};
+         // Si el registro ya existe, actualizarlo. No intentar crearlo de nuevo.
+         const cafesParaVincular=[...new Set([
+           ...cafesEditados.filter(id=>confirmadas.includes(id)),
+           ...nuevas.creados,...nuevas.existentes,...tsfV1910CafRetry
+         ])].filter(id=>!spEdits.get(id)?.has('CAF'));
+         if(cafesParaVincular.length){
+           const syncCaf=await tsfV1910ReflejarCafConfirmado(cafesParaVincular);
+           if(syncCaf.pendientes.length){
+             console.warn('TSF CAF: sincronización pendiente',syncCaf.pendientes);
+             toast('El CAF quedó guardado en Gestión, pero todavía no pudimos confirmar que aparezca en Tracking. No necesitas escribirlo otra vez; pulsa «Reintentar» o «Guardar cambios».',
+               'warning','CAF pendiente de actualizar',{label:'Reintentar',onClick:()=>tsfGuardarAmbosGestion()});
+           }else if(syncCaf.actualizados.length){
+             toast(`El CAF de ${syncCaf.actualizados.length===1?syncCaf.actualizados[0]:syncCaf.actualizados.length+' operaciones'} ya figura correctamente en Gestión y Tracking.`,
+               'success','CAF actualizado',{label:'Ver Tracking',onClick:()=>{switchModule(1);if(syncCaf.actualizados.length===1){query=syncCaf.actualizados[0];page=1;const q=document.getElementById('q');if(q)q.value=query;draw();}}});
+           }else if(syncCaf.sinFila.length){
+             toast('El CAF se guardó en Gestión. Para que aparezca también en Tracking, completa Expediente y Analista operativo y pulsa «Guardar cambios».',
+               'info','Falta completar la operación');
+           }
+         }
          const mesesConfirmados=[...new Set([...mesesEditados.filter(id=>confirmadas.includes(id)),...tsfV199MesSyncRetry])]
            .filter(id=>!spEdits.get(id)?.has('MES DE COLOCACIÓN'));
          if(mesesConfirmados.length){
@@ -6477,7 +6607,11 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
              toast('Mes de colocación actualizado en TB1 y TB2 para '+sincronizacion.actualizados.join(', '),'success','Sincronización confirmada');
            }
          }
-         if(rechazadas.length)toast('TB1 no confirmó '+rechazadas.join(', ')+'. '+String(window.TSF_TB1_LAST_ERROR||'Comprueba ACTUALIZAR en el historial del flujo.').slice(0,205)+' Se conservaron sus cambios y no se creó Tracking.','error','Actualización no confirmada');
+         if(rechazadas.length){
+           console.warn('TSF Gestión: detalle del rechazo',window.TSF_TB1_LAST_ERROR,rechazadas);
+           toast('No pudimos guardar todos los cambios de '+rechazadas.join(', ')+'. La información que escribiste sigue disponible. Revisa las celdas resaltadas y vuelve a pulsar «Guardar cambios».',
+             'warning','Algunos cambios necesitan revisión');
+         }
          if(!rechazadas.length&&tsfPendientesEstadoGestion().length)
            await tsfGuardarTrackingConConflictos(true);
          if(!rechazadas.length)tsfEstadoSinTB2.clear();
@@ -6724,7 +6858,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         b.disabled=false;b.title='Guardar campos compartidos en Gestión (SharePoint)';
       }
       const pie=document.querySelector('.sidefoot-text');
-      if(pie)pie.innerHTML='<b>V19.9 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
+      if(pie)pie.innerHTML='<b>V19.10 · Piloto autenticado</b><br/>Gestión y TB2–TB6 vinculados a SharePoint';
       return r;
     };
     const tsfV127DirtyAnterior=updateDirtyLabel;
@@ -8407,7 +8541,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       const reason=String(item.issue||'');
       if(/ETag/i.test(reason))return 'Alternativa: retira este cambio, actualiza la lista para obtener la versión vigente y vuelve a editar la celda.';
       if(/no se encontró|ya no está disponible|no se encontró la fila/i.test(reason))return 'Alternativa: verifica que el registro siga existiendo en SharePoint y vuelve a cargar el módulo.';
-      if(/TB2|Tracking/i.test(reason))return 'Alternativa: completa y guarda EXPEDIENTE, CAF y ANALISTA OPERATIVO. El portal creará la fila de Tracking automáticamente.';
+      if(/TB2|Tracking/i.test(reason))return 'Completa Expediente y Analista operativo. Luego pulsa «Guardar cambios» para que aparezca en Tracking.';
       if(/número|numérico|importe/i.test(reason))return 'Alternativa: introduce solo un número válido, usando punto o coma decimal.';
       if(/fecha/i.test(reason))return 'Alternativa: corrige la fecha al formato DD/MM/AAAA o DD/MM/AAAA HH:MM.';
       if(/mapeo|esquema|autorizado|bloqueado/i.test(reason))return 'Alternativa: verifica el nombre y tipo de columna en SharePoint; no se enviará un campo sin mapeo válido.';
@@ -8579,18 +8713,23 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         layer.className='tsf-save-review-layer';
         const details=(failures||[]).map((failure,i)=>{
           const text=String(failure??'');
+          const amable=/conflicto|412|ETag/i.test(text)
+            ?'Esta operación fue modificada recientemente. Actualiza su vista y revisa el dato antes de volver a guardarlo.'
+            :/no se encontr|sin versión/i.test(text)
+              ?'No pudimos encontrar o comprobar la versión de esta operación. Actualiza la vista y vuelve a intentarlo.'
+              :'Este cambio necesita revisión. Se conserva lo que escribiste: vuelve a intentar desde «Guardar cambios». Si continúa, solicita ayuda al responsable del portal.';
           const match=text.match(/SharePoint\s*#(\d+)/i);
           const row=match?tsfRemoteStores[Number(mIdx)]?.rows.find(r=>Number(r.__spId)===Number(match[1])):null;
           return `<article class="tsf-save-review-item has-issue">
             <div class="tsf-save-review-top"><span class="tsf-save-review-tag">${esc(module)}</span>${row?`<span class="tsf-save-review-tag">ID: ${esc(row.ID_OPERACION||'—')}</span><span class="tsf-save-review-tag">CAF: ${esc(row.CAF||'—')}</span>`:''}<span class="tsf-save-review-state issue">RECHAZADO</span></div>
-            <div class="tsf-save-review-reason">${esc(text)}</div>
+            <div class="tsf-save-review-reason">${esc(amable)}<details style="margin-top:8px;font-size:10px;opacity:.75"><summary>Detalle para soporte</summary>${esc(text)}</details></div>
           </article>`;
         }).join('');
         layer.innerHTML=`<section class="tsf-save-review-panel" role="dialog" aria-modal="true">
-          <header class="tsf-save-review-head"><div><h2>Observaciones devueltas por SharePoint / Power Automate</h2><p>Estos registros no se confirmaron. Sus cambios siguen pendientes y no se han eliminado.</p></div><button type="button" class="tsf-save-review-close">×</button></header>
+          <header class="tsf-save-review-head"><div><h2>Cambios que necesitan revisión</h2><p>No todos los cambios pudieron guardarse. La información que escribiste permanece en el portal.</p></div><button type="button" class="tsf-save-review-close">×</button></header>
           <div class="tsf-save-review-summary"><span class="tsf-save-review-chip issue">${failures.length} rechazo(s) o error(es)</span><span class="tsf-save-review-chip">Borradores conservados</span></div>
           <div class="tsf-save-review-body">${details}</div>
-          <footer class="tsf-save-review-footer"><small>Corrige la celda indicada o verifica la configuración de la lista y del flujo antes de reintentar.</small><div class="tsf-save-review-footer-actions"><button type="button" class="tsf-save-review-btn primary" data-close-failures>Cerrar y revisar</button></div></footer>
+          <footer class="tsf-save-review-footer"><small>Puedes revisar la operación y pulsar «Guardar cambios» para reintentar.</small><div class="tsf-save-review-footer-actions"><button type="button" class="tsf-save-review-btn primary" data-close-failures>Cerrar y revisar</button></div></footer>
         </section>`;
         const close=()=>{layer.remove();resolve();};
         layer.querySelectorAll('.tsf-save-review-close,[data-close-failures]').forEach(b=>b.addEventListener('click',close));
@@ -8696,6 +8835,19 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return original;
     };
+    // V19.10: permitir reintentar CAF sin volver a escribirlo.
+    const tsfV1910DirtyPrev=updateDirtyLabel;
+    updateDirtyLabel=function(...args){
+      const out=tsfV1910DirtyPrev.apply(this,args);
+      if(mIdx===0&&tsfV1910CafRetry.size&&window.TSF_SESSION_ROLE==='EDICION'){
+        const n=spEditCount()+tsfPendientesEstadoGestion().length+tsfTrackingRetryIds.size+tsfV199MesSyncRetry.size+tsfV1910CafRetry.size;
+        const label=document.getElementById('dirtyCount');
+        const btn=document.getElementById('saveBtn');
+        if(label)label.textContent='· '+n;
+        if(btn){btn.disabled=spSaving||trackingSp.saving||tsfGuardandoGestionYTracking;btn.title='Hay un CAF pendiente de reflejar en Tracking. Pulsa Guardar cambios para reintentar.';}
+      }
+      return out;
+    };
     const tsfSaveReviewButton=document.getElementById('saveBtn');
     if(tsfSaveReviewButton){
       tsfSaveReviewButton.onclick=async event=>{
@@ -8704,7 +8856,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
         if(spSaving||trackingSp.saving||tsfV174Saving?.has?.(Number(mIdx)))return toast('Espera a que termine el guardado actual.');
         const items=tsfSaveReviewCollect();
         if(!items.length){
-          if(Number(mIdx)===0&&(tsfTrackingRetryIds.size||tsfV199MesSyncRetry.size))return tsfGuardarAmbosGestion();
+          if(Number(mIdx)===0&&(tsfTrackingRetryIds.size||tsfV199MesSyncRetry.size||tsfV1910CafRetry.size))return tsfGuardarAmbosGestion();
           return toast('No hay cambios pendientes para guardar.');
         }
 
@@ -8744,7 +8896,7 @@ const cabecera = tabla?.tHead?.rows?.[tabla.tHead.rows.length - 1];
       }
       return result;
     };
-    // V19.9: si Gestión carga en segundo plano mientras se observa Tracking,
+    // V19.10: si Gestión carga en segundo plano mientras se observa Tracking,
     // refrescar el VAF derivado sin interrumpir a quien está editando una celda.
     const tsfV199SafePaintAnterior=tsfSafePaint;
     tsfSafePaint=function(index){
